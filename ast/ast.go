@@ -9,6 +9,7 @@ const (
 	IntLiteralNode
 	FloatLiteralNode
 	BinaryExpressionNode
+	UnaryExpressionNode
 	DeclarationNode
 	ReturnNode
 

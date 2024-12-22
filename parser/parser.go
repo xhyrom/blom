@@ -83,7 +83,7 @@ func (p *Parser) ParseExpression() ast.Expression {
 }
 
 func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast.Expression {
-	left := p.parsePrimaryExpression()
+	left := p.ParsePrimaryExpression()
 
 	for !p.IsEof() && precedence < p.Current().Kind.Precedence() {
 		op := p.Current()
@@ -102,7 +102,7 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 	return left
 }
 
-func (p *Parser) parsePrimaryExpression() ast.Expression {
+func (p *Parser) ParsePrimaryExpression() ast.Expression {
 	switch p.Current().Kind {
 	case tokens.IntLiteral:
 		value, _ := strconv.ParseInt(p.Consume().Value, 10, 64)
@@ -121,6 +121,8 @@ func (p *Parser) parsePrimaryExpression() ast.Expression {
 		expr := p.ParseExpression()
 		p.Consume() // Consume ')'
 		return expr
+	case tokens.Plus, tokens.Minus:
+		return expressions.ParseUnary(p)
 	}
 
 	return nil

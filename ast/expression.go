@@ -18,3 +18,17 @@ func (b BinaryExpression) Kind() NodeKind {
 func (b BinaryExpression) Location() tokens.Location {
 	return b.Loc
 }
+
+type UnaryExpression struct {
+	Operand  Expression
+	Operator tokens.TokenKind
+	Loc      tokens.Location
+}
+
+func (u UnaryExpression) Kind() NodeKind {
+	return UnaryExpressionNode
+}
+
+func (u UnaryExpression) Location() tokens.Location {
+	return u.Loc
+}

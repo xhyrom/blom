@@ -11,4 +11,5 @@ type Parser interface {
 	Consume() tokens.Token
 	ParseStatement() ast.Statement
 	ParseExpression() ast.Expression
+	ParsePrimaryExpression() ast.Expression
 }
