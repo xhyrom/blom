@@ -24,8 +24,6 @@ func New(file string, content string) *Lexer {
 }
 
 func (lex *Lexer) Next() *tokens.Token {
-	lex.skipWhitespace()
-
 	char, err := lex.Reader.Read()
 	if err != nil {
 		return nil
@@ -36,6 +34,11 @@ func (lex *Lexer) Next() *tokens.Token {
 	kind := tokens.Illegal
 
 	switch char {
+	case '\n':
+		{
+			lex.NewLine()
+			return lex.Next()
+		}
 	case '=':
 		{
 			lex.Advance()
@@ -55,7 +58,18 @@ func (lex *Lexer) Next() *tokens.Token {
 	case '*':
 		kind = tokens.Asterisk
 	case '/':
-		kind = tokens.Slash
+		{
+			lex.Advance()
+
+			switch lex.CurrentChar() {
+			case '/':
+				consumers.ConsumeComment(lex)
+				return lex.Next()
+			default:
+				kind = tokens.Slash
+				lex.Rewind()
+			}
+		}
 	case '%':
 		kind = tokens.Modulo
 	case '<':
@@ -82,8 +96,6 @@ func (lex *Lexer) Next() *tokens.Token {
 				lex.Rewind()
 			}
 		}
-	case '\n':
-		lex.newLine()
 	case '.':
 		kind = tokens.Dot
 	case ',':
@@ -105,7 +117,9 @@ func (lex *Lexer) Next() *tokens.Token {
 	case '}':
 		kind = tokens.RightCurlyBracket
 	default:
-		if unicode.IsDigit(char) {
+		if unicode.IsSpace(char) {
+			return lex.Next()
+		} else if unicode.IsDigit(char) {
 			return consumers.ConsumeNumber(lex)
 		} else if unicode.IsLetter(char) {
 			return consumers.ConsumeIdentifier(lex)
@@ -124,13 +138,13 @@ func (lex *Lexer) Next() *tokens.Token {
 	}
 }
 
-func (lex *Lexer) newLine() {
+func (lex *Lexer) NewLine() {
 	lex.location.Row++
 	lex.location.Col = 0
 }
 
 func (lex *Lexer) Advance() error {
-	_, err := lex.Reader.Current()
+	_, err := lex.Reader.Peek()
 	if err != nil {
 		return err
 	}
@@ -158,24 +172,4 @@ func (lex *Lexer) CurrentChar() rune {
 
 func (lex *Lexer) Location() *tokens.Location {
 	return lex.location
-}
-
-func (lex *Lexer) skipWhitespace() {
-	for {
-		char, err := lex.Reader.Peek()
-
-		if err != nil {
-			break
-		}
-
-		if char == 0 {
-			break
-		}
-
-		if !unicode.IsSpace(char) {
-			break
-		}
-
-		lex.Advance()
-	}
 }

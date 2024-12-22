@@ -8,40 +8,12 @@ import (
 func ConsumeNumber(lex Lexer) *tokens.Token {
 	startLocation := lex.Location()
 	value := ""
-	radix := 10
 	isFloat := false
 
+	var err error
+
 	char := lex.CurrentChar()
-
-	if char == '0' {
-		err := lex.Advance()
-		if err != nil {
-			return nil
-		}
-
-		char = lex.CurrentChar()
-
-		switch char {
-		case 'x':
-			radix = 16
-		case 'o':
-			radix = 8
-		case 'b':
-			radix = 2
-		default:
-			lex.Rewind()
-			lex.Rewind()
-		}
-
-		err = lex.Advance()
-		if err != nil {
-			return nil
-		}
-
-		char = lex.CurrentChar()
-	}
-
-	for unicode.IsDigit(char) || (radix == 16 && unicode.Is(unicode.Hex_Digit, char)) || char == '.' && !isFloat || char == '_' {
+	for unicode.IsDigit(char) || char == '.' && !isFloat || char == '_' {
 		if char == '.' {
 			isFloat = true
 		}
@@ -50,7 +22,7 @@ func ConsumeNumber(lex Lexer) *tokens.Token {
 			value += string(char)
 		}
 
-		err := lex.Advance()
+		err = lex.Advance()
 		if err != nil {
 			break
 		}
@@ -58,7 +30,9 @@ func ConsumeNumber(lex Lexer) *tokens.Token {
 		char = lex.CurrentChar()
 	}
 
-	lex.Rewind()
+	if err == nil {
+		lex.Rewind()
+	}
 
 	kind := tokens.IntLiteral
 	if isFloat {
