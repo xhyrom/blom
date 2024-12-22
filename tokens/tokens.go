@@ -25,7 +25,7 @@ const (
 	Minus
 	Asterisk
 	Slash
-	Modulo
+	PercentSign
 	And
 	Or
 	LessThan
@@ -36,6 +36,7 @@ const (
 	// Delimiters
 	Dot
 	Comma
+	Colon
 	Semicolon
 	AtMark
 	LeftParenthesis
@@ -65,7 +66,7 @@ var tokens = []string{
 	Minus:              "-",
 	Asterisk:           "*",
 	Slash:              "/",
-	Modulo:             "%",
+	PercentSign:        "%",
 	And:                "and",
 	Or:                 "or",
 	LessThan:           "<",
@@ -74,6 +75,7 @@ var tokens = []string{
 	GreaterThanOrEqual: ">=",
 	Dot:                ".",
 	Comma:              ",",
+	Colon:              ":",
 	Semicolon:          ";",
 	AtMark:             "@",
 	LeftParenthesis:    "(",
@@ -108,23 +110,24 @@ func FromIdentifier(identifier string) TokenKind {
 	return TokenKind(index)
 }
 
-func (t TokenKind) Precedence() int {
-	switch t {
-	case Asterisk, Slash, Modulo:
-		return 10
-	case Plus, Minus:
-		return 9
-	case LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual:
-		return 8
-	case Equals:
-		return 7
-	case And:
-		return 6
-	case Or:
-		return 5
-	}
+type Precedence int
 
-	return 0
+const (
+	LowestPrecedence Precedence = iota
+	AdditivePrecedence
+	MultiplicativePrecedence
+	HighestPrecedence
+)
+
+func (kind TokenKind) Precedence() Precedence {
+	switch kind {
+	case Plus, Minus:
+		return AdditivePrecedence
+	case Asterisk, Slash, PercentSign:
+		return MultiplicativePrecedence
+	default:
+		return LowestPrecedence
+	}
 }
 
 type Location struct {

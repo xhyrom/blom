@@ -2,8 +2,12 @@ package main
 
 import (
 	"blom/lexer"
+	"blom/parser"
+	"blom/tokens"
 	"fmt"
 	"os"
+
+	"github.com/gookit/goutil/dump"
 )
 
 func main() {
@@ -22,9 +26,18 @@ func main() {
 
 	lexer := lexer.New(args[0], string(content))
 	c := lexer.Next()
-	for c != nil {
+	for c.Kind != tokens.Eof {
 		fmt.Println(c.Kind, c.Location, c.Value)
 
 		c = lexer.Next()
 	}
+
+	parser := parser.New(args[0])
+	ast := parser.AST(args[0], string(content))
+
+	dump.Config(func(o *dump.Options) {
+		o.MaxDepth = 10
+	})
+
+	dump.Println(ast)
 }

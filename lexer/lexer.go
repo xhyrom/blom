@@ -26,7 +26,10 @@ func New(file string, content string) *Lexer {
 func (lex *Lexer) Next() *tokens.Token {
 	char, err := lex.Reader.Read()
 	if err != nil {
-		return nil
+		return &tokens.Token{
+			Kind:     tokens.Eof,
+			Location: lex.Location().Copy(),
+		}
 	}
 
 	lex.location.Col++
@@ -71,7 +74,7 @@ func (lex *Lexer) Next() *tokens.Token {
 			}
 		}
 	case '%':
-		kind = tokens.Modulo
+		kind = tokens.PercentSign
 	case '<':
 		{
 			lex.Advance()
@@ -100,6 +103,8 @@ func (lex *Lexer) Next() *tokens.Token {
 		kind = tokens.Dot
 	case ',':
 		kind = tokens.Comma
+	case ':':
+		kind = tokens.Colon
 	case ';':
 		kind = tokens.Semicolon
 	case '@':
