@@ -1,6 +1,11 @@
 []+=
 >=
-55
+55.78
+0x3a
+
+agijh
+
+true
 
 fun main() -> i32 {
     return 0;

@@ -6,4 +6,5 @@ type Lexer interface {
 	CurrentChar() rune
 	Advance() error
 	Location() *tokens.Location
+	Rewind()
 }

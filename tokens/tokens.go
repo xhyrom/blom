@@ -1,6 +1,6 @@
 package tokens
 
-import "strconv"
+import "slices"
 
 type TokenKind int
 
@@ -51,6 +51,14 @@ const (
 )
 
 var tokens = []string{
+	Eof:                "EOF",
+	Illegal:            "Illegal",
+	Identifier:         "Identifier",
+	CharLiteral:        "CharLiteral",
+	StringLiteral:      "StringLiteral",
+	IntLiteral:         "IntLiteral",
+	FloatLiteral:       "FloatLiteral",
+	BooleanLiteral:     "BooleanLiteral",
 	Assign:             "=",
 	Equals:             "==",
 	Plus:               "+",
@@ -78,12 +86,26 @@ var tokens = []string{
 	Return:             "return",
 }
 
+var keywords = []string{
+	Fun:    "fun",
+	Return: "return",
+}
+
 func (t TokenKind) String() string {
-	if tokens[t] == "" {
-		return strconv.Itoa(int(t))
+	return tokens[t]
+}
+
+func FromIdentifier(identifier string) TokenKind {
+	if identifier == "true" || identifier == "false" {
+		return BooleanLiteral
 	}
 
-	return tokens[t]
+	index := slices.Index(keywords, identifier)
+	if index == -1 {
+		return Illegal
+	}
+
+	return TokenKind(index)
 }
 
 func (t TokenKind) Precedence() int {

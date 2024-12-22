@@ -107,6 +107,8 @@ func (lex *Lexer) Next() *tokens.Token {
 	default:
 		if unicode.IsDigit(char) {
 			return consumers.ConsumeNumber(lex)
+		} else if unicode.IsLetter(char) {
+			return consumers.ConsumeIdentifier(lex)
 		}
 
 		kind = tokens.Illegal
