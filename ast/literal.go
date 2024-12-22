@@ -2,6 +2,20 @@ package ast
 
 import "blom/tokens"
 
+type IdentifierLiteralStatement struct {
+	Tokenkind tokens.TokenKind
+	Value     string
+	Loc       tokens.Location
+}
+
+func (l IdentifierLiteralStatement) Kind() NodeKind {
+	return IdentifierLiteralNode
+}
+
+func (l IdentifierLiteralStatement) Location() tokens.Location {
+	return l.Loc
+}
+
 type IntLiteralStatement struct {
 	Tokenkind tokens.TokenKind
 	Value     int64

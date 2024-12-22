@@ -1,6 +1,7 @@
 package main
 
 import (
+	"blom/interpreter"
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
@@ -40,4 +41,7 @@ func main() {
 	})
 
 	dump.Println(ast)
+
+	inp := interpreter.New()
+	dump.Println(inp.Interpret(ast).Inspect())
 }
