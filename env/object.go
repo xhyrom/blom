@@ -5,7 +5,8 @@ import "fmt"
 type ObjectType int
 
 const (
-	Integer ObjectType = iota
+	Boolean ObjectType = iota
+	Integer
 	Float
 )
 
@@ -17,6 +18,68 @@ type Object interface {
 	Multiply(other Object) Object
 	Divide(other Object) Object
 	Modulo(other Object) Object
+	Equals(other Object) Object
+	LessThan(other Object) Object
+	LessThanOrEqual(other Object) Object
+	GreaterThan(other Object) Object
+	GreaterThanOrEqual(other Object) Object
+}
+
+type BooleanObject struct {
+	Value bool
+}
+
+func (b *BooleanObject) Type() ObjectType {
+	return Boolean
+}
+
+func (b *BooleanObject) Inspect() string {
+	return fmt.Sprintf("%t", b.Value)
+}
+
+func (b *BooleanObject) Add(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) Subtract(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) Multiply(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) Divide(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) Modulo(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) Equals(other Object) Object {
+	switch o := other.(type) {
+	case *BooleanObject:
+		return &BooleanObject{Value: b.Value == o.Value}
+	}
+
+	return &BooleanObject{Value: false}
+}
+
+func (b *BooleanObject) LessThan(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) LessThanOrEqual(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) GreaterThan(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) GreaterThanOrEqual(other Object) Object {
+	return nil
 }
 
 type IntegerObject struct {
@@ -41,6 +104,7 @@ func (i IntegerObject) Add(other Object) Object {
 
 	return nil
 }
+
 func (i *IntegerObject) Subtract(other Object) Object {
 	switch o := other.(type) {
 	case *IntegerObject:
@@ -51,6 +115,7 @@ func (i *IntegerObject) Subtract(other Object) Object {
 
 	return nil
 }
+
 func (i *IntegerObject) Multiply(other Object) Object {
 	switch o := other.(type) {
 	case *IntegerObject:
@@ -61,6 +126,7 @@ func (i *IntegerObject) Multiply(other Object) Object {
 
 	return nil
 }
+
 func (i *IntegerObject) Divide(other Object) Object {
 	switch o := other.(type) {
 	case *IntegerObject:
@@ -71,10 +137,66 @@ func (i *IntegerObject) Divide(other Object) Object {
 
 	return nil
 }
+
 func (i *IntegerObject) Modulo(other Object) Object {
 	switch o := other.(type) {
 	case *IntegerObject:
 		return &IntegerObject{Value: i.Value % o.Value}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) Equals(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: i.Value == o.Value}
+	case *FloatObject:
+		return &BooleanObject{Value: float64(i.Value) == o.Value}
+	}
+
+	return &BooleanObject{Value: false}
+}
+
+func (i *IntegerObject) LessThan(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: i.Value < o.Value}
+	case *FloatObject:
+		return &BooleanObject{Value: float64(i.Value) < o.Value}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) LessThanOrEqual(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: i.Value <= o.Value}
+	case *FloatObject:
+		return &BooleanObject{Value: float64(i.Value) <= o.Value}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) GreaterThan(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: i.Value > o.Value}
+	case *FloatObject:
+		return &BooleanObject{Value: float64(i.Value) > o.Value}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) GreaterThanOrEqual(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: i.Value >= o.Value}
+	case *FloatObject:
+		return &BooleanObject{Value: float64(i.Value) >= o.Value}
 	}
 
 	return nil
@@ -137,5 +259,60 @@ func (f *FloatObject) Divide(other Object) Object {
 }
 
 func (f *FloatObject) Modulo(other Object) Object {
+	return nil
+}
+
+func (f *FloatObject) Equals(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: f.Value == float64(o.Value)}
+	case *FloatObject:
+		return &BooleanObject{Value: f.Value == o.Value}
+	}
+
+	return &BooleanObject{Value: false}
+}
+
+func (f *FloatObject) LessThan(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: f.Value < float64(o.Value)}
+	case *FloatObject:
+		return &BooleanObject{Value: f.Value < o.Value}
+	}
+
+	return nil
+}
+
+func (f *FloatObject) LessThanOrEqual(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: f.Value <= float64(o.Value)}
+	case *FloatObject:
+		return &BooleanObject{Value: f.Value <= o.Value}
+	}
+
+	return nil
+}
+
+func (f *FloatObject) GreaterThan(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: f.Value > float64(o.Value)}
+	case *FloatObject:
+		return &BooleanObject{Value: f.Value > o.Value}
+	}
+
+	return nil
+}
+
+func (f *FloatObject) GreaterThanOrEqual(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &BooleanObject{Value: f.Value >= float64(o.Value)}
+	case *FloatObject:
+		return &BooleanObject{Value: f.Value >= o.Value}
+	}
+
 	return nil
 }

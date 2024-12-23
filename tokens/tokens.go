@@ -114,6 +114,10 @@ type Precedence int
 
 const (
 	LowestPrecedence Precedence = iota
+	OrPrecedence
+	AndPrecedence
+	EqualityPrecedence
+	RelationalPrecedence
 	AdditivePrecedence
 	MultiplicativePrecedence
 	HighestPrecedence
@@ -121,6 +125,14 @@ const (
 
 func (kind TokenKind) Precedence() Precedence {
 	switch kind {
+	case Or:
+		return OrPrecedence
+	case And:
+		return AndPrecedence
+	case Equals:
+		return EqualityPrecedence
+	case LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual:
+		return RelationalPrecedence
 	case Plus, Minus:
 		return AdditivePrecedence
 	case Asterisk, Slash, PercentSign:

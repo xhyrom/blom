@@ -24,6 +24,16 @@ func evaluateBinaryExpression(interpreter Interpreter, environment *env.Environm
 		return left.Multiply(right)
 	case tokens.Slash:
 		return left.Divide(right)
+	case tokens.Equals:
+		return left.Equals(right)
+	case tokens.LessThan:
+		return left.LessThan(right)
+	case tokens.LessThanOrEqual:
+		return left.LessThanOrEqual(right)
+	case tokens.GreaterThan:
+		return left.GreaterThan(right)
+	case tokens.GreaterThanOrEqual:
+		return left.GreaterThanOrEqual(right)
 	default:
 		panic(fmt.Sprintf("unknown operator: %s", expression.Operator))
 	}
