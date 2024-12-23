@@ -21,6 +21,7 @@ func (intrepreter *Interpreter) Interpret(program *ast.Program) env.Object {
 
 	return intrepreter.InterpretBlock(ast.BlockStatement{
 		Body: program.Body,
+		Loc:  program.Loc,
 	}, env.New())
 }
 

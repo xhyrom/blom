@@ -39,7 +39,13 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 		}
 	}
 
-	prog := &ast.Program{}
+	prog := &ast.Program{
+		Loc: tokens.Location{
+			File: file,
+			Row:  1,
+			Col:  0,
+		},
+	}
 
 	for !p.IsEof() {
 		prog.Body = append(prog.Body, p.ParseStatement())
