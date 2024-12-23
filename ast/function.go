@@ -26,7 +26,7 @@ func (f FunctionDeclaration) Location() tokens.Location {
 
 type FunctionCall struct {
 	Name       string
-	Parameters []Statement
+	Parameters []Expression
 	Loc        tokens.Location
 }
 

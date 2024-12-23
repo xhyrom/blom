@@ -73,8 +73,6 @@ func (p *Parser) ParseStatement() ast.Statement {
 		return expressions.ParseFunction(p)
 	case tokens.Return:
 		return expressions.ParseReturn(p)
-	case tokens.LeftCurlyBracket:
-		return expressions.ParseBlock(p)
 	default:
 		return p.ParseExpression()
 	}
@@ -119,10 +117,7 @@ func (p *Parser) ParsePrimaryExpression() ast.Expression {
 			Loc:   p.Current().Location,
 		}
 	case tokens.Identifier:
-		return &ast.IdentifierLiteralStatement{
-			Value: p.Consume().Value,
-			Loc:   p.Current().Location,
-		}
+		return expressions.ParseIdentifier(p)
 	case tokens.LeftParenthesis:
 		p.Consume() // Consume '('
 		expr := p.ParseExpression()
@@ -130,6 +125,8 @@ func (p *Parser) ParsePrimaryExpression() ast.Expression {
 		return expr
 	case tokens.Plus, tokens.Minus:
 		return expressions.ParseUnary(p)
+	case tokens.LeftCurlyBracket:
+		return expressions.ParseBlock(p)
 	}
 
 	return nil

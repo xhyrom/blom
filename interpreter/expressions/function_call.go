@@ -11,7 +11,7 @@ func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment
 	env := env.New(*environment)
 
 	for i, arg := range call.Parameters {
-		environment.Set(function.Arguments[i].Name, interpreter.InterpretStatement(arg, env))
+		env.Set(function.Arguments[i].Name, interpreter.InterpretStatement(arg, env))
 	}
 
 	return interpreter.InterpretBlock(function.Body, env)

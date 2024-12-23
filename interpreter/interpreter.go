@@ -16,7 +16,7 @@ func New() *Interpreter {
 func (intrepreter *Interpreter) Interpret(program *ast.Program) env.Object {
 	program.Body = append(program.Body, &ast.FunctionCall{
 		Name:       "main",
-		Parameters: []ast.Statement{},
+		Parameters: []ast.Expression{},
 	})
 
 	return intrepreter.InterpretBlock(ast.BlockStatement{
@@ -30,11 +30,11 @@ func (interpreter *Interpreter) InterpretBlock(body ast.BlockStatement, environm
 	for _, stmt := range body.Body {
 		value := interpreter.InterpretStatement(stmt, envi)
 
+		fmt.Printf("Interpreting statement %T, value: %v\n", stmt, value)
+
 		switch stmt.(type) {
 		case *ast.FunctionCall, ast.FunctionCall:
-			if stmt.(*ast.FunctionCall).Name == "main" {
-				return value
-			}
+			return value
 		case *ast.ReturnStatement, ast.ReturnStatement:
 			return value
 		}
@@ -87,39 +87,6 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		return expressions.InterpretFunctionCall(intrepreter, environment, &stmt)
 	default:
 		fmt.Printf("Unknown statement type: %T\n", stmt)
-	}
-
-	return nil
-}
-
-func (interpreter *Interpreter) InterpretExpression(expression ast.Expression, environment *env.Environment) env.Object {
-	switch expression := expression.(type) {
-	case *ast.IntLiteralStatement:
-		return &env.IntegerObject{Value: expression.Value}
-	case ast.IntLiteralStatement:
-		return &env.IntegerObject{Value: expression.Value}
-	case *ast.FloatLiteralStatement:
-		return &env.FloatObject{Value: expression.Value}
-	case ast.FloatLiteralStatement:
-		return &env.FloatObject{Value: expression.Value}
-	case *ast.IdentifierLiteralStatement:
-		return environment.Get(expression.Value)
-	case ast.IdentifierLiteralStatement:
-		return environment.Get(expression.Value)
-	case *ast.BinaryExpression:
-		return expressions.InterpretBinaryExpression(interpreter, environment, expression)
-	case ast.BinaryExpression:
-		return expressions.InterpretBinaryExpression(interpreter, environment, &expression)
-	case *ast.UnaryExpression:
-		return expressions.InterpretUnaryExpression(interpreter, environment, expression)
-	case ast.UnaryExpression:
-		return expressions.InterpretUnaryExpression(interpreter, environment, &expression)
-	case *ast.FunctionCall:
-		return expressions.InterpretFunctionCall(interpreter, environment, expression)
-	case ast.FunctionCall:
-		return expressions.InterpretFunctionCall(interpreter, environment, &expression)
-	default:
-		fmt.Printf("Unknown expression type: %T\n", expression)
 	}
 
 	return nil
