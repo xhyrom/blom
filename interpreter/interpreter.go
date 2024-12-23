@@ -19,13 +19,15 @@ func (intrepreter *Interpreter) Interpret(program *ast.Program) env.Object {
 		Parameters: []ast.Statement{},
 	})
 
-	return intrepreter.InterpretBlock(program.Body, env.New())
+	return intrepreter.InterpretBlock(ast.BlockStatement{
+		Body: program.Body,
+	}, env.New())
 }
 
-func (interpreter *Interpreter) InterpretBlock(body []ast.Statement, environment *env.Environment) env.Object {
+func (interpreter *Interpreter) InterpretBlock(body ast.BlockStatement, environment *env.Environment) env.Object {
 	envi := env.New(*environment)
 
-	for _, stmt := range body {
+	for _, stmt := range body.Body {
 		value := interpreter.InterpretStatement(stmt, envi)
 
 		switch stmt.(type) {
@@ -55,6 +57,10 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		return environment.Get(stmt.Value)
 	case ast.IdentifierLiteralStatement:
 		return environment.Get(stmt.Value)
+	case *ast.BlockStatement:
+		return intrepreter.InterpretBlock(*stmt, environment)
+	case ast.BlockStatement:
+		return intrepreter.InterpretBlock(stmt, environment)
 	case *ast.FunctionDeclaration:
 		expressions.InterpretFunctionDeclaration(intrepreter, environment, stmt)
 	case ast.FunctionDeclaration:

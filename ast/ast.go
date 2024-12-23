@@ -13,6 +13,7 @@ const (
 	UnaryExpressionNode
 	DeclarationNode
 	ReturnNode
+	BlockNode
 
 	AnnotationNode
 	FunctionDeclarationNode
@@ -24,6 +25,4 @@ type Statement interface {
 	Location() tokens.Location
 }
 
-type Program struct {
-	Body []Statement
-}
+type Program BlockStatement

@@ -3,7 +3,6 @@ package expressions
 import (
 	"blom/ast"
 	"blom/tokens"
-	"fmt"
 )
 
 func ParseFunction(p Parser) ast.Statement {
@@ -48,7 +47,7 @@ func ParseFunction(p Parser) ast.Statement {
 		}
 
 		returnType = p.Consume().Kind
-		current = p.Consume()
+		current = p.Current()
 	}
 
 	if current.Kind != tokens.LeftCurlyBracket {
@@ -60,19 +59,9 @@ func ParseFunction(p Parser) ast.Statement {
 		Arguments:   arguments,
 		Annotations: annotations,
 		ReturnType:  int(returnType),
-		Body:        make([]ast.Statement, 0),
+		Body:        ParseBlock(p),
 		Loc:         name.Location,
 	}
-
-	current = p.Current()
-	for current.Kind != tokens.RightCurlyBracket {
-		fn.Body = append(fn.Body, p.ParseStatement())
-		current = p.Current()
-	}
-
-	p.Consume()
-
-	fmt.Printf("Parsed function %s\n", fn.Name)
 
 	return fn
 }

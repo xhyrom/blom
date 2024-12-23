@@ -73,6 +73,8 @@ func (p *Parser) ParseStatement() ast.Statement {
 		return expressions.ParseFunction(p)
 	case tokens.Return:
 		return expressions.ParseReturn(p)
+	case tokens.LeftCurlyBracket:
+		return expressions.ParseBlock(p)
 	default:
 		return p.ParseExpression()
 	}
@@ -114,6 +116,11 @@ func (p *Parser) ParsePrimaryExpression() ast.Expression {
 		value, _ := strconv.ParseFloat(p.Consume().Value, 64)
 		return &ast.FloatLiteralStatement{
 			Value: value,
+			Loc:   p.Current().Location,
+		}
+	case tokens.Identifier:
+		return &ast.IdentifierLiteralStatement{
+			Value: p.Consume().Value,
 			Loc:   p.Current().Location,
 		}
 	case tokens.LeftParenthesis:
