@@ -7,6 +7,8 @@ type NodeKind int
 const (
 	ProgramNode NodeKind = iota
 	IdentifierLiteralNode
+	CharLiteralNode
+	StringLiteralNode
 	IntLiteralNode
 	FloatLiteralNode
 	BinaryExpressionNode

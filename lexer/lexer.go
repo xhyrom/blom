@@ -133,6 +133,10 @@ func (lex *Lexer) Next() *tokens.Token {
 		kind = tokens.LeftCurlyBracket
 	case '}':
 		kind = tokens.RightCurlyBracket
+	case '\'':
+		return consumers.ConsumeCharacter(lex)
+	case '"':
+		return consumers.ConsumeString(lex)
 	default:
 		if unicode.IsSpace(char) {
 			return lex.Next()
@@ -185,6 +189,22 @@ func (lex *Lexer) CurrentChar() rune {
 	}
 
 	return char
+}
+
+func (lex *Lexer) PreviousChar() rune {
+	char, err := lex.Reader.Previous()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return char
+}
+
+func (lex *Lexer) IsEof() bool {
+	_, err := lex.Reader.Peek()
+
+	return err != nil
 }
 
 func (lex *Lexer) Location() *tokens.Location {

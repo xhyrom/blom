@@ -52,6 +52,14 @@ func (interpreter *Interpreter) InterpretBlock(body ast.BlockStatement, environm
 
 func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environment *env.Environment) env.Object {
 	switch stmt := stmt.(type) {
+	case *ast.CharLiteralStatement:
+		return &env.CharacterObject{Value: stmt.Value}
+	case ast.CharLiteralStatement:
+		return &env.CharacterObject{Value: stmt.Value}
+	case *ast.StringLiteralStatement:
+		return &env.StringObject{Value: stmt.Value}
+	case ast.StringLiteralStatement:
+		return &env.StringObject{Value: stmt.Value}
 	case *ast.IntLiteralStatement:
 		return &env.IntegerObject{Value: stmt.Value}
 	case ast.IntLiteralStatement:

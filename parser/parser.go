@@ -110,6 +110,18 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 
 func (p *Parser) ParsePrimaryExpression() ast.Expression {
 	switch p.Current().Kind {
+	case tokens.CharLiteral:
+		value := []rune(p.Consume().Value)[0]
+		return &ast.CharLiteralStatement{
+			Value: value,
+			Loc:   p.Current().Location,
+		}
+	case tokens.StringLiteral:
+		value := p.Consume().Value
+		return &ast.StringLiteralStatement{
+			Value: value,
+			Loc:   p.Current().Location,
+		}
 	case tokens.IntLiteral:
 		value, _ := strconv.ParseInt(p.Consume().Value, 10, 64)
 		return &ast.IntLiteralStatement{

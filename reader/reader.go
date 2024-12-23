@@ -48,6 +48,14 @@ func (r *Reader) Current() (rune, error) {
 	return r.runes[r.cursor-1], nil
 }
 
+func (r *Reader) Previous() (rune, error) {
+	if r.cursor < 2 {
+		return 0, io.EOF
+	}
+
+	return r.runes[r.cursor-2], nil
+}
+
 func (r *Reader) Rewind() error {
 	r.cursor--
 

@@ -15,6 +15,32 @@ func (l IdentifierLiteralStatement) Location() tokens.Location {
 	return l.Loc
 }
 
+type CharLiteralStatement struct {
+	Value rune
+	Loc   tokens.Location
+}
+
+func (l CharLiteralStatement) Kind() NodeKind {
+	return CharLiteralNode
+}
+
+func (l CharLiteralStatement) Location() tokens.Location {
+	return l.Loc
+}
+
+type StringLiteralStatement struct {
+	Value string
+	Loc   tokens.Location
+}
+
+func (l StringLiteralStatement) Kind() NodeKind {
+	return StringLiteralNode
+}
+
+func (l StringLiteralStatement) Location() tokens.Location {
+	return l.Loc
+}
+
 type IntLiteralStatement struct {
 	Value int64
 	Loc   tokens.Location
