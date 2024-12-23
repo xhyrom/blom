@@ -5,6 +5,7 @@ import (
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
+	"blom/transpiler/lua"
 	"fmt"
 	"os"
 
@@ -47,4 +48,9 @@ func main() {
 
 	inp := interpreter.New()
 	dump.Println(inp.Interpret(ast))
+
+	transp := lua.LuaTranspiler{}
+	code, _ := transp.Transpile(ast)
+
+	fmt.Printf("%s\n", code)
 }
