@@ -18,16 +18,14 @@ func (t JavascriptTranspiler) TranspileFunctionDeclaration(declaration *ast.Func
 		}
 	}
 
-	result += ") {\n"
+	result += ") "
 
 	body := t.TranspileBlock(declaration.Body)
 
 	bodyLines := strings.Split(body, "\n")
 	for _, line := range bodyLines {
-		result += "   " + line + "\n"
+		result += line + "\n"
 	}
-
-	result += "}\n"
 
 	return result
 }

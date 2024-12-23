@@ -3,10 +3,11 @@ package ast
 import "blom/tokens"
 
 type DeclarationStatement struct {
-	Name  string
-	Type  int
-	Value Statement
-	Loc   tokens.Location
+	Name          string
+	Type          int
+	Value         Statement
+	Redeclaration bool
+	Loc           tokens.Location
 }
 
 func (d DeclarationStatement) Kind() NodeKind {

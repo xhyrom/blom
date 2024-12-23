@@ -6,7 +6,7 @@ import (
 )
 
 func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment, call *ast.FunctionCall) env.Object {
-	function := environment.GetFunction(call.Name)
+	function := environment.FindFunction(call.Name)
 
 	env := env.New(*environment)
 

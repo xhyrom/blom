@@ -5,22 +5,18 @@ import "blom/ast"
 type Environment struct {
 	Functions map[string]*ast.FunctionDeclaration
 	Variables map[string]Object
+	Parent    *Environment
 }
 
 func New(environments ...Environment) *Environment {
 	environment := Environment{
 		Functions: make(map[string]*ast.FunctionDeclaration),
 		Variables: make(map[string]Object),
+		Parent:    nil,
 	}
 
 	for _, env := range environments {
-		for key, value := range env.Variables {
-			environment.Variables[key] = value
-		}
-
-		for key, value := range env.Functions {
-			environment.Functions[key] = value
-		}
+		environment.Parent = &env
 	}
 
 	return &environment
@@ -40,4 +36,26 @@ func (env *Environment) SetFunction(key string, value *ast.FunctionDeclaration) 
 
 func (env *Environment) GetFunction(key string) *ast.FunctionDeclaration {
 	return env.Functions[key]
+}
+
+func (env *Environment) FindVariable(key string) Object {
+	currentEnv := env
+	for currentEnv != nil {
+		if value, exists := currentEnv.Variables[key]; exists {
+			return value
+		}
+		currentEnv = currentEnv.Parent
+	}
+	return nil
+}
+
+func (env *Environment) FindFunction(key string) *ast.FunctionDeclaration {
+	currentEnv := env
+	for currentEnv != nil {
+		if function, exists := currentEnv.Functions[key]; exists {
+			return function
+		}
+		currentEnv = currentEnv.Parent
+	}
+	return nil
 }

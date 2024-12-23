@@ -1,5 +1,14 @@
+fun asd() -> i64 {
+    return 1;
+}
+
 fun main() -> i64 {
     i64 a = 7 + 6;
 
-    return a ^ 8;
+    {
+        i64 a = 8;
+        a = 9;
+    }
+
+    return a;
 }

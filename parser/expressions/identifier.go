@@ -13,7 +13,11 @@ func ParseIdentifier(p Parser) ast.Statement {
 	}
 
 	if p.Current().Kind == tokens.Identifier {
-		return ParseAssignment(p, token)
+		return ParseAssignment(p, token, false)
+	}
+
+	if p.Current().Kind == tokens.Assign {
+		return ParseAssignment(p, token, true)
 	}
 
 	return &ast.IdentifierLiteralStatement{
