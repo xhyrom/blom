@@ -14,9 +14,11 @@ func New() *Interpreter {
 }
 
 func (intrepreter *Interpreter) Interpret(program *ast.Program) env.Object {
-	program.Body = append(program.Body, &ast.FunctionCall{
-		Name:       "main",
-		Parameters: []ast.Expression{},
+	program.Body = append(program.Body, &ast.ReturnStatement{
+		Value: &ast.FunctionCall{
+			Name:       "main",
+			Parameters: []ast.Expression{},
+		},
 	})
 
 	return intrepreter.InterpretBlock(ast.BlockStatement{
@@ -26,6 +28,8 @@ func (intrepreter *Interpreter) Interpret(program *ast.Program) env.Object {
 }
 
 func (interpreter *Interpreter) InterpretBlock(body ast.BlockStatement, environment *env.Environment) env.Object {
+	fmt.Printf("Interpreting block %v\n", body.Location())
+
 	envi := env.New(*environment)
 
 	for _, stmt := range body.Body {
@@ -34,12 +38,12 @@ func (interpreter *Interpreter) InterpretBlock(body ast.BlockStatement, environm
 		fmt.Printf("Interpreting statement %T, value: %v\n", stmt, value)
 
 		switch stmt.(type) {
-		case *ast.FunctionCall, ast.FunctionCall:
-			return value
-		case *ast.IfStatement, ast.IfStatement:
-			return value
 		case *ast.ReturnStatement, ast.ReturnStatement:
 			return value
+		case *ast.IfStatement, ast.IfStatement:
+			if value != nil {
+				return value
+			}
 		}
 	}
 

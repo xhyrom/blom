@@ -18,6 +18,24 @@ fun fib(n: i64) -> i64 {
     }
 }
 
+fun b() {
+    return 3 + 5 / (4 + 5);
+}
+
+fun a() {
+    if b() == 3 {
+        return 2;
+    } else {
+        return 3;
+    }
+
+    return b() + 2;
+}
+
 fun main() {
-    return fib(15);
+    return fact(if a() == 2 {
+        return 5;
+    } else {
+        return 6;
+    });
 }
