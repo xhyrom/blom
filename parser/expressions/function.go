@@ -3,10 +3,16 @@ package expressions
 import (
 	"blom/ast"
 	"blom/tokens"
+	"fmt"
 )
 
 func ParseFunction(p Parser) ast.Statement {
 	p.Consume()
+
+	annotations := make([]ast.Annotation, 0)
+	for p.Current().Kind == tokens.AtMark {
+		annotations = append(annotations, parseAnnotation(p))
+	}
 
 	name := p.Consume()
 	current := p.Consume()
@@ -50,11 +56,12 @@ func ParseFunction(p Parser) ast.Statement {
 	}
 
 	fn := ast.FunctionDeclaration{
-		Name:       name.Value,
-		Arguments:  arguments,
-		ReturnType: int(returnType),
-		Body:       make([]ast.Statement, 0),
-		Loc:        name.Location,
+		Name:        name.Value,
+		Arguments:   arguments,
+		Annotations: annotations,
+		ReturnType:  int(returnType),
+		Body:        make([]ast.Statement, 0),
+		Loc:         name.Location,
 	}
 
 	current = p.Current()
@@ -65,7 +72,20 @@ func ParseFunction(p Parser) ast.Statement {
 
 	p.Consume()
 
+	fmt.Printf("Parsed function %s\n", fn.Name)
+
 	return fn
+}
+
+func parseAnnotation(p Parser) ast.Annotation {
+	p.Consume()
+
+	name := p.Consume()
+
+	return ast.Annotation{
+		Name: name.Value,
+		Loc:  name.Location,
+	}
 }
 
 func parseArgument(p Parser) ast.FunctionArgument {

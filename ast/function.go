@@ -8,11 +8,12 @@ type FunctionArgument struct {
 }
 
 type FunctionDeclaration struct {
-	Name       string
-	Arguments  []FunctionArgument
-	ReturnType int
-	Body       []Statement
-	Loc        tokens.Location
+	Name        string
+	Arguments   []FunctionArgument
+	Annotations []Annotation
+	ReturnType  int
+	Body        []Statement
+	Loc         tokens.Location
 }
 
 func (f FunctionDeclaration) Kind() NodeKind {

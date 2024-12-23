@@ -14,6 +14,7 @@ const (
 	DeclarationNode
 	ReturnNode
 
+	AnnotationNode
 	FunctionDeclarationNode
 	FunctionCallNode
 )
