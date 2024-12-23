@@ -124,6 +124,8 @@ func (p *Parser) ParsePrimaryExpression() ast.Expression {
 		}
 	case tokens.Identifier:
 		return expressions.ParseIdentifier(p)
+	case tokens.If:
+		return expressions.ParseIf(p)
 	case tokens.LeftParenthesis:
 		p.Consume() // Consume '('
 		expr := p.ParseExpression()
@@ -132,7 +134,7 @@ func (p *Parser) ParsePrimaryExpression() ast.Expression {
 	case tokens.Plus, tokens.Minus:
 		return expressions.ParseUnary(p)
 	case tokens.LeftCurlyBracket:
-		return expressions.ParseBlock(p)
+		return expressions.ParseBlock(p, true)
 	}
 
 	return nil

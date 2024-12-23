@@ -36,6 +36,8 @@ func (interpreter *Interpreter) InterpretBlock(body ast.BlockStatement, environm
 		switch stmt.(type) {
 		case *ast.FunctionCall, ast.FunctionCall:
 			return value
+		case *ast.IfStatement, ast.IfStatement:
+			return value
 		case *ast.ReturnStatement, ast.ReturnStatement:
 			return value
 		}
@@ -82,6 +84,10 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		return expressions.InterpretReturnStatement(intrepreter, environment, stmt)
 	case ast.ReturnStatement:
 		return expressions.InterpretReturnStatement(intrepreter, environment, &stmt)
+	case *ast.IfStatement:
+		return expressions.InterpretIfStatement(intrepreter, environment, stmt)
+	case ast.IfStatement:
+		return expressions.InterpretIfStatement(intrepreter, environment, &stmt)
 	case *ast.FunctionCall:
 		return expressions.InterpretFunctionCall(intrepreter, environment, stmt)
 	case ast.FunctionCall:

@@ -60,7 +60,7 @@ func ParseFunction(p Parser) ast.Statement {
 		Arguments:   arguments,
 		Annotations: annotations,
 		ReturnType:  int(returnType),
-		Body:        ParseBlock(p),
+		Body:        ParseBlock(p, true),
 		Loc:         name.Location,
 	}
 

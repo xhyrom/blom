@@ -18,6 +18,8 @@ const (
 
 	// Statements
 	Assign
+	If
+	Else
 
 	// Operators
 	Equals
@@ -61,6 +63,8 @@ var tokens = []string{
 	FloatLiteral:       "FloatLiteral",
 	BooleanLiteral:     "BooleanLiteral",
 	Assign:             "=",
+	If:                 "if",
+	Else:               "else",
 	Equals:             "==",
 	Plus:               "+",
 	Minus:              "-",
@@ -88,7 +92,9 @@ var tokens = []string{
 	Return:             "return",
 }
 
-var keywords = []string{
+var reserved = []string{
+	If:     "if",
+	Else:   "else",
 	Fun:    "fun",
 	Return: "return",
 }
@@ -102,7 +108,7 @@ func FromIdentifier(identifier string) TokenKind {
 		return BooleanLiteral
 	}
 
-	index := slices.Index(keywords, identifier)
+	index := slices.Index(reserved, identifier)
 	if index == -1 {
 		return Illegal
 	}

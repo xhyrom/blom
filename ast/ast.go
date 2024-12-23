@@ -14,6 +14,7 @@ const (
 	DeclarationNode
 	ReturnNode
 	BlockNode
+	IfNode
 
 	AnnotationNode
 	FunctionDeclarationNode

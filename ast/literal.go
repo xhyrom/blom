@@ -3,9 +3,8 @@ package ast
 import "blom/tokens"
 
 type IdentifierLiteralStatement struct {
-	Tokenkind tokens.TokenKind
-	Value     string
-	Loc       tokens.Location
+	Value string
+	Loc   tokens.Location
 }
 
 func (l IdentifierLiteralStatement) Kind() NodeKind {
@@ -17,9 +16,8 @@ func (l IdentifierLiteralStatement) Location() tokens.Location {
 }
 
 type IntLiteralStatement struct {
-	Tokenkind tokens.TokenKind
-	Value     int64
-	Loc       tokens.Location
+	Value int64
+	Loc   tokens.Location
 }
 
 func (l IntLiteralStatement) Kind() NodeKind {
@@ -31,9 +29,8 @@ func (l IntLiteralStatement) Location() tokens.Location {
 }
 
 type FloatLiteralStatement struct {
-	Tokenkind tokens.TokenKind
-	Value     float64
-	Loc       tokens.Location
+	Value float64
+	Loc   tokens.Location
 }
 
 func (l FloatLiteralStatement) Kind() NodeKind {
