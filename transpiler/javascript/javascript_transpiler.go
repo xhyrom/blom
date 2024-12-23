@@ -1,4 +1,4 @@
-package lua
+package javascript
 
 import (
 	"blom/ast"
@@ -7,11 +7,11 @@ import (
 	"strconv"
 )
 
-type LuaTranspiler struct{}
+type JavascriptTranspiler struct{}
 
-func (t LuaTranspiler) Transpile(program *ast.Program) (string, error) {
+func (t JavascriptTranspiler) Transpile(program *ast.Program) (string, error) {
 	program.Body = append(program.Body, &ast.FunctionCall{
-		Name: "os.exit",
+		Name: "process.exit",
 		Parameters: []ast.Expression{
 			ast.FunctionCall{
 				Name:       "main",
@@ -26,7 +26,7 @@ func (t LuaTranspiler) Transpile(program *ast.Program) (string, error) {
 	}), nil
 }
 
-func (t LuaTranspiler) TranspileBlock(block ast.BlockStatement) string {
+func (t JavascriptTranspiler) TranspileBlock(block ast.BlockStatement) string {
 	result := ""
 
 	for _, stmt := range block.Body {
@@ -36,7 +36,7 @@ func (t LuaTranspiler) TranspileBlock(block ast.BlockStatement) string {
 	return result
 }
 
-func (t LuaTranspiler) TranspileStatement(stmt ast.Statement) string {
+func (t JavascriptTranspiler) TranspileStatement(stmt ast.Statement) string {
 	switch stmt := stmt.(type) {
 	case *ast.IntLiteralStatement:
 		return strconv.FormatInt(stmt.Value, 10)
@@ -89,4 +89,4 @@ func (t LuaTranspiler) TranspileStatement(stmt ast.Statement) string {
 	return ""
 }
 
-var _ transpiler.Transpiler = (*LuaTranspiler)(nil)
+var _ transpiler.Transpiler = (*JavascriptTranspiler)(nil)

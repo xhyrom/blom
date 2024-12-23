@@ -37,8 +37,8 @@ func main() {
 
 	dump.Println(tkns)
 
-	parser := parser.New(args[0])
-	ast := parser.AST(args[0], string(content))
+	pp := parser.New(args[0])
+	ast := pp.AST(args[0], string(content))
 
 	dump.Config(func(o *dump.Options) {
 		o.MaxDepth = 10
@@ -49,6 +49,8 @@ func main() {
 	inp := interpreter.New()
 	dump.Println(inp.Interpret(ast))
 
+	pp = parser.New(args[0])
+	ast = pp.AST(args[0], string(content))
 	transp := lua.LuaTranspiler{}
 	code, _ := transp.Transpile(ast)
 
