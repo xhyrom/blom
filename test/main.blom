@@ -1,10 +1,14 @@
-fun a(a: i32, b: i64) -> i32 {
+fun @inline a(a: i32, b: i64) -> i32 {
     return (-5 + 6) * 9 / 3;
 }
 
-//fun b() {
-//    return;
-    //}
+fun main() -> i32 {
+    return b();
+}
+
+fun b() {
+    return a(5, 6);
+}
 
 //fun main(a: i32, b: i64) -> i32 {
    // return 0;

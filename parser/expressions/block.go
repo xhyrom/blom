@@ -6,9 +6,8 @@ import (
 )
 
 func ParseBlock(p Parser) ast.BlockStatement {
-	p.Consume()
+	current := p.Consume()
 
-	current := p.Current()
 	body := []ast.Statement{}
 
 	for !p.IsEof() && current.Kind != tokens.RightCurlyBracket {

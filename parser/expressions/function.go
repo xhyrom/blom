@@ -35,12 +35,13 @@ func ParseFunction(p Parser) ast.Statement {
 
 	var returnType tokens.TokenKind
 
-	current = p.Consume()
-	if current.Kind == tokens.RightParenthesis { // If there are no arguments, otherwise already consumed
-		current = p.Consume()
+	if len(arguments) == 0 {
+		p.Consume()
 	}
 
-	if current.Kind == tokens.Minus {
+	if p.Current().Kind == tokens.Minus {
+		p.Consume()
+
 		current = p.Consume()
 		if current.Kind != tokens.GreaterThan {
 			panic("Expected '->'")
@@ -50,7 +51,7 @@ func ParseFunction(p Parser) ast.Statement {
 		current = p.Current()
 	}
 
-	if current.Kind != tokens.LeftCurlyBracket {
+	if p.Current().Kind != tokens.LeftCurlyBracket {
 		panic("Expected '{'")
 	}
 
