@@ -57,9 +57,9 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 	case ast.FloatLiteralStatement:
 		return &env.FloatObject{Value: stmt.Value}
 	case *ast.IdentifierLiteralStatement:
-		return environment.Get(stmt.Value)
+		return environment.FindVariable(stmt.Value)
 	case ast.IdentifierLiteralStatement:
-		return environment.Get(stmt.Value)
+		return environment.FindVariable(stmt.Value)
 	case *ast.BlockStatement:
 		return intrepreter.InterpretBlock(*stmt, environment)
 	case ast.BlockStatement:
