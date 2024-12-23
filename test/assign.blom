@@ -10,5 +10,11 @@ fun main() -> i64 {
         a = 9;
     }
 
-    return a;
+    i64 b = if a == 13 {
+        return 1;
+    } else {
+        return 2;
+    };
+
+    return a + b;
 }
