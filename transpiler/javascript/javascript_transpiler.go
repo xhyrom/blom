@@ -30,7 +30,7 @@ func (t JavascriptTranspiler) TranspileBlock(block ast.BlockStatement) string {
 	result := "{\n"
 
 	for _, stmt := range block.Body {
-		result += "   " + t.TranspileStatement(stmt)
+		result += t.TranspileStatement(stmt)
 	}
 
 	result += "}\n"

@@ -2,7 +2,6 @@ package javascript
 
 import (
 	"blom/ast"
-	"strings"
 )
 
 func (t JavascriptTranspiler) TranspileFunctionDeclaration(declaration *ast.FunctionDeclaration) string {
@@ -20,12 +19,7 @@ func (t JavascriptTranspiler) TranspileFunctionDeclaration(declaration *ast.Func
 
 	result += ") "
 
-	body := t.TranspileBlock(declaration.Body)
-
-	bodyLines := strings.Split(body, "\n")
-	for _, line := range bodyLines {
-		result += line + "\n"
-	}
+	result += t.TranspileBlock(declaration.Body)
 
 	return result
 }
