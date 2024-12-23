@@ -11,7 +11,8 @@ fun main() -> i64 {
     }
 
     i64 b = if a == 13 {
-        return 1;
+        i64 c = 15;
+        return c;
     } else {
         return 2;
     };
