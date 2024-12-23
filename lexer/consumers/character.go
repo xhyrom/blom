@@ -10,7 +10,6 @@ func ConsumeCharacter(lex Lexer) *tokens.Token {
 
 	lex.Advance()
 
-	// check if there's no ' next to the character
 	if value == '\\' {
 		switch lex.CurrentChar() {
 		case 'a':
