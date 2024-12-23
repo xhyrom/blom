@@ -5,6 +5,7 @@ import (
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
+	"blom/transpiler/javascript"
 	"blom/transpiler/lua"
 	"fmt"
 	"os"
@@ -53,6 +54,13 @@ func main() {
 	ast = pp.AST(args[0], string(content))
 	transp := lua.LuaTranspiler{}
 	code, _ := transp.Transpile(ast)
+
+	fmt.Printf("%s\n", code)
+
+	pp = parser.New(args[0])
+	ast = pp.AST(args[0], string(content))
+	transpp := javascript.JavascriptTranspiler{}
+	code, _ = transpp.Transpile(ast)
 
 	fmt.Printf("%s\n", code)
 }

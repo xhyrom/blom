@@ -6,5 +6,5 @@ import (
 )
 
 func (t JavascriptTranspiler) TranspileDeclarationStatement(declaration *ast.DeclarationStatement) string {
-	return fmt.Sprintf("local %s = %s\n", declaration.Name, t.TranspileStatement(declaration.Value))
+	return fmt.Sprintf("let %s = %s\n", declaration.Name, t.TranspileStatement(declaration.Value))
 }

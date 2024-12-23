@@ -28,7 +28,7 @@ func (t JavascriptTranspiler) TranspileBinaryExpression(expression *ast.BinaryEx
 	case tokens.VerticalLine:
 		operator = "|"
 	case tokens.CircumflexAccent:
-		operator = "~"
+		operator = "^"
 	case tokens.DoubleLessThan:
 		operator = "<<"
 	case tokens.DoubleGreaterThan:
