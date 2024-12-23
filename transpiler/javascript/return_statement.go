@@ -6,5 +6,5 @@ import (
 )
 
 func (t JavascriptTranspiler) TranspileReturnStatement(stmt *ast.ReturnStatement) string {
-	return fmt.Sprintf("return %s;", t.TranspileStatement(stmt.Value))
+	return fmt.Sprintf("return %s;", t.TranspileAndFunctionifyStatement(stmt.Value))
 }

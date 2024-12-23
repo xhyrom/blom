@@ -17,5 +17,9 @@ fun main() -> i64 {
         return 2;
     };
 
-    return a + b;
+    return if a + b > 0 {
+        return a + b;
+    } else {
+        return 0;
+    };
 }
