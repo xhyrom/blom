@@ -75,6 +75,14 @@ func (lex *Lexer) Next() *tokens.Token {
 		}
 	case '%':
 		kind = tokens.PercentSign
+	case '&':
+		kind = tokens.Ampersand
+	case '|':
+		kind = tokens.VerticalLine
+	case '^':
+		kind = tokens.CircumflexAccent
+	case '~':
+		kind = tokens.Tilde
 	case '<':
 		{
 			lex.Advance()
@@ -82,6 +90,8 @@ func (lex *Lexer) Next() *tokens.Token {
 			switch lex.CurrentChar() {
 			case '=':
 				kind = tokens.LessThanOrEqual
+			case '<':
+				kind = tokens.DoubleLessThan
 			default:
 				kind = tokens.LessThan
 				lex.Rewind()
@@ -94,6 +104,8 @@ func (lex *Lexer) Next() *tokens.Token {
 			switch lex.CurrentChar() {
 			case '=':
 				kind = tokens.GreaterThanOrEqual
+			case '>':
+				kind = tokens.DoubleGreaterThan
 			default:
 				kind = tokens.GreaterThan
 				lex.Rewind()

@@ -18,6 +18,11 @@ type Object interface {
 	Multiply(other Object) Object
 	Divide(other Object) Object
 	Modulo(other Object) Object
+	BitwiseAnd(other Object) Object
+	BitwiseOr(other Object) Object
+	BitwiseXor(other Object) Object
+	LeftShift(other Object) Object
+	RightShift(other Object) Object
 	Equals(other Object) Object
 	LessThan(other Object) Object
 	LessThanOrEqual(other Object) Object
@@ -54,6 +59,26 @@ func (b *BooleanObject) Divide(other Object) Object {
 }
 
 func (b *BooleanObject) Modulo(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) BitwiseAnd(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) BitwiseOr(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) BitwiseXor(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) LeftShift(other Object) Object {
+	return nil
+}
+
+func (b *BooleanObject) RightShift(other Object) Object {
 	return nil
 }
 
@@ -142,6 +167,51 @@ func (i *IntegerObject) Modulo(other Object) Object {
 	switch o := other.(type) {
 	case *IntegerObject:
 		return &IntegerObject{Value: i.Value % o.Value}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) BitwiseAnd(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &IntegerObject{Value: i.Value & o.Value}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) BitwiseOr(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &IntegerObject{Value: i.Value | o.Value}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) BitwiseXor(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &IntegerObject{Value: i.Value ^ o.Value}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) LeftShift(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &IntegerObject{Value: i.Value << uint(o.Value)}
+	}
+
+	return nil
+}
+
+func (i *IntegerObject) RightShift(other Object) Object {
+	switch o := other.(type) {
+	case *IntegerObject:
+		return &IntegerObject{Value: i.Value >> uint(o.Value)}
 	}
 
 	return nil
@@ -259,6 +329,26 @@ func (f *FloatObject) Divide(other Object) Object {
 }
 
 func (f *FloatObject) Modulo(other Object) Object {
+	return nil
+}
+
+func (f *FloatObject) BitwiseAnd(other Object) Object {
+	return nil
+}
+
+func (f *FloatObject) BitwiseOr(other Object) Object {
+	return nil
+}
+
+func (f *FloatObject) BitwiseXor(other Object) Object {
+	return nil
+}
+
+func (f *FloatObject) LeftShift(other Object) Object {
+	return nil
+}
+
+func (f *FloatObject) RightShift(other Object) Object {
 	return nil
 }
 

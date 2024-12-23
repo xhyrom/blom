@@ -131,7 +131,7 @@ func (p *Parser) ParsePrimaryExpression() ast.Expression {
 		expr := p.ParseExpression()
 		p.Consume() // Consume ')'
 		return expr
-	case tokens.Plus, tokens.Minus:
+	case tokens.Plus, tokens.Minus, tokens.Tilde:
 		return expressions.ParseUnary(p)
 	case tokens.LeftCurlyBracket:
 		return expressions.ParseBlock(p, true)

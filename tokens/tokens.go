@@ -28,11 +28,17 @@ const (
 	Asterisk
 	Slash
 	PercentSign
+	Ampersand
+	VerticalLine
+	CircumflexAccent
+	Tilde
 	And
 	Or
 	LessThan
+	DoubleLessThan
 	LessThanOrEqual
 	GreaterThan
+	DoubleGreaterThan
 	GreaterThanOrEqual
 
 	// Delimiters
@@ -71,11 +77,17 @@ var tokens = []string{
 	Asterisk:           "*",
 	Slash:              "/",
 	PercentSign:        "%",
+	Ampersand:          "&",
+	VerticalLine:       "|",
+	CircumflexAccent:   "^",
+	Tilde:              "~",
 	And:                "and",
 	Or:                 "or",
 	LessThan:           "<",
+	DoubleLessThan:     "<<",
 	LessThanOrEqual:    "<=",
 	GreaterThan:        ">",
+	DoubleGreaterThan:  ">>",
 	GreaterThanOrEqual: ">=",
 	Dot:                ".",
 	Comma:              ",",
@@ -122,8 +134,12 @@ const (
 	LowestPrecedence Precedence = iota
 	OrPrecedence
 	AndPrecedence
+	BitwiseOrPrecedence
+	BitwiseXorPrecedence
+	BitwiseAndPrecedence
 	EqualityPrecedence
 	RelationalPrecedence
+	ShiftPrecedence
 	AdditivePrecedence
 	MultiplicativePrecedence
 	HighestPrecedence
@@ -135,10 +151,18 @@ func (kind TokenKind) Precedence() Precedence {
 		return OrPrecedence
 	case And:
 		return AndPrecedence
+	case VerticalLine:
+		return BitwiseOrPrecedence
+	case CircumflexAccent:
+		return BitwiseXorPrecedence
+	case Ampersand:
+		return BitwiseAndPrecedence
 	case Equals:
 		return EqualityPrecedence
 	case LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual:
 		return RelationalPrecedence
+	case DoubleLessThan, DoubleGreaterThan:
+		return ShiftPrecedence
 	case Plus, Minus:
 		return AdditivePrecedence
 	case Asterisk, Slash, PercentSign:

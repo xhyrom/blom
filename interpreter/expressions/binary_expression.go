@@ -24,6 +24,18 @@ func evaluateBinaryExpression(interpreter Interpreter, environment *env.Environm
 		return left.Multiply(right)
 	case tokens.Slash:
 		return left.Divide(right)
+	case tokens.PercentSign:
+		return left.Modulo(right)
+	case tokens.Ampersand:
+		return left.BitwiseAnd(right)
+	case tokens.VerticalLine:
+		return left.BitwiseOr(right)
+	case tokens.CircumflexAccent:
+		return left.BitwiseXor(right)
+	case tokens.DoubleLessThan:
+		return left.LeftShift(right)
+	case tokens.DoubleGreaterThan:
+		return left.RightShift(right)
 	case tokens.Equals:
 		return left.Equals(right)
 	case tokens.LessThan:
