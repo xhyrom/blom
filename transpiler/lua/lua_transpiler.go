@@ -27,11 +27,13 @@ func (t LuaTranspiler) Transpile(program *ast.Program) (string, error) {
 }
 
 func (t LuaTranspiler) TranspileBlock(block ast.BlockStatement) string {
-	result := ""
+	result := "do\n"
 
 	for _, stmt := range block.Body {
 		result += t.TranspileStatement(stmt)
 	}
+
+	result += "\nend\n"
 
 	return result
 }

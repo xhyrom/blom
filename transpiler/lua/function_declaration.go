@@ -2,7 +2,6 @@ package lua
 
 import (
 	"blom/ast"
-	"strings"
 )
 
 func (t LuaTranspiler) TranspileFunctionDeclaration(declaration *ast.FunctionDeclaration) string {
@@ -21,13 +20,9 @@ func (t LuaTranspiler) TranspileFunctionDeclaration(declaration *ast.FunctionDec
 	result += ")\n"
 
 	body := t.TranspileBlock(declaration.Body)
+	body = body[3:] // remove the "do" from the beginning
 
-	bodyLines := strings.Split(body, "\n")
-	for _, line := range bodyLines {
-		result += "   " + line + "\n"
-	}
-
-	result += "end\n"
+	result += body
 
 	return result
 }
