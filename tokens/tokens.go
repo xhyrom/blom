@@ -20,6 +20,8 @@ const (
 	Assign
 	If
 	Else
+	For
+	While
 
 	// Operators
 	Equals
@@ -71,6 +73,8 @@ var tokens = []string{
 	Assign:             "=",
 	If:                 "if",
 	Else:               "else",
+	For:                "for",
+	While:              "while",
 	Equals:             "==",
 	Plus:               "+",
 	Minus:              "-",
@@ -107,6 +111,8 @@ var tokens = []string{
 var reserved = []string{
 	If:     "if",
 	Else:   "else",
+	For:    "for",
+	While:  "while",
 	Fun:    "fun",
 	Return: "return",
 }

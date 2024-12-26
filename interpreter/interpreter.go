@@ -100,6 +100,14 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		return expressions.InterpretIfStatement(intrepreter, environment, stmt)
 	case ast.IfStatement:
 		return expressions.InterpretIfStatement(intrepreter, environment, &stmt)
+	case *ast.ForLoopStatement:
+		expressions.InterpretForLoopStatement(intrepreter, environment, stmt)
+	case ast.ForLoopStatement:
+		expressions.InterpretForLoopStatement(intrepreter, environment, &stmt)
+	case *ast.WhileLoopStatement:
+		expressions.InterpretWhileLoopStatement(intrepreter, environment, stmt)
+	case ast.WhileLoopStatement:
+		expressions.InterpretWhileLoopStatement(intrepreter, environment, &stmt)
 	case *ast.FunctionCall:
 		return expressions.InterpretFunctionCall(intrepreter, environment, stmt)
 	case ast.FunctionCall:

@@ -79,6 +79,10 @@ func (p *Parser) ParseStatement() ast.Statement {
 		return expressions.ParseFunction(p)
 	case tokens.Return:
 		return expressions.ParseReturn(p)
+	case tokens.For:
+		return expressions.ParseForLoop(p)
+	case tokens.While:
+		return expressions.ParseWhileLoop(p)
 	default:
 		return p.ParseExpression()
 	}
@@ -149,5 +153,5 @@ func (p *Parser) ParsePrimaryExpression() ast.Expression {
 		return expressions.ParseBlock(p, true)
 	}
 
-	return nil
+	panic(fmt.Sprintf("Unexpected token %s", p.Current().Kind))
 }

@@ -11,10 +11,6 @@ func ParseAssignment(p Parser, token tokens.Token, redeclaration bool) ast.State
 
 		value := p.ParseExpression()
 
-		if p.Consume().Kind != tokens.Semicolon {
-			panic("Expected semicolon")
-		}
-
 		return ast.DeclarationStatement{
 			Name:          token.Value,
 			Value:         value,
@@ -29,10 +25,6 @@ func ParseAssignment(p Parser, token tokens.Token, redeclaration bool) ast.State
 	}
 
 	value := p.ParseExpression()
-
-	if p.Consume().Kind != tokens.Semicolon {
-		panic("Expected semicolon")
-	}
 
 	return ast.DeclarationStatement{
 		Name:          name,

@@ -5,7 +5,6 @@ import (
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
-	"blom/transpiler/python"
 	"fmt"
 	"os"
 
@@ -49,7 +48,7 @@ func main() {
 	inp := interpreter.New()
 	dump.Println(inp.Interpret(ast))
 
-	pp = parser.New(args[0])
+	/*pp = parser.New(args[0])
 	ast = pp.AST(args[0], string(content))
 	transp := python.PythonTranspiler{}
 	code, _ := transp.Transpile(ast)

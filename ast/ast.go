@@ -17,6 +17,8 @@ const (
 	ReturnNode
 	BlockNode
 	IfNode
+	ForLoopNode
+	WhileLoopNode
 
 	AnnotationNode
 	FunctionDeclarationNode
