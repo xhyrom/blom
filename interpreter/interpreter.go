@@ -87,6 +87,8 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		expressions.InterpretWhileLoopStatement(intrepreter, environment, stmt)
 	case *ast.FunctionCall:
 		return expressions.InterpretFunctionCall(intrepreter, environment, stmt)
+	case *ast.CompileTimeFunctionCall:
+		return expressions.InterpretCompileTimeFunctionCall(intrepreter, environment, stmt)
 	default:
 		fmt.Printf("Unknown statement type: %T\n", stmt)
 	}

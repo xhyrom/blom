@@ -13,6 +13,8 @@ func ParseCompileTimeFunctionCall(p Parser) *ast.CompileTimeFunctionCall {
 	name := identifier.Value
 	parameters := make([]ast.Expression, 0)
 
+	p.Consume() // consume (
+
 	for p.Current().Kind != tokens.RightParenthesis {
 		exp, err := p.ParseExpression()
 		if err != nil {

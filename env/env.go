@@ -6,9 +6,10 @@ import (
 )
 
 type Environment struct {
-	Functions map[string]*ast.FunctionDeclaration
-	Variables map[string]objects.Object
-	Parent    *Environment
+	Functions       map[string]*ast.FunctionDeclaration
+	Variables       map[string]objects.Object
+	CurrentFunction *ast.FunctionDeclaration // This is a pointer to the current function being interpreted
+	Parent          *Environment
 }
 
 func New(environments ...Environment) *Environment {
@@ -61,4 +62,26 @@ func (env *Environment) FindFunction(key string) *ast.FunctionDeclaration {
 		currentEnv = currentEnv.Parent
 	}
 	return nil
+}
+
+func (env *Environment) FindCurrentFunction() *ast.FunctionDeclaration {
+	currentEnv := env
+	for currentEnv != nil {
+		if currentEnv.CurrentFunction != nil {
+			return currentEnv.CurrentFunction
+		}
+		currentEnv = currentEnv.Parent
+	}
+	return nil
+}
+
+func (env *Environment) Collect() {
+	env.Variables = make(map[string]objects.Object)
+
+	if env.Parent != nil {
+		env.Parent.Collect()
+	}
+
+	env.Parent = nil
+	env.CurrentFunction = nil
 }

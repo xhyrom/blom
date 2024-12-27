@@ -1,7 +1,11 @@
-fun lol() -> i32 {
-    i64 a = @cast(5, i64);
+fun asd() -> i64 {
+    return @cast(5, i64);
+}
 
-    return -9 + (9 + a);
+fun lol() -> i32 {
+    i64 a = asd();
+
+    return -9 + (9 + @cast(a, i32));
 }
 
 fun main() -> i32 {

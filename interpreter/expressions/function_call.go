@@ -15,5 +15,7 @@ func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment
 		env.Set(function.Arguments[i].Name, interpreter.InterpretStatement(arg, env))
 	}
 
+	env.CurrentFunction = function
+
 	return interpreter.InterpretBlock(function.Body, env)
 }
