@@ -6,10 +6,11 @@ import (
 )
 
 type Parser interface {
+	Source() string
 	IsEof() bool
 	Current() tokens.Token
 	Consume() tokens.Token
-	ParseStatement() ast.Statement
-	ParseExpression() ast.Expression
-	ParsePrimaryExpression() ast.Expression
+	ParseStatement() (ast.Statement, error)
+	ParseExpression() (ast.Expression, error)
+	ParsePrimaryExpression() (ast.Expression, error)
 }

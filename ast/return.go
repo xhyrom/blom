@@ -14,3 +14,8 @@ func (r ReturnStatement) Kind() NodeKind {
 func (r ReturnStatement) Location() tokens.Location {
 	return r.Loc
 }
+
+func (r *ReturnStatement) SetLocation(row uint64, column uint64) {
+	r.Loc.Row = row
+	r.Loc.Column = column
+}

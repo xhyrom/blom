@@ -6,26 +6,32 @@ import (
 	"fmt"
 )
 
-func ParseIf(p Parser) *ast.IfStatement {
+func ParseIf(p Parser) (*ast.IfStatement, error) {
 	p.Consume()
 
-	condition := p.ParseExpression()
+	condition, _ := p.ParseExpression()
 
 	if p.Current().Kind != tokens.LeftCurlyBracket {
 		fmt.Println("Expected {")
 	}
 
-	then_block := ParseBlock(p, true)
+	then_block, _ := ParseBlock(p, true)
 	else_block := &ast.BlockStatement{}
+
+	loc := then_block.Loc
 
 	if p.Current().Kind == tokens.Else {
 		p.Consume()
-		else_block = ParseBlock(p, true)
+		block, _ := ParseBlock(p, true)
+
+		else_block = block
+		loc = else_block.Loc
 	}
 
 	return &ast.IfStatement{
 		Condition: condition,
 		Then:      then_block,
 		Else:      else_block,
-	}
+		Loc:       loc,
+	}, nil
 }

@@ -16,9 +16,8 @@ func New(file string, content string) *Lexer {
 	return &Lexer{
 		Reader: reader.New(content),
 		location: &tokens.Location{
-			File: file,
-			Row:  1,
-			Col:  0,
+			Row:    1,
+			Column: 0,
 		},
 	}
 }
@@ -27,12 +26,15 @@ func (lex *Lexer) Next() *tokens.Token {
 	char, err := lex.Reader.Read()
 	if err != nil {
 		return &tokens.Token{
-			Kind:     tokens.Eof,
-			Location: lex.Location().Copy(),
+			Kind: tokens.Eof,
+			Location: tokens.Location{
+				Row:    lex.Location().Row,
+				Column: lex.Location().Column + 1,
+			},
 		}
 	}
 
-	lex.location.Col++
+	lex.location.Column++
 
 	kind := tokens.Illegal
 
@@ -161,7 +163,7 @@ func (lex *Lexer) Next() *tokens.Token {
 
 func (lex *Lexer) NewLine() {
 	lex.location.Row++
-	lex.location.Col = 0
+	lex.location.Column = 0
 }
 
 func (lex *Lexer) Advance() error {
@@ -170,7 +172,7 @@ func (lex *Lexer) Advance() error {
 		return err
 	}
 
-	lex.location.Col++
+	lex.location.Column++
 	lex.Reader.Read()
 
 	return nil
@@ -178,7 +180,7 @@ func (lex *Lexer) Advance() error {
 
 func (lex *Lexer) Rewind() {
 	lex.Reader.Rewind()
-	lex.location.Col--
+	lex.location.Column--
 }
 
 func (lex *Lexer) CurrentChar() rune {

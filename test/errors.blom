@@ -1,0 +1,9 @@
+fun main() {
+    i32 looool = 0;+5
+
+    for i32 i = 0; i < 10; i = i + 1; {
+        looool = looool + 1;
+    }
+
+    return looool;
+}

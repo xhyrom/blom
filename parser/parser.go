@@ -5,23 +5,19 @@ import (
 	"blom/lexer"
 	"blom/parser/expressions"
 	"blom/tokens"
-	"fmt"
+	"errors"
 	"strconv"
 )
 
 type Parser struct {
-	tokens   []tokens.Token
-	location *tokens.Location
+	tokens []tokens.Token
+	source string
 }
 
 func New(file string) *Parser {
 	return &Parser{
 		tokens: make([]tokens.Token, 0),
-		location: &tokens.Location{
-			File: file,
-			Row:  1,
-			Col:  0,
-		},
+		source: file,
 	}
 }
 
@@ -30,7 +26,6 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 
 	for {
 		token := lexer.Next()
-		fmt.Printf("Parsing token %s\n", token.Kind)
 
 		p.tokens = append(p.tokens, *token)
 
@@ -41,25 +36,37 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 
 	prog := &ast.Program{
 		Loc: tokens.Location{
-			File: file,
-			Row:  1,
-			Col:  0,
+			Row:    1,
+			Column: 0,
 		},
 	}
 
 	for !p.IsEof() {
-		prog.Body = append(prog.Body, p.ParseStatement())
+		stmt, _ := p.ParseStatement()
+		prog.Body = append(prog.Body, stmt)
 	}
 
 	return prog
 }
 
+func (p *Parser) Source() string {
+	return p.source
+}
+
 func (p *Parser) IsEof() bool {
+	if len(p.tokens) == 0 {
+		return true
+	}
+
 	return p.tokens[0].Kind == tokens.Eof
 }
 
 func (p *Parser) Current() tokens.Token {
 	return p.tokens[0]
+}
+
+func (p *Parser) Next() tokens.Token {
+	return p.tokens[1]
 }
 
 func (p *Parser) Consume() tokens.Token {
@@ -73,7 +80,7 @@ func (p *Parser) Advance() {
 	p.tokens = p.tokens[1:]
 }
 
-func (p *Parser) ParseStatement() ast.Statement {
+func (p *Parser) ParseStatement() (ast.Statement, error) {
 	switch p.Current().Kind {
 	case tokens.Fun:
 		return expressions.ParseFunction(p)
@@ -83,75 +90,96 @@ func (p *Parser) ParseStatement() ast.Statement {
 		return expressions.ParseForLoop(p)
 	case tokens.While:
 		return expressions.ParseWhileLoop(p)
-	default:
-		return p.ParseExpression()
+	case tokens.Identifier:
+		if p.Next().Kind == tokens.Identifier {
+
+			return expressions.ParseAssignment(p, false)
+		}
+
+		if p.Next().Kind == tokens.Assign {
+			return expressions.ParseAssignment(p, true)
+		}
 	}
+
+	return p.ParseExpression()
 }
 
-func (p *Parser) ParseExpression() ast.Expression {
+func (p *Parser) ParseExpression() (ast.Expression, error) {
 	return p.parseExpressionWithPrecedence(tokens.LowestPrecedence)
 }
 
-func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast.Expression {
-	left := p.ParsePrimaryExpression()
+func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (ast.Expression, error) {
+	left, err := p.ParsePrimaryExpression()
+	if err != nil {
+		return nil, err
+	}
 
 	for !p.IsEof() && precedence < p.Current().Kind.Precedence() {
 		op := p.Current()
 		p.Consume()
 
-		right := p.parseExpressionWithPrecedence(op.Kind.Precedence())
+		right, err := p.parseExpressionWithPrecedence(op.Kind.Precedence())
+		if err != nil {
+			return nil, err
+		}
 
 		left = &ast.BinaryExpression{
 			Left:     left,
 			Operator: op.Kind,
 			Right:    right,
-			Loc:      op.Location,
+			Loc:      right.Location(),
 		}
 	}
 
-	return left
+	return left, nil
 }
 
-func (p *Parser) ParsePrimaryExpression() ast.Expression {
+func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 	switch p.Current().Kind {
 	case tokens.CharLiteral:
-		value := []rune(p.Consume().Value)[0]
+		token := p.Consume()
+		value := []rune(token.Value)[0]
 		return &ast.CharLiteralStatement{
 			Value: value,
-			Loc:   p.Current().Location,
-		}
+			Loc:   token.Location,
+		}, nil
 	case tokens.StringLiteral:
-		value := p.Consume().Value
+		token := p.Consume()
+		value := token.Value
 		return &ast.StringLiteralStatement{
 			Value: value,
-			Loc:   p.Current().Location,
-		}
+			Loc:   token.Location,
+		}, nil
 	case tokens.IntLiteral:
-		value, _ := strconv.ParseInt(p.Consume().Value, 10, 64)
+		token := p.Consume()
+		value, _ := strconv.ParseInt(token.Value, 10, 64)
 		return &ast.IntLiteralStatement{
 			Value: value,
-			Loc:   p.Current().Location,
-		}
+			Loc:   token.Location,
+		}, nil
 	case tokens.FloatLiteral:
-		value, _ := strconv.ParseFloat(p.Consume().Value, 64)
+		token := p.Consume()
+		value, _ := strconv.ParseFloat(token.Value, 64)
 		return &ast.FloatLiteralStatement{
 			Value: value,
-			Loc:   p.Current().Location,
-		}
+			Loc:   token.Location,
+		}, nil
 	case tokens.Identifier:
 		return expressions.ParseIdentifier(p)
 	case tokens.If:
 		return expressions.ParseIf(p)
 	case tokens.LeftParenthesis:
-		p.Consume() // Consume '('
-		expr := p.ParseExpression()
-		p.Consume() // Consume ')'
-		return expr
+		p.Consume() // consume '('
+		expr, err := p.ParseExpression()
+		p.Consume() // consume ')'
+
+		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
+		return expr, err
 	case tokens.Plus, tokens.Minus, tokens.Tilde:
 		return expressions.ParseUnary(p)
 	case tokens.LeftCurlyBracket:
 		return expressions.ParseBlock(p, true)
 	}
 
-	panic(fmt.Sprintf("Unexpected token %s", p.Current().Kind))
+	return nil, errors.New("Unexpected token " + p.Current().Kind.String())
 }

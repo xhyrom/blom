@@ -16,3 +16,8 @@ func (i IfStatement) Kind() NodeKind {
 func (i IfStatement) Location() tokens.Location {
 	return i.Loc
 }
+
+func (i *IfStatement) SetLocation(row uint64, column uint64) {
+	i.Loc.Row = row
+	i.Loc.Column = column
+}

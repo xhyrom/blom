@@ -17,3 +17,8 @@ func (d DeclarationStatement) Kind() NodeKind {
 func (d DeclarationStatement) Location() tokens.Location {
 	return d.Loc
 }
+
+func (d *DeclarationStatement) SetLocation(row uint64, column uint64) {
+	d.Loc.Row = row
+	d.Loc.Column = column
+}

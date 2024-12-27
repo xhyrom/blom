@@ -24,6 +24,11 @@ func (f FunctionDeclaration) Location() tokens.Location {
 	return f.Loc
 }
 
+func (f *FunctionDeclaration) SetLocation(row uint64, column uint64) {
+	f.Loc.Row = row
+	f.Loc.Column = column
+}
+
 type FunctionCall struct {
 	Name       string
 	Parameters []Expression
@@ -36,4 +41,9 @@ func (f FunctionCall) Kind() NodeKind {
 
 func (f FunctionCall) Location() tokens.Location {
 	return f.Loc
+}
+
+func (f *FunctionCall) SetLocation(row uint64, column uint64) {
+	f.Loc.Row = row
+	f.Loc.Column = column
 }

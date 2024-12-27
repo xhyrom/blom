@@ -19,6 +19,11 @@ func (b BinaryExpression) Location() tokens.Location {
 	return b.Loc
 }
 
+func (b *BinaryExpression) SetLocation(row uint64, column uint64) {
+	b.Loc.Row = row
+	b.Loc.Column = column
+}
+
 type UnaryExpression struct {
 	Operand  Expression
 	Operator tokens.TokenKind
@@ -31,4 +36,9 @@ func (u UnaryExpression) Kind() NodeKind {
 
 func (u UnaryExpression) Location() tokens.Location {
 	return u.Loc
+}
+
+func (u *UnaryExpression) SetLocation(row uint64, column uint64) {
+	u.Loc.Row = row
+	u.Loc.Column = column
 }

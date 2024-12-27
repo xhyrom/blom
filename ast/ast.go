@@ -28,6 +28,7 @@ const (
 type Statement interface {
 	Kind() NodeKind
 	Location() tokens.Location
+	SetLocation(row uint64, column uint64)
 }
 
 type Program BlockStatement

@@ -2,10 +2,11 @@ package expressions
 
 import (
 	"blom/ast"
+	"blom/debug"
 	"blom/tokens"
 )
 
-func ParseReturn(p Parser) *ast.ReturnStatement {
+func ParseReturn(p Parser) (*ast.ReturnStatement, error) {
 	p.Consume()
 
 	current := p.Current()
@@ -15,17 +16,18 @@ func ParseReturn(p Parser) *ast.ReturnStatement {
 		return &ast.ReturnStatement{
 			Value: nil,
 			Loc:   current.Location,
-		}
+		}, nil
 	}
 
-	value := p.ParseExpression()
+	value, _ := p.ParseExpression()
 
 	if p.Consume().Kind != tokens.Semicolon {
-		panic("Expected semicolon")
+		dbg := debug.NewSourceLocationFromExpression(p.Source(), value)
+		dbg.ThrowError("Expected semicolon", true, debug.NewHint("Add semicolon", ";"))
 	}
 
 	return &ast.ReturnStatement{
 		Value: value,
 		Loc:   value.Location(),
-	}
+	}, nil
 }

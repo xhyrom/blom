@@ -15,6 +15,11 @@ func (l IdentifierLiteralStatement) Location() tokens.Location {
 	return l.Loc
 }
 
+func (l IdentifierLiteralStatement) SetLocation(row uint64, column uint64) {
+	l.Loc.Row = row
+	l.Loc.Column = column
+}
+
 type CharLiteralStatement struct {
 	Value rune
 	Loc   tokens.Location
@@ -26,6 +31,11 @@ func (l CharLiteralStatement) Kind() NodeKind {
 
 func (l CharLiteralStatement) Location() tokens.Location {
 	return l.Loc
+}
+
+func (l CharLiteralStatement) SetLocation(row uint64, column uint64) {
+	l.Loc.Row = row
+	l.Loc.Column = column
 }
 
 type StringLiteralStatement struct {
@@ -41,6 +51,11 @@ func (l StringLiteralStatement) Location() tokens.Location {
 	return l.Loc
 }
 
+func (l StringLiteralStatement) SetLocation(row uint64, column uint64) {
+	l.Loc.Row = row
+	l.Loc.Column = column
+}
+
 type IntLiteralStatement struct {
 	Value int64
 	Loc   tokens.Location
@@ -54,6 +69,11 @@ func (l IntLiteralStatement) Location() tokens.Location {
 	return l.Loc
 }
 
+func (l IntLiteralStatement) SetLocation(row uint64, column uint64) {
+	l.Loc.Row = row
+	l.Loc.Column = column
+}
+
 type FloatLiteralStatement struct {
 	Value float64
 	Loc   tokens.Location
@@ -65,4 +85,9 @@ func (l FloatLiteralStatement) Kind() NodeKind {
 
 func (l FloatLiteralStatement) Location() tokens.Location {
 	return l.Loc
+}
+
+func (l FloatLiteralStatement) SetLocation(row uint64, column uint64) {
+	l.Loc.Row = row
+	l.Loc.Column = column
 }

@@ -179,9 +179,8 @@ func (kind TokenKind) Precedence() Precedence {
 }
 
 type Location struct {
-	File string
-	Row  int
-	Col  int
+	Row    uint64
+	Column uint64
 }
 
 type Token struct {
@@ -192,8 +191,7 @@ type Token struct {
 
 func (l *Location) Copy() Location {
 	return Location{
-		File: l.File,
-		Row:  l.Row,
-		Col:  l.Col,
+		Row:    l.Row,
+		Column: l.Column,
 	}
 }
