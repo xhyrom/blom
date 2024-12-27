@@ -2,6 +2,7 @@ package statements
 
 import (
 	"blom/ast"
+	"blom/compiler"
 	"blom/debug"
 	"blom/tokens"
 )
@@ -30,7 +31,13 @@ func ParseAssignment(p Parser, redeclaration bool) *ast.DeclarationStatement {
 		}
 	}
 
-	valueType := p.Consume()
+	valueTypeToken := p.Consume()
+
+	valueType, err := compiler.ParseType(valueTypeToken.Value)
+	if err != nil {
+		dbg := debug.NewSourceLocation(p.Source(), valueTypeToken.Location.Row, valueTypeToken.Location.Column)
+		dbg.ThrowError(err.Error(), true)
+	}
 
 	name := p.Consume()
 	var value ast.Expression = nil
@@ -61,7 +68,7 @@ func ParseAssignment(p Parser, redeclaration bool) *ast.DeclarationStatement {
 		Name:          name.Value,
 		Value:         value,
 		Redeclaration: false,
-		Type:          int(valueType.Kind),
+		Type:          valueType,
 		Loc:           right.Location,
 	}
 }

@@ -3,9 +3,11 @@ package expressions
 import (
 	"blom/ast"
 	"blom/env"
+	"blom/env/objects"
 )
 
 type Interpreter interface {
-	InterpretBlock(block *ast.BlockStatement, environment *env.Environment) env.Object
-	InterpretStatement(statement ast.Statement, environment *env.Environment) env.Object
+	Source() string
+	InterpretBlock(block *ast.BlockStatement, environment *env.Environment) objects.Object
+	InterpretStatement(statement ast.Statement, environment *env.Environment) objects.Object
 }

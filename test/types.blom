@@ -1,0 +1,9 @@
+fun lol() -> i32 {
+    i64 a = @cast(5, i64);
+
+    return -9 + (9 + a);
+}
+
+fun main() -> i32 {
+    return lol();
+}

@@ -133,10 +133,11 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (as
 		}
 
 		left = &ast.BinaryExpression{
-			Left:     left,
-			Operator: op.Kind,
-			Right:    right,
-			Loc:      right.Location(),
+			Left:        left,
+			Operator:    op.Kind,
+			Right:       right,
+			Loc:         right.Location(),
+			OperatorLoc: op.Location,
 		}
 	}
 
@@ -161,18 +162,20 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		}, nil
 	case tokens.IntLiteral:
 		token := p.Consume()
-		value, _ := strconv.ParseInt(token.Value, 10, 64)
+		value, _ := strconv.ParseInt(token.Value, 10, 32)
 		return &ast.IntLiteralStatement{
-			Value: value,
+			Value: int32(value),
 			Loc:   token.Location,
 		}, nil
 	case tokens.FloatLiteral:
 		token := p.Consume()
-		value, _ := strconv.ParseFloat(token.Value, 64)
+		value, _ := strconv.ParseFloat(token.Value, 32)
 		return &ast.FloatLiteralStatement{
-			Value: value,
+			Value: float32(value),
 			Loc:   token.Location,
 		}, nil
+	case tokens.AtMark:
+		return expressions.ParseCompileTimeFunctionCall(p), nil
 	case tokens.Identifier:
 		return expressions.ParseIdentifier(p), nil
 	case tokens.If:

@@ -3,9 +3,10 @@ package expressions
 import (
 	"blom/ast"
 	"blom/env"
+	"blom/env/objects"
 )
 
-func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment, call *ast.FunctionCall) env.Object {
+func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment, call *ast.FunctionCall) objects.Object {
 	function := environment.FindFunction(call.Name)
 
 	env := env.New(*environment)

@@ -58,6 +58,6 @@ func Run(args []string) {
 		dump.Println(ast)
 	}
 
-	inp := interpreter.New()
+	inp := interpreter.New(inputFile)
 	dump.Println(inp.Interpret(ast))
 }

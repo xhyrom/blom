@@ -2,7 +2,9 @@ package expressions
 
 import (
 	"blom/ast"
+	"blom/debug"
 	"blom/env"
+	"fmt"
 )
 
 func InterpretDeclarationStatement(interpreter Interpreter, environment *env.Environment, statement *ast.DeclarationStatement) {
@@ -13,5 +15,12 @@ func InterpretDeclarationStatement(interpreter Interpreter, environment *env.Env
 		}
 	}
 
-	environment.Set(statement.Name, interpreter.InterpretStatement(statement.Value, environment))
+	obj := interpreter.InterpretStatement(statement.Value, environment)
+
+	if statement.Type != obj.Type() {
+		dbg := debug.NewSourceLocation(interpreter.Source(), statement.Location().Row, statement.Location().Column)
+		dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration: %s != %s", statement.Type, obj.Type()), true)
+	}
+
+	environment.Set(statement.Name, obj)
 }

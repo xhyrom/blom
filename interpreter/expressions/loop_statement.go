@@ -3,6 +3,7 @@ package expressions
 import (
 	"blom/ast"
 	"blom/env"
+	"blom/env/objects"
 )
 
 func InterpretForLoopStatement(interpreter Interpreter, environment *env.Environment, statement *ast.ForLoopStatement) {
@@ -21,7 +22,7 @@ func InterpretForLoopStatement(interpreter Interpreter, environment *env.Environ
 			break
 		}
 
-		if conditionValue.(*env.BooleanObject).Value {
+		if conditionValue.(*objects.BooleanObject).Value {
 			interpreter.InterpretBlock(body, environment)
 			interpreter.InterpretStatement(step, environment)
 		} else {
@@ -40,7 +41,7 @@ func InterpretWhileLoopStatement(interpreter Interpreter, environment *env.Envir
 			break
 		}
 
-		if conditionValue.(*env.BooleanObject).Value {
+		if conditionValue.(*objects.BooleanObject).Value {
 			interpreter.InterpretBlock(body, environment)
 		} else {
 			break

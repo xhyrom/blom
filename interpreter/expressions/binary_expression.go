@@ -2,51 +2,62 @@ package expressions
 
 import (
 	"blom/ast"
+	"blom/debug"
 	"blom/env"
+	"blom/env/objects"
 	"blom/tokens"
 	"fmt"
 )
 
-func InterpretBinaryExpression(interpreter Interpreter, environment *env.Environment, expression *ast.BinaryExpression) env.Object {
+func InterpretBinaryExpression(interpreter Interpreter, environment *env.Environment, expression *ast.BinaryExpression) objects.Object {
 	return evaluateBinaryExpression(interpreter, environment, expression)
 }
 
-func evaluateBinaryExpression(interpreter Interpreter, environment *env.Environment, expression *ast.BinaryExpression) env.Object {
+func evaluateBinaryExpression(interpreter Interpreter, environment *env.Environment, expression *ast.BinaryExpression) objects.Object {
 	left := interpreter.InterpretStatement(expression.Left, environment)
 	right := interpreter.InterpretStatement(expression.Right, environment)
 
 	switch expression.Operator {
 	case tokens.Plus:
-		return left.Add(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.Add(right))
 	case tokens.Minus:
-		return left.Subtract(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.Subtract(right))
 	case tokens.Asterisk:
-		return left.Multiply(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.Multiply(right))
 	case tokens.Slash:
-		return left.Divide(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.Divide(right))
 	case tokens.PercentSign:
-		return left.Modulo(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.Modulo(right))
 	case tokens.Ampersand:
-		return left.BitwiseAnd(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.BitwiseAnd(right))
 	case tokens.VerticalLine:
-		return left.BitwiseOr(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.BitwiseOr(right))
 	case tokens.CircumflexAccent:
-		return left.BitwiseXor(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.BitwiseXor(right))
 	case tokens.DoubleLessThan:
-		return left.LeftShift(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.LeftShift(right))
 	case tokens.DoubleGreaterThan:
-		return left.RightShift(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.RightShift(right))
 	case tokens.Equals:
-		return left.Equals(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.Equals(right))
 	case tokens.LessThan:
-		return left.LessThan(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.LessThan(right))
 	case tokens.LessThanOrEqual:
-		return left.LessThanOrEqual(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.LessThanOrEqual(right))
 	case tokens.GreaterThan:
-		return left.GreaterThan(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.GreaterThan(right))
 	case tokens.GreaterThanOrEqual:
-		return left.GreaterThanOrEqual(right)
+		return handleTypeMismatch(interpreter, expression, left, right, left.GreaterThanOrEqual(right))
 	default:
 		panic(fmt.Sprintf("unknown operator: %s", expression.Operator))
 	}
+}
+
+func handleTypeMismatch(interpreter Interpreter, expression *ast.BinaryExpression, left objects.Object, right objects.Object, object objects.Object) objects.Object {
+	if object == nil {
+		dbg := debug.NewSourceLocation(interpreter.Source(), expression.OperatorLoc.Row, expression.OperatorLoc.Column)
+		dbg.ThrowError(fmt.Sprintf("Type mismatch: %s %s %s", left.Type(), expression.Operator, right.Type()), true)
+	}
+
+	return object
 }

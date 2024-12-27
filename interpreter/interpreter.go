@@ -3,17 +3,22 @@ package interpreter
 import (
 	"blom/ast"
 	"blom/env"
+	"blom/env/objects"
 	"blom/interpreter/expressions"
 	"fmt"
 )
 
-type Interpreter struct{}
-
-func New() *Interpreter {
-	return &Interpreter{}
+type Interpreter struct {
+	source string
 }
 
-func (intrepreter *Interpreter) Interpret(program *ast.Program) env.Object {
+func New(source string) *Interpreter {
+	return &Interpreter{
+		source,
+	}
+}
+
+func (intrepreter *Interpreter) Interpret(program *ast.Program) objects.Object {
 	program.Body = append(program.Body, &ast.ReturnStatement{
 		Value: &ast.FunctionCall{
 			Name:       "main",
@@ -27,7 +32,7 @@ func (intrepreter *Interpreter) Interpret(program *ast.Program) env.Object {
 	}, env.New())
 }
 
-func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environment *env.Environment) env.Object {
+func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environment *env.Environment) objects.Object {
 	fmt.Printf("Interpreting block %v\n", body.Location())
 
 	envi := env.New(*environment)
@@ -50,16 +55,16 @@ func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environ
 	return nil
 }
 
-func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environment *env.Environment) env.Object {
+func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environment *env.Environment) objects.Object {
 	switch stmt := stmt.(type) {
 	case *ast.CharLiteralStatement:
-		return &env.CharacterObject{Value: stmt.Value}
+		return &objects.CharacterObject{Value: stmt.Value}
 	case *ast.StringLiteralStatement:
-		return &env.StringObject{Value: stmt.Value}
+		return &objects.StringObject{Value: stmt.Value}
 	case *ast.IntLiteralStatement:
-		return &env.IntegerObject{Value: stmt.Value}
+		return &objects.IntObject{Value: stmt.Value}
 	case *ast.FloatLiteralStatement:
-		return &env.FloatObject{Value: stmt.Value}
+		return &objects.FloatObject{Value: stmt.Value}
 	case *ast.IdentifierLiteralStatement:
 		return environment.FindVariable(stmt.Value)
 	case *ast.BlockStatement:
@@ -87,4 +92,8 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 	}
 
 	return nil
+}
+
+func (interpreter *Interpreter) Source() string {
+	return interpreter.source
 }

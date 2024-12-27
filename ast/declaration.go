@@ -1,10 +1,13 @@
 package ast
 
-import "blom/tokens"
+import (
+	"blom/compiler"
+	"blom/tokens"
+)
 
 type DeclarationStatement struct {
 	Name          string
-	Type          int
+	Type          compiler.Type
 	Value         Statement
 	Redeclaration bool
 	Loc           tokens.Location

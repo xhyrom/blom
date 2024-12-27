@@ -23,6 +23,7 @@ const (
 	AnnotationNode
 	FunctionDeclarationNode
 	FunctionCallNode
+	CompileTimeFunctionCallNode
 )
 
 type Statement interface {

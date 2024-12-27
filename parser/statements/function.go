@@ -2,6 +2,7 @@ package statements
 
 import (
 	"blom/ast"
+	"blom/compiler"
 	"blom/debug"
 	"blom/parser/expressions"
 	"blom/tokens"
@@ -60,7 +61,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 		}
 	}
 
-	var returnType tokens.Token
+	var returnType compiler.Type
 
 	if len(arguments) == 0 {
 		p.Consume()
@@ -76,13 +77,21 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 			dbg.ThrowError("Return type must be preceded by a dash", true, debug.NewHint("Did you forget to add a dash?", ">"))
 		}
 
-		returnType = p.Consume()
-		if returnType.Kind != tokens.Identifier {
-			dbg := debug.NewSourceLocation(p.Source(), returnType.Location.Row, returnType.Location.Column)
-			dbg.ThrowError(fmt.Sprintf("Return type must be a valid type, got \"%s\"", returnType.Value), true)
+		returnTypeToken := p.Consume()
+		if returnTypeToken.Kind != tokens.Identifier {
+			dbg := debug.NewSourceLocation(p.Source(), returnTypeToken.Location.Row, returnTypeToken.Location.Column)
+			dbg.ThrowError(fmt.Sprintf("Return type must be a valid type, got \"%s\"", returnTypeToken.Value), true)
 		}
 
-		locationBeforeBlock = returnType.Location
+		var err error
+		returnType, err = compiler.ParseType(returnTypeToken.Value)
+
+		if err != nil {
+			dbg := debug.NewSourceLocation(p.Source(), returnTypeToken.Location.Row, returnTypeToken.Location.Column)
+			dbg.ThrowError(err.Error(), true)
+		}
+
+		locationBeforeBlock = returnTypeToken.Location
 		current = p.Current()
 	}
 
@@ -97,7 +106,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 		Name:        name.Value,
 		Arguments:   arguments,
 		Annotations: annotations,
-		ReturnType:  int(returnType.Kind),
+		ReturnType:  returnType,
 		Body:        block,
 		Loc:         name.Location,
 	}
@@ -128,15 +137,22 @@ func parseArgument(p Parser) (ast.FunctionArgument, tokens.Location) {
 		dbg.ThrowError("Argument type must be preceded by a colon", true, debug.NewHint("Did you forget to add a colon?", ":"))
 	}
 
-	typ := p.Consume()
+	typToken := p.Consume()
 
-	if typ.Kind != tokens.Identifier {
-		dbg := debug.NewSourceLocation(p.Source(), typ.Location.Row, typ.Location.Column)
-		dbg.ThrowError(fmt.Sprintf("Argument type must be a valid type, got \"%s\"", typ.Value), true)
+	if typToken.Kind != tokens.Identifier {
+		dbg := debug.NewSourceLocation(p.Source(), typToken.Location.Row, typToken.Location.Column)
+		dbg.ThrowError(fmt.Sprintf("Argument type must be a valid type, got \"%s\"", typToken.Value), true)
+	}
+
+	typ, err := compiler.ParseType(typToken.Value)
+
+	if err != nil {
+		dbg := debug.NewSourceLocation(p.Source(), typToken.Location.Row, typToken.Location.Column)
+		dbg.ThrowError(err.Error(), true)
 	}
 
 	return ast.FunctionArgument{
 		Name: name.Value,
-		Type: int(typ.Kind),
-	}, typ.Location
+		Type: typ,
+	}, typToken.Location
 }

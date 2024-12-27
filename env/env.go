@@ -1,17 +1,20 @@
 package env
 
-import "blom/ast"
+import (
+	"blom/ast"
+	"blom/env/objects"
+)
 
 type Environment struct {
 	Functions map[string]*ast.FunctionDeclaration
-	Variables map[string]Object
+	Variables map[string]objects.Object
 	Parent    *Environment
 }
 
 func New(environments ...Environment) *Environment {
 	environment := Environment{
 		Functions: make(map[string]*ast.FunctionDeclaration),
-		Variables: make(map[string]Object),
+		Variables: make(map[string]objects.Object),
 		Parent:    nil,
 	}
 
@@ -22,11 +25,11 @@ func New(environments ...Environment) *Environment {
 	return &environment
 }
 
-func (env *Environment) Set(key string, value Object) {
+func (env *Environment) Set(key string, value objects.Object) {
 	env.Variables[key] = value
 }
 
-func (env *Environment) Get(key string) Object {
+func (env *Environment) Get(key string) objects.Object {
 	return env.Variables[key]
 }
 
@@ -38,7 +41,7 @@ func (env *Environment) GetFunction(key string) *ast.FunctionDeclaration {
 	return env.Functions[key]
 }
 
-func (env *Environment) FindVariable(key string) Object {
+func (env *Environment) FindVariable(key string) objects.Object {
 	currentEnv := env
 	for currentEnv != nil {
 		if value, exists := currentEnv.Variables[key]; exists {
