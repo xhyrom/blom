@@ -1,4 +1,4 @@
-package expressions
+package statements
 
 import (
 	"blom/ast"
@@ -10,8 +10,7 @@ import (
 // <type> <identifier> = <expression>;
 // <type> <identifier>;
 // <identifier> = <expression>;
-func ParseAssignment(p Parser, redeclaration bool) (*ast.DeclarationStatement, error) {
-
+func ParseAssignment(p Parser, redeclaration bool) *ast.DeclarationStatement {
 	if redeclaration {
 		name := p.Consume()
 
@@ -21,14 +20,14 @@ func ParseAssignment(p Parser, redeclaration bool) (*ast.DeclarationStatement, e
 
 		if p.Consume().Kind != tokens.Semicolon {
 			dbg := debug.NewSourceLocationFromExpression(p.Source(), value)
-			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Add semicolon", ";"))
+			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 		}
 
 		return &ast.DeclarationStatement{
 			Name:          name.Value,
 			Value:         value,
 			Redeclaration: true,
-		}, nil
+		}
 	}
 
 	valueType := p.Consume()
@@ -51,10 +50,10 @@ func ParseAssignment(p Parser, redeclaration bool) (*ast.DeclarationStatement, e
 	if p.Consume().Kind != tokens.Semicolon {
 		if value != nil {
 			dbg := debug.NewSourceLocationFromExpression(p.Source(), value)
-			dbg.ThrowError("Expected semicolon", true)
+			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 		} else {
 			dbg := debug.NewSourceLocation(p.Source(), right.Location.Row, right.Location.Column+1)
-			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Add semicolon", ";"))
+			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 		}
 	}
 
@@ -64,5 +63,5 @@ func ParseAssignment(p Parser, redeclaration bool) (*ast.DeclarationStatement, e
 		Redeclaration: false,
 		Type:          int(valueType.Kind),
 		Loc:           right.Location,
-	}, nil
+	}
 }

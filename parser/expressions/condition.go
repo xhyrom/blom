@@ -2,27 +2,39 @@ package expressions
 
 import (
 	"blom/ast"
+	"blom/debug"
 	"blom/tokens"
-	"fmt"
 )
 
-func ParseIf(p Parser) (*ast.IfStatement, error) {
+func ParseIf(p Parser) *ast.IfStatement {
 	p.Consume()
 
-	condition, _ := p.ParseExpression()
-
-	if p.Current().Kind != tokens.LeftCurlyBracket {
-		fmt.Println("Expected {")
+	condition, err := p.ParseExpression()
+	if err != nil {
+		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
+		dbg.ThrowError(err.Error(), true, debug.NewHint("Add condition", "true "))
 	}
 
-	then_block, _ := ParseBlock(p, true)
+	if p.Current().Kind != tokens.LeftCurlyBracket {
+		dbg := debug.NewSourceLocationFromExpression(p.Source(), condition)
+		dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
+	}
+
+	then_block := ParseBlock(p)
 	else_block := &ast.BlockStatement{}
 
 	loc := then_block.Loc
 
-	if p.Current().Kind == tokens.Else {
+	maybe_else := p.Current()
+	if maybe_else.Kind == tokens.Else {
 		p.Consume()
-		block, _ := ParseBlock(p, true)
+
+		if p.Current().Kind != tokens.LeftCurlyBracket {
+			dbg := debug.NewSourceLocation(p.Source(), maybe_else.Location.Row, maybe_else.Location.Column+1)
+			dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
+		}
+
+		block := ParseBlock(p)
 
 		else_block = block
 		loc = else_block.Loc
@@ -33,5 +45,5 @@ func ParseIf(p Parser) (*ast.IfStatement, error) {
 		Then:      then_block,
 		Else:      else_block,
 		Loc:       loc,
-	}, nil
+	}
 }

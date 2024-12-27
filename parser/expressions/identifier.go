@@ -5,7 +5,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseIdentifier(p Parser) (ast.Statement, error) {
+func ParseIdentifier(p Parser) ast.Statement {
 	token := p.Consume()
 
 	if p.Current().Kind == tokens.LeftParenthesis {
@@ -15,5 +15,5 @@ func ParseIdentifier(p Parser) (ast.Statement, error) {
 	return &ast.IdentifierLiteralStatement{
 		Value: token.Value,
 		Loc:   token.Location,
-	}, nil
+	}
 }

@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseFunctionCall(p Parser, identifier tokens.Token) (*ast.FunctionCall, error) {
+func ParseFunctionCall(p Parser, identifier tokens.Token) *ast.FunctionCall {
 	p.Consume()
 
 	name := identifier.Value
@@ -19,7 +19,7 @@ func ParseFunctionCall(p Parser, identifier tokens.Token) (*ast.FunctionCall, er
 			dbg.ThrowError(
 				err.Error(),
 				true,
-				debug.NewHint("Failed to close function?", ")"),
+				debug.NewHint("Did you forget to close a function call?", ")"),
 			)
 		}
 
@@ -48,5 +48,5 @@ func ParseFunctionCall(p Parser, identifier tokens.Token) (*ast.FunctionCall, er
 		Name:       name,
 		Parameters: parameters,
 		Loc:        last.Location,
-	}, nil
+	}
 }

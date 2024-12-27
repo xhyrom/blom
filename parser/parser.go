@@ -4,6 +4,7 @@ import (
 	"blom/ast"
 	"blom/lexer"
 	"blom/parser/expressions"
+	"blom/parser/statements"
 	"blom/tokens"
 	"errors"
 	"strconv"
@@ -83,21 +84,21 @@ func (p *Parser) Advance() {
 func (p *Parser) ParseStatement() (ast.Statement, error) {
 	switch p.Current().Kind {
 	case tokens.Fun:
-		return expressions.ParseFunction(p)
+		return statements.ParseFunction(p), nil
 	case tokens.Return:
-		return expressions.ParseReturn(p)
+		return statements.ParseReturn(p), nil
 	case tokens.For:
-		return expressions.ParseForLoop(p)
+		return statements.ParseForLoop(p), nil
 	case tokens.While:
-		return expressions.ParseWhileLoop(p)
+		return statements.ParseWhileLoop(p), nil
 	case tokens.Identifier:
 		if p.Next().Kind == tokens.Identifier {
 
-			return expressions.ParseAssignment(p, false)
+			return statements.ParseAssignment(p, false), nil
 		}
 
 		if p.Next().Kind == tokens.Assign {
-			return expressions.ParseAssignment(p, true)
+			return statements.ParseAssignment(p, true), nil
 		}
 	}
 
@@ -165,9 +166,11 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 			Loc:   token.Location,
 		}, nil
 	case tokens.Identifier:
-		return expressions.ParseIdentifier(p)
+		return expressions.ParseIdentifier(p), nil
 	case tokens.If:
-		return expressions.ParseIf(p)
+		return expressions.ParseIf(p), nil
+	case tokens.LeftCurlyBracket:
+		return expressions.ParseBlock(p), nil
 	case tokens.LeftParenthesis:
 		p.Consume() // consume '('
 		expr, err := p.ParseExpression()
@@ -176,9 +179,7 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
 		return expr, err
 	case tokens.Plus, tokens.Minus, tokens.Tilde:
-		return expressions.ParseUnary(p)
-	case tokens.LeftCurlyBracket:
-		return expressions.ParseBlock(p, true)
+		return expressions.ParseUnary(p), nil
 	}
 
 	return nil, errors.New("Unexpected token " + p.Current().Kind.String())
