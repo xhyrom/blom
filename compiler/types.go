@@ -3,6 +3,7 @@ package compiler
 import (
 	"errors"
 	"fmt"
+	"slices"
 )
 
 type Type int
@@ -20,6 +21,7 @@ const (
 	Single
 	Double
 	Char
+	String
 	Void
 	Null
 )
@@ -37,6 +39,7 @@ var humanTypes = []string{
 	Single:           "f32",
 	Double:           "f64",
 	Char:             "char",
+	String:           "string",
 	Void:             "void",
 	Null:             "null",
 }
@@ -54,31 +57,18 @@ var types = []string{
 	Single:           "f",
 	Double:           "d",
 	Char:             "c",
+	String:           "l",
 	Void:             "",
 	Null:             "",
 }
 
-var mapping = map[string]Type{
-	"i8":   Byte,
-	"i16":  Halfword,
-	"i32":  Word,
-	"i64":  Long,
-	"u8":   UnsignedByte,
-	"u16":  UnsignedHalfword,
-	"u32":  UnsignedWord,
-	"u64":  UnsignedLong,
-	"f32":  Single,
-	"f64":  Double,
-	"char": Char,
-	"void": Void,
-}
-
 func ParseType(str string) (Type, error) {
-	if val, ok := mapping[str]; ok {
-		return val, nil
+	index := slices.Index(humanTypes, str)
+	if index == -1 {
+		return 0, errors.New(fmt.Sprintf("Unknown type \"%s\"", str))
 	}
 
-	return 0, errors.New(fmt.Sprintf("Unknown type \"%s\"", str))
+	return Type(index), nil
 }
 
 func (t Type) Inspect() string {

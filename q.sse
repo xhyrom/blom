@@ -1,3 +1,5 @@
+data $s.2a = { b "abc", b 0 }
+data $s.2 = { b "lol: %d", b 0 }
 function w $abc() {
 @start
     %r = w add 7, 5
@@ -6,9 +8,13 @@ function w $abc() {
 
 export function w $main() {
 @start
-    %a =w call $abc()
-    call $printf(l $fmt, ..., w %a)
+    %a.addr = l alloc8 4
+    storel $s.2a, %a.addr
+    %a =l loadl %a.addr
+    %c.addr = l alloc8 4
+    storel 9, %c.addr
+    %c =l loadl %c.addr
+    call $puts(l %a)
+    call $printf(l $s.2, ..., l %c)
     ret 0
 }
-
-data $fmt = { b "abc: %d\n", b 0 }

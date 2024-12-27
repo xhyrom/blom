@@ -1,8 +1,17 @@
 package qbe
 
-import "blom/ast"
+import (
+	"blom/ast"
+	"blom/env"
+)
 
-func (c Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, ident int) string {
+func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, env *env.Environment, ident int) string {
+	env.SetFunction(stmt.Name, stmt)
+
+	if stmt.IsNative() {
+		return ""
+	}
+
 	result := ""
 
 	if stmt.Name == "main" {
@@ -22,7 +31,7 @@ func (c Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, iden
 	result += ") {\n"
 	result += "@start\n"
 
-	result += c.CompileBlock(*stmt.Body, ident)
+	result += c.CompileBlock(*stmt.Body, env, ident)
 
 	result += "}\n"
 

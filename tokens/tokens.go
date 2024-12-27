@@ -45,6 +45,7 @@ const (
 
 	// Delimiters
 	Dot
+	Ellipsis
 	Comma
 	Colon
 	Semicolon
@@ -94,6 +95,7 @@ var tokens = []string{
 	DoubleGreaterThan:  ">>",
 	GreaterThanOrEqual: ">=",
 	Dot:                ".",
+	Ellipsis:           "...",
 	Comma:              ",",
 	Colon:              ":",
 	Semicolon:          ";",

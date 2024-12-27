@@ -1,8 +1,14 @@
+fun @native puts(arg: string) -> i32;
+fun @native printf(format: string, ...) -> i32;
+
 fun abc() -> i32 {
     return 7 + 5;
 }
 
 fun main() -> i32 {
-    i32 a = abc();
+    string a = "abc";
+    i64 c = 9;
+    puts(a)
+    printf("lol: %d", c)
     return 0;
 }

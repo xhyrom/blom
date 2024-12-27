@@ -7,7 +7,7 @@ type StringObject struct {
 }
 
 func (s *StringObject) Type() compiler.Type {
-	return compiler.Char
+	return compiler.String
 }
 
 func (s *StringObject) Inspect() string {

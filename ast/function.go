@@ -16,6 +16,7 @@ type FunctionDeclaration struct {
 	Annotations []Annotation
 	ReturnType  compiler.Type
 	Body        *BlockStatement
+	Variadic    bool
 	Loc         tokens.Location
 }
 
@@ -30,6 +31,20 @@ func (f FunctionDeclaration) Location() tokens.Location {
 func (f *FunctionDeclaration) SetLocation(row uint64, column uint64) {
 	f.Loc.Row = row
 	f.Loc.Column = column
+}
+
+func (f *FunctionDeclaration) HasAnnotation(typ AnnotationType) bool {
+	for _, annotation := range f.Annotations {
+		if annotation.Type == typ {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (f *FunctionDeclaration) IsNative() bool {
+	return f.HasAnnotation(Native)
 }
 
 type FunctionCall struct {

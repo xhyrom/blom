@@ -114,7 +114,22 @@ func (lex *Lexer) Next() *tokens.Token {
 			}
 		}
 	case '.':
-		kind = tokens.Dot
+		lex.Advance()
+
+		switch lex.CurrentChar() {
+		case '.':
+			lex.Advance()
+
+			switch lex.CurrentChar() {
+			case '.':
+				kind = tokens.Ellipsis
+			default:
+				lex.Rewind()
+			}
+		default:
+			kind = tokens.Dot
+			lex.Rewind()
+		}
 	case ',':
 		kind = tokens.Comma
 	case ':':

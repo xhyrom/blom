@@ -39,9 +39,20 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 	arguments := make([]ast.FunctionArgument, 0)
 	locationBeforeBlock := p.Current().Location
 
+	fn := ast.FunctionDeclaration{
+		Name:        name.Value,
+		Annotations: annotations,
+		Loc:         name.Location,
+	}
+
 	for current.Kind != tokens.RightParenthesis && p.Current().Kind != tokens.RightParenthesis {
-		arg, location := parseArgument(p)
-		arguments = append(arguments, arg)
+		arg, location := parseArgument(p, &fn)
+		if arg == nil {
+			p.Consume()
+			break
+		}
+
+		arguments = append(arguments, *arg)
 
 		current = p.Consume()
 
@@ -60,6 +71,8 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 			Column: location.Column + 1,
 		}
 	}
+
+	fn.Arguments = arguments
 
 	var returnType compiler.Type
 
@@ -95,6 +108,24 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 		current = p.Current()
 	}
 
+	fn.ReturnType = returnType
+
+	if fn.IsNative() {
+		if p.Current().Kind == tokens.LeftCurlyBracket {
+			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
+			dbg.ThrowError("Native function must not have a body", true, debug.NewHint("Remove '{' to make function native", ""))
+		}
+
+		if current.Kind != tokens.Semicolon {
+			dbg := debug.NewSourceLocation(p.Source(), locationBeforeBlock.Row, locationBeforeBlock.Column+1)
+			dbg.ThrowError("Did you forget to add a semicolon?", true, debug.NewHint("Add ';'", ";"))
+		}
+
+		p.Consume()
+
+		return &fn
+	}
+
 	if p.Current().Kind != tokens.LeftCurlyBracket {
 		dbg := debug.NewSourceLocation(p.Source(), locationBeforeBlock.Row, locationBeforeBlock.Column+1)
 		dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
@@ -102,31 +133,34 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 
 	block := expressions.ParseBlock(p)
 
-	fn := &ast.FunctionDeclaration{
-		Name:        name.Value,
-		Arguments:   arguments,
-		Annotations: annotations,
-		ReturnType:  returnType,
-		Body:        block,
-		Loc:         name.Location,
-	}
-
-	return fn
+	fn.Body = block
+	return &fn
 }
 
 func parseAnnotation(p Parser) ast.Annotation {
 	p.Consume()
 
 	name := p.Consume()
+	typ := ast.ParseAnnotation(name.Value)
+
+	if typ == -1 {
+		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
+		dbg.ThrowError(fmt.Sprintf("Annotation \"%s\" is not recognized", name.Value), true)
+	}
 
 	return ast.Annotation{
-		Name: name.Value,
+		Type: typ,
 		Loc:  name.Location,
 	}
 }
 
-func parseArgument(p Parser) (ast.FunctionArgument, tokens.Location) {
+func parseArgument(p Parser, fun *ast.FunctionDeclaration) (*ast.FunctionArgument, *tokens.Location) {
 	name := p.Consume()
+	if name.Kind == tokens.Ellipsis {
+		fun.Variadic = true
+		return nil, nil
+	}
+
 	if name.Kind != tokens.Identifier {
 		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
 		dbg.ThrowError(fmt.Sprintf("Argument name must be valid identifier, got \"%s\"", name.Value), true)
@@ -151,8 +185,8 @@ func parseArgument(p Parser) (ast.FunctionArgument, tokens.Location) {
 		dbg.ThrowError(err.Error(), true)
 	}
 
-	return ast.FunctionArgument{
+	return &ast.FunctionArgument{
 		Name: name.Value,
 		Type: typ,
-	}, typToken.Location
+	}, &typToken.Location
 }
