@@ -78,10 +78,6 @@ func (env *Environment) FindCurrentFunction() *ast.FunctionDeclaration {
 func (env *Environment) Collect() {
 	env.Variables = make(map[string]objects.Object)
 
-	if env.Parent != nil {
-		env.Parent.Collect()
-	}
-
 	env.Parent = nil
 	env.CurrentFunction = nil
 }

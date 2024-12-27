@@ -33,14 +33,14 @@ func (intrepreter *Interpreter) Interpret(program *ast.Program) objects.Object {
 }
 
 func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environment *env.Environment) objects.Object {
-	fmt.Printf("Interpreting block %v\n", body.Location())
+	//fmt.Printf("Interpreting block %v\n", body.Location())
 
 	envi := env.New(*environment)
 
 	for _, stmt := range body.Body {
 		value := interpreter.InterpretStatement(stmt, envi)
 
-		fmt.Printf("Interpreting statement %T, value: %v\n", stmt, value)
+		//fmt.Printf("Interpreting statement %T, value: %v\n", stmt, value)
 
 		switch stmt.(type) {
 		case *ast.ReturnStatement:
