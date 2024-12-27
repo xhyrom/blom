@@ -4,9 +4,9 @@ import "blom/tokens"
 
 type ForLoopStatement struct {
 	Declaration *DeclarationStatement
-	Condition   BinaryExpression
-	Step        DeclarationStatement
-	Body        BlockStatement
+	Condition   *BinaryExpression
+	Step        *DeclarationStatement
+	Body        *BlockStatement
 	Loc         tokens.Location
 }
 
@@ -20,7 +20,7 @@ func (f ForLoopStatement) Location() tokens.Location {
 
 type WhileLoopStatement struct {
 	Condition Expression
-	Body      BlockStatement
+	Body      *BlockStatement
 	Loc       tokens.Location
 }
 

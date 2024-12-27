@@ -6,6 +6,6 @@ import (
 )
 
 type Interpreter interface {
-	InterpretBlock(block ast.BlockStatement, environment *env.Environment) env.Object
+	InterpretBlock(block *ast.BlockStatement, environment *env.Environment) env.Object
 	InterpretStatement(statement ast.Statement, environment *env.Environment) env.Object
 }

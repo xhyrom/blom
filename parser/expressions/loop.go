@@ -9,18 +9,18 @@ import (
 // Parses a for loop statement that can has form:
 // for <declaration>; <condition>; <step> { <body> }
 // for <condition>; <step> { <body> }
-func ParseForLoop(p Parser) ast.Statement {
+func ParseForLoop(p Parser) *ast.ForLoopStatement {
 	p.Consume()
 
 	var declaration *ast.DeclarationStatement
-	var condition ast.BinaryExpression
+	var condition *ast.BinaryExpression
 
 	if p.Current().Kind == tokens.Identifier {
 		stmt := p.ParseExpression()
-		if decl, ok := stmt.(ast.DeclarationStatement); ok {
-			declaration = &decl
+		if decl, ok := stmt.(*ast.DeclarationStatement); ok {
+			declaration = decl
 		} else if bin, ok := stmt.(*ast.BinaryExpression); ok {
-			condition = *bin
+			condition = bin
 		} else {
 			panic(fmt.Sprintf("expected declaration or binary expression, got %T", stmt))
 		}
@@ -31,7 +31,7 @@ func ParseForLoop(p Parser) ast.Statement {
 	if declaration != nil {
 		stmt := p.ParseExpression()
 		if bin, ok := stmt.(*ast.BinaryExpression); ok {
-			condition = *bin
+			condition = bin
 		} else {
 			panic(fmt.Sprintf("expected binary expression, got %T", stmt))
 		}
@@ -39,9 +39,9 @@ func ParseForLoop(p Parser) ast.Statement {
 		p.Consume() // consume the semicolon
 	}
 
-	var step ast.DeclarationStatement
+	var step *ast.DeclarationStatement
 	stmt := p.ParseExpression()
-	if decl, ok := stmt.(ast.DeclarationStatement); ok {
+	if decl, ok := stmt.(*ast.DeclarationStatement); ok {
 		step = decl
 	} else {
 		panic(fmt.Sprintf("expected declaration statement, got %T", stmt))
@@ -49,7 +49,7 @@ func ParseForLoop(p Parser) ast.Statement {
 
 	body := ParseBlock(p, true)
 
-	return ast.ForLoopStatement{
+	return &ast.ForLoopStatement{
 		Declaration: declaration,
 		Condition:   condition,
 		Step:        step,
@@ -58,13 +58,13 @@ func ParseForLoop(p Parser) ast.Statement {
 	}
 }
 
-func ParseWhileLoop(p Parser) ast.Statement {
+func ParseWhileLoop(p Parser) *ast.WhileLoopStatement {
 	p.Consume()
 
 	condition := p.ParseExpression()
 	body := ParseBlock(p, true)
 
-	return ast.WhileLoopStatement{
+	return &ast.WhileLoopStatement{
 		Condition: condition,
 		Body:      body,
 		Loc:       condition.Location(),

@@ -5,7 +5,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseFunctionCall(p Parser, identifier tokens.Token) ast.Statement {
+func ParseFunctionCall(p Parser, identifier tokens.Token) *ast.FunctionCall {
 	p.Consume()
 
 	name := identifier.Value
@@ -23,7 +23,7 @@ func ParseFunctionCall(p Parser, identifier tokens.Token) ast.Statement {
 
 	p.Consume()
 
-	return ast.FunctionCall{
+	return &ast.FunctionCall{
 		Name:       name,
 		Parameters: parameters,
 	}

@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func ParseIf(p Parser) ast.Statement {
+func ParseIf(p Parser) *ast.IfStatement {
 	p.Consume()
 
 	condition := p.ParseExpression()
@@ -16,14 +16,14 @@ func ParseIf(p Parser) ast.Statement {
 	}
 
 	then_block := ParseBlock(p, true)
-	else_block := ast.BlockStatement{}
+	else_block := &ast.BlockStatement{}
 
 	if p.Current().Kind == tokens.Else {
 		p.Consume()
 		else_block = ParseBlock(p, true)
 	}
 
-	return ast.IfStatement{
+	return &ast.IfStatement{
 		Condition: condition,
 		Then:      then_block,
 		Else:      else_block,

@@ -5,14 +5,14 @@ import (
 	"blom/tokens"
 )
 
-func ParseReturn(p Parser) ast.Statement {
+func ParseReturn(p Parser) *ast.ReturnStatement {
 	p.Consume()
 
 	current := p.Current()
 	if current.Kind == tokens.Semicolon {
 		p.Consume()
 
-		return ast.ReturnStatement{
+		return &ast.ReturnStatement{
 			Value: nil,
 			Loc:   current.Location,
 		}
@@ -24,7 +24,7 @@ func ParseReturn(p Parser) ast.Statement {
 		panic("Expected semicolon")
 	}
 
-	return ast.ReturnStatement{
+	return &ast.ReturnStatement{
 		Value: value,
 		Loc:   value.Location(),
 	}

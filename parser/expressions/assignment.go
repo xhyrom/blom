@@ -5,13 +5,13 @@ import (
 	"blom/tokens"
 )
 
-func ParseAssignment(p Parser, token tokens.Token, redeclaration bool) ast.Statement {
+func ParseAssignment(p Parser, token tokens.Token, redeclaration bool) *ast.DeclarationStatement {
 	if redeclaration {
 		p.Consume()
 
 		value := p.ParseExpression()
 
-		return ast.DeclarationStatement{
+		return &ast.DeclarationStatement{
 			Name:          token.Value,
 			Value:         value,
 			Redeclaration: true,
@@ -26,7 +26,7 @@ func ParseAssignment(p Parser, token tokens.Token, redeclaration bool) ast.State
 
 	value := p.ParseExpression()
 
-	return ast.DeclarationStatement{
+	return &ast.DeclarationStatement{
 		Name:          name,
 		Value:         value,
 		Redeclaration: false,

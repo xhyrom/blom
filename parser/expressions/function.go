@@ -5,7 +5,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseFunction(p Parser) ast.Statement {
+func ParseFunction(p Parser) *ast.FunctionDeclaration {
 	p.Consume()
 
 	annotations := make([]ast.Annotation, 0)
@@ -55,7 +55,7 @@ func ParseFunction(p Parser) ast.Statement {
 		panic("Expected '{'")
 	}
 
-	fn := ast.FunctionDeclaration{
+	fn := &ast.FunctionDeclaration{
 		Name:        name.Value,
 		Arguments:   arguments,
 		Annotations: annotations,

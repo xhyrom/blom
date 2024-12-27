@@ -5,7 +5,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseBlock(p Parser, consumeFirst bool) ast.BlockStatement {
+func ParseBlock(p Parser, consumeFirst bool) *ast.BlockStatement {
 	if consumeFirst {
 		p.Consume()
 	}
@@ -20,7 +20,7 @@ func ParseBlock(p Parser, consumeFirst bool) ast.BlockStatement {
 	}
 
 	p.Consume()
-	return ast.BlockStatement{
+	return &ast.BlockStatement{
 		Body: body,
 		Loc:  current.Location,
 	}
