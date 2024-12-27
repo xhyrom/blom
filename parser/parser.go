@@ -2,6 +2,7 @@ package parser
 
 import (
 	"blom/ast"
+	"blom/debug"
 	"blom/lexer"
 	"blom/parser/expressions"
 	"blom/parser/statements"
@@ -43,7 +44,14 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 	}
 
 	for !p.IsEof() {
+		beforeLocation := p.Current().Location
+
 		stmt, _ := p.ParseStatement()
+		if _, ok := stmt.(*ast.FunctionDeclaration); !ok {
+			dbg := debug.NewSourceLocation(p.Source(), beforeLocation.Row, beforeLocation.Column)
+			dbg.ThrowError("Top-level statements must be function declarations.", true, debug.NewHint("Non-function declaration instead", ""))
+		}
+
 		prog.Body = append(prog.Body, stmt)
 	}
 

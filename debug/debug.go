@@ -101,7 +101,7 @@ func (s *SourceLocation) ThrowError(msg string, top bool, hints ...*Hint) {
 		fmt.Fprintf(os.Stderr, "^\n")
 	} else {
 		for _, hint := range hints {
-			if hint != nil && len(hint.Code) > 0 {
+			if hint != nil {
 				for i := uint64(startLine); i < s.Row-1; i++ {
 					fmt.Fprintf(os.Stderr, "%*d | %s\n", width, i+1, lines[i])
 				}
@@ -109,9 +109,15 @@ func (s *SourceLocation) ThrowError(msg string, top bool, hints ...*Hint) {
 				fmt.Fprintf(os.Stderr, "%*d | %s\x1b[32;1m%s\x1b[0m%s\n", width, s.Row, lines[s.Row-1][:s.Column-1], hint.Code, lines[s.Row-1][s.Column-1:])
 
 				fmt.Fprintf(os.Stderr, "%*c |%*c", width, ' ', s.Column, ' ')
-				fmt.Fprintf(os.Stderr, "\x1b[32;1m%s\x1b[0m\n", strings.Repeat("+", len(hint.Code)))
 
-				fmt.Fprintf(os.Stderr, "%*c\x1b[34;1mHint\x1b[0m: %s\n", n, ' ', hint.Msg)
+				if len(hint.Code) > 0 {
+					fmt.Fprintf(os.Stderr, "\x1b[32;1m%s\x1b[0m\n", strings.Repeat("+", len(hint.Code)))
+					fmt.Fprintf(os.Stderr, "%*c\x1b[34;1mHint\x1b[0m: %s\n", n, ' ', hint.Msg)
+
+				} else {
+					fmt.Fprintf(os.Stderr, "^")
+					fmt.Fprintf(os.Stderr, " \x1b[34;1mHint\x1b[0m: %s\n", hint.Msg)
+				}
 
 				if hint != hints[len(hints)-1] {
 					fmt.Fprintln(os.Stderr, "")
