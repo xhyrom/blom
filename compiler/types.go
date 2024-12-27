@@ -24,7 +24,7 @@ const (
 	Null
 )
 
-var types = []string{
+var humanTypes = []string{
 	UnsignedByte:     "u8",
 	UnsignedHalfword: "u16",
 	UnsignedWord:     "u32",
@@ -39,6 +39,23 @@ var types = []string{
 	Char:             "char",
 	Void:             "void",
 	Null:             "null",
+}
+
+var types = []string{
+	UnsignedByte:     "ub",
+	UnsignedHalfword: "uh",
+	UnsignedWord:     "uw",
+	UnsignedLong:     "ul",
+	Byte:             "b",
+	Halfword:         "h",
+	Boolean:          "bool",
+	Word:             "w",
+	Long:             "l",
+	Single:           "f",
+	Double:           "d",
+	Char:             "c",
+	Void:             "",
+	Null:             "",
 }
 
 var mapping = map[string]Type{
@@ -62,6 +79,10 @@ func ParseType(str string) (Type, error) {
 	}
 
 	return 0, errors.New(fmt.Sprintf("Unknown type \"%s\"", str))
+}
+
+func (t Type) Inspect() string {
+	return humanTypes[t]
 }
 
 func (t Type) String() string {

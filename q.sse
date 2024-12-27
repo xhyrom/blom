@@ -1,0 +1,14 @@
+function w $abc() {
+@start
+    %r = w add 7, 5
+    ret %r
+}
+
+export function w $main() {
+@start
+    %a =w call $abc()
+    call $printf(l $fmt, ..., w %a)
+    ret 0
+}
+
+data $fmt = { b "abc: %d\n", b 0 }

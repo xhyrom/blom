@@ -1,0 +1,8 @@
+fun abc() -> i32 {
+    return 7 + 5;
+}
+
+fun main() -> i32 {
+    i32 a = abc();
+    return 0;
+}
