@@ -1,30 +1,19 @@
-data $main.0 = { b "result: %d\n", b 0 }
-export function ub $main() {
+function w $abc(l %a.0) {
 @start
-    %a.addr.3 =l alloc8 4
-    %tmp.8 =w xor 2, -1
-    # ^ unary expression
-
-    %tmp.7 =w shr %tmp.8, 5
+    %tmp.3 =w add %a.0, 95
     # ^ binary expression
 
-    %tmp.6 =w and %tmp.7, 3
-    # ^ binary expression
+    ret %tmp.3
+    # ^ return statement
+}
+# ^ function declaration
 
-    %tmp.5 =w and %tmp.6, 1685478
-    # ^ binary expression
-
-    %tmp.4 =w shl %tmp.5, 55
-    # ^ binary expression
-
-    storew %tmp.4, %a.addr.3
-    %a.3 =w loadw %a.addr.3
-    # ^ declaration statement
-
-    %tmp.14 =w call $printf(l $main.0, ..., w %a.3)
+export function w $main() {
+@start
+    %tmp.10 =w call $abc(w 5)
     # ^ function call
 
-    ret 0
+    ret %tmp.10
     # ^ return statement
 }
 # ^ function declaration

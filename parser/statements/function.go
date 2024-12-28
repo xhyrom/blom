@@ -74,7 +74,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 
 	fn.Arguments = arguments
 
-	var returnType compiler.Type
+	var returnType compiler.Type = compiler.Void
 
 	if len(arguments) == 0 {
 		p.Consume()

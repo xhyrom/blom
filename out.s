@@ -1,20 +1,22 @@
-.data
-.balign 8
-main.0:
-	.ascii "result: %d\n"
-	.byte 0
-/* end data */
+.text
+abc:
+	pushq %rbp
+	movq %rsp, %rbp
+	movl %edi, %eax
+	addl $95, %eax
+	leave
+	ret
+.type abc, @function
+.size abc, .-abc
+/* end function abc */
 
 .text
 .globl main
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	movl $16777216, %esi
-	leaq main.0(%rip), %rdi
-	movl $0, %eax
-	callq printf
-	movl $0, %eax
+	movl $5, %edi
+	callq abc
 	leave
 	ret
 .type main, @function
