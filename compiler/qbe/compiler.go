@@ -72,9 +72,9 @@ func (c *Compiler) CompileBlock(block ast.BlockStatement, labels bool) ([]string
 		compiled, _ := c.CompileStatement(stmt, nil)
 		for _, compiled := range compiled {
 			if strings.HasPrefix(compiled, "@") {
-				result = append(result, compiled+"\n")
+				result = append(result, strings.TrimSpace(compiled)+"\n")
 			} else {
-				result = append(result, indentation+compiled+"\n")
+				result = append(result, indentation+strings.TrimSpace(compiled)+"\n")
 			}
 		}
 	}
