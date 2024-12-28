@@ -147,6 +147,4 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, expectedType *compiler.T
 	}
 
 	panic(fmt.Sprintf("Unknown statement: %T\n", stmt))
-
-	return []string{}, nil
 }

@@ -12,6 +12,11 @@ import (
 func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.FunctionCall) objects.Object {
 	function := environment.FindFunction(call.Name)
 
+	if function == nil {
+		dbg := debug.NewSourceLocation(interpreter.Source(), call.Loc.Row, call.Loc.Column)
+		dbg.ThrowError(fmt.Sprintf("Function '%s' is not defined", call.Name), true)
+	}
+
 	if function.IsNative() {
 		return nativeInterpretFunctionCall(interpreter, environment, call)
 	}
@@ -66,6 +71,10 @@ func interpretPrintf(interpreter Interpreter, environment *env.Environment[objec
 	}
 
 	format = strings.ReplaceAll(format, `\n`, "\n")
+	format = strings.ReplaceAll(format, `\t`, "\t")
+	format = strings.ReplaceAll(format, `\"`, "\"")
+	format = strings.ReplaceAll(format, `\\`, "\\")
+
 	fmt.Printf(format, args...)
 
 	return nil

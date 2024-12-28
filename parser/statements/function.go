@@ -74,7 +74,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 
 	fn.Arguments = arguments
 
-	var returnType compiler.Type = compiler.Void
+	var returnType compiler.Type = compiler.Word
 
 	if len(arguments) == 0 {
 		p.Consume()
@@ -132,6 +132,24 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 	}
 
 	block := expressions.ParseBlock(p)
+
+	// TOOD: move to analyzer
+	hasReturn := false
+	for _, stmt := range block.Body {
+		if stmt.Kind() == ast.ReturnNode {
+			hasReturn = true
+			break
+		}
+	}
+
+	if !hasReturn {
+		block.Body = append(block.Body, &ast.ReturnStatement{
+			Loc: block.Loc,
+			Value: &ast.IntLiteralStatement{
+				Value: 0,
+			},
+		})
+	}
 
 	fn.Body = block
 	return &fn
