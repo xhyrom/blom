@@ -139,7 +139,7 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, expectedType *compiler.T
 	case *ast.UnaryExpression:
 		return c.CompileUnaryExpression(stmt, expectedType)
 	case *ast.IfStatement:
-		return c.CompileIfStatement(stmt), nil
+		return c.CompileIfStatement(stmt)
 	case *ast.CompileTimeFunctionCall:
 		return c.CompileCompileTimeFunctionCall(stmt)
 	}

@@ -4,8 +4,8 @@ import "blom/tokens"
 
 type IfStatement struct {
 	Condition Expression
-	Then      Statement
-	Else      Statement
+	Then      *BlockStatement
+	Else      *BlockStatement
 	Loc       tokens.Location
 }
 
@@ -23,7 +23,7 @@ func (i *IfStatement) SetLocation(row uint64, column uint64) {
 }
 
 func (i *IfStatement) HasElse() bool {
-	if i.Else.(*BlockStatement) != nil {
+	if i.Else != nil {
 		return true
 	}
 

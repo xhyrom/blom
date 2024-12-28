@@ -5,6 +5,7 @@ import (
 	"blom/compiler"
 	"blom/debug"
 	"fmt"
+	"strings"
 )
 
 type Variable struct {
@@ -38,16 +39,33 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement) (
 			dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
 			dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", original.Type.Inspect(), statIdentifier.Type.Inspect()), true)
 		}
-	} else if stmtType != statIdentifier.Type {
+	} else if stmt.Value.Kind() != ast.IfNode && stmtType != statIdentifier.Type {
 		dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
 		dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", stmtType.Inspect(), statIdentifier.Type.Inspect()), true)
 	}
 
-	for _, stat := range stat {
-		result = append(result, stat)
-	}
+	if stmt.Value.Kind() == ast.IfNode {
+		for _, stat := range stat {
+			stat = strings.TrimSpace(stat)
 
-	result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmtType), c.StoreVal(statIdentifier), stmt.Name, id))
+			if strings.HasPrefix(stat, "ret") {
+				returnValue := strings.Split(stat, " ")[1]
+				stat = fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmtType), returnValue, stmt.Name, id)
+			}
+
+			result = append(result, stat)
+
+			if strings.HasPrefix(stat, "ret") {
+				result = append(result, fmt.Sprintf("jnz @end.%d", statIdentifier.Id))
+			}
+		}
+	} else {
+		for _, stat := range stat {
+			result = append(result, stat)
+		}
+
+		result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmtType), c.StoreVal(statIdentifier), stmt.Name, id))
+	}
 
 	name := fmt.Sprintf("%%%s.%d", stmt.Name, id)
 	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmtType), stmtType, stmt.Name, id))

@@ -7,7 +7,7 @@ import (
 	"github.com/gookit/goutil/dump"
 )
 
-func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) []string {
+func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) ([]string, *Additional) {
 	dump.P(stmt)
 
 	result := make([]string, 0)
@@ -30,18 +30,42 @@ func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) []string {
 	// if block
 	result = append(result, fmt.Sprintf("@if.%d", id))
 
-	thenBlock, _ := c.CompileStatement(stmt.Then, nil)
+	thenBlock, _ := c.CompileBlock(*stmt.Then, false)
 	for _, data := range thenBlock {
 		result = append(result, data)
+	}
+
+	// check if result doesn't contain return statement
+	containsRet := false
+	for _, data := range stmt.Then.Body {
+		if data.Kind() == ast.ReturnNode {
+			containsRet = true
+		}
+	}
+
+	if !containsRet {
+		result = append(result, fmt.Sprintf("jmp @end.%d", id))
 	}
 
 	// else block
 	if stmt.HasElse() {
 		result = append(result, fmt.Sprintf("@else.%d", id))
 
-		elseBlock, _ := c.CompileStatement(stmt.Else, nil)
+		elseBlock, _ := c.CompileBlock(*stmt.Else, false)
 		for _, data := range elseBlock {
 			result = append(result, data)
+		}
+
+		// check if result doesn't contain return statement
+		containsRet := false
+		for _, data := range stmt.Else.Body {
+			if data.Kind() == ast.ReturnNode {
+				containsRet = true
+			}
+		}
+
+		if !containsRet {
+			result = append(result, fmt.Sprintf("jmp @end.%d", id))
 		}
 	}
 
@@ -50,5 +74,7 @@ func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) []string {
 
 	result = append(result, "# ^ if statement")
 
-	return result
+	return result, &Additional{
+		Id: id,
+	}
 }

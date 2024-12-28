@@ -1,7 +1,7 @@
 .data
 .balign 8
 main.0:
-	.ascii "inner: %d\n"
+	.ascii "here\n"
 	.byte 0
 /* end data */
 
@@ -17,18 +17,14 @@ main.1:
 main:
 	pushq %rbp
 	movq %rsp, %rbp
+	cmpl $11, %edi
 	subq $16, %rsp
 	movq %rsp, %rax
-	movl $5, (%rax)
-	movl $5, %esi
+	movl $1244, (%rax)
 	leaq main.0(%rip), %rdi
 	movl $0, %eax
 	callq printf
-	movl $5, %esi
-	leaq main.1(%rip), %rdi
-	movl $0, %eax
-	callq printf
-	movl $0, %eax
+	movl $4294967295, %eax
 	movq %rbp, %rsp
 	subq $0, %rsp
 	leave

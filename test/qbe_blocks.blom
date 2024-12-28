@@ -6,6 +6,11 @@ fun main() -> i32 {
     {
         i32 a = 5;
 
+        {
+            i32 a = 3;
+            printf("innermost: %d\n", a)
+        }
+
         printf("inner: %d\n", a)
     }
 
