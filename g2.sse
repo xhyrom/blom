@@ -14,17 +14,14 @@ export function w $main() {
     # ^ function call
 
     %a.addr.8 =l alloc8 8
-    %tmp.10 =d div d_93, d_10
+    %tmp.9 =d div d_9, d_1
     # ^ float literal statement
-
-    %tmp.9 =d add %tmp.10, d_1
-    # ^ binary expression
 
     stored %tmp.9, %a.addr.8
     %a.8 =d loadd %a.addr.8
     # ^ declaration statement
 
-    %tmp.13 =w call $printf(l $main.1, ..., d %a.8)
+    %tmp.10 =w call $printf(l $main.1, ..., d %a.8)
     # ^ function call
 
     ret 0

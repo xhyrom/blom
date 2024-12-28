@@ -23,7 +23,7 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent in
 		result = append(result, r)
 	}
 
-	exp := fmt.Sprintf("%s =%s ", name, "l")
+	exp := fmt.Sprintf("%s =%s ", name, c.StoreType(leftVar.Type))
 
 	switch stmt.Operator {
 	case tokens.Plus:
@@ -31,18 +31,18 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent in
 	case tokens.Minus:
 		exp += "sub"
 	case tokens.Equals:
-		exp += "ceql"
+		exp += "ceq" + c.StoreType(leftVar.Type).String()
 	case tokens.LessThan:
-		exp += "cltd"
+		exp += "clt" + c.StoreType(leftVar.Type).String()
 	case tokens.LessThanOrEqual:
-		exp += "cslel"
+		exp += "csle" + c.StoreType(leftVar.Type).String()
 	case tokens.GreaterThan:
-		exp += "csgtl"
+		exp += "csgt" + c.StoreType(leftVar.Type).String()
 	case tokens.GreaterThanOrEqual:
-		exp += "csgel"
+		exp += "csge" + c.StoreType(leftVar.Type).String()
 	}
 
-	exp += " " + leftVar.Name + ", " + rightVar.Name
+	exp += " " + c.StoreVal(leftVar) + ", " + c.StoreVal(rightVar)
 
 	result = append(result, exp)
 

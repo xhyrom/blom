@@ -5,8 +5,7 @@ fun main() -> i32 {
 
     printf("first: %f\n", a)
 
-    a = 9.4;
-
+    a = 9.3 + @cast(1, f64);
 
     printf("second: %f\n", a)
 

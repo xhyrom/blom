@@ -47,7 +47,7 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, i
 		result = append(result, stat)
 	}
 
-	result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmtType), statIdentifier.Name, stmt.Name, id))
+	result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmtType), c.StoreVal(statIdentifier), stmt.Name, id))
 
 	name := fmt.Sprintf("%%%s.%d", stmt.Name, id)
 	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmtType), stmtType, stmt.Name, id))
@@ -63,6 +63,17 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, i
 		Name: name,
 		Type: stmtType,
 	}
+}
+
+func (c *Compiler) StoreVal(additional *Additional) string {
+	if additional.Raw {
+		switch additional.Type {
+		case compiler.Double, compiler.Single:
+			return fmt.Sprintf("d_%s", additional.Name)
+		}
+	}
+
+	return additional.Name
 }
 
 func (c *Compiler) AllocSize(t compiler.Type) int {

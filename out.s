@@ -36,8 +36,8 @@ main:
 .section .rodata
 .p2align 3
 .Lfp0:
-	.int -858993459
-	.int 1076022476 /* 9.400000 */
+	.int -1717986918
+	.int 1076140441 /* 10.300000 */
 
 .section .rodata
 .p2align 3

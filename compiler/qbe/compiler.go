@@ -20,6 +20,7 @@ type Compiler struct {
 type Additional struct {
 	Name string
 	Type compiler.Type
+	Raw  bool
 }
 
 func (a *Additional) String() string {
@@ -79,6 +80,7 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType
 		return []string{}, &Additional{
 			Name: val,
 			Type: compiler.Word,
+			Raw:  true,
 		}
 	case *ast.FloatLiteralStatement:
 		return c.CompileFloatLiteralStatement(stmt, indent, expectedType)
@@ -117,6 +119,8 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType
 		return c.CompileBinaryExpression(stmt, indent, expectedType)
 	case *ast.IfStatement:
 		return c.CompileIfStatement(stmt, indent), nil
+	case *ast.CompileTimeFunctionCall:
+		return c.CompileCompileTimeFunctionCall(stmt, indent)
 	}
 
 	fmt.Printf("Unknown statement: %T\n", stmt)
