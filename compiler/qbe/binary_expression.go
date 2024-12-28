@@ -28,6 +28,18 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent in
 	switch stmt.Operator {
 	case tokens.Plus:
 		exp += "add"
+	case tokens.Minus:
+		exp += "sub"
+	case tokens.Equals:
+		exp += "ceql"
+	case tokens.LessThan:
+		exp += "cltd"
+	case tokens.LessThanOrEqual:
+		exp += "cslel"
+	case tokens.GreaterThan:
+		exp += "csgtl"
+	case tokens.GreaterThanOrEqual:
+		exp += "csgel"
 	}
 
 	exp += " " + leftVar.Name + ", " + rightVar.Name

@@ -59,7 +59,11 @@ func (c *Compiler) CompileBlock(block ast.BlockStatement, indent int) []string {
 	for _, stmt := range block.Body {
 		compiled, _ := c.CompileStatement(stmt, indent, nil)
 		for _, compiled := range compiled {
-			result = append(result, indentation+compiled+"\n")
+			if strings.HasPrefix(compiled, "@") {
+				result = append(result, compiled+"\n")
+			} else {
+				result = append(result, indentation+compiled+"\n")
+			}
 		}
 	}
 
@@ -111,6 +115,8 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType
 		return c.CompileBlock(*stmt, indent+1), nil
 	case *ast.BinaryExpression:
 		return c.CompileBinaryExpression(stmt, indent, expectedType)
+	case *ast.IfStatement:
+		return c.CompileIfStatement(stmt, indent), nil
 	}
 
 	fmt.Printf("Unknown statement: %T\n", stmt)

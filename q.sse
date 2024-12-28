@@ -1,50 +1,58 @@
-data $main.0 = { b "%d - %d\n", b 0 }
-data $main.1 = { b "xdd: %f\n", b 0 }
-data $main.2 = { b "gumi %d hm?\n", b 0 }
-function l $ahoj(l %a.0) {
+data $main.0 = { b "fib(50) = %d\n", b 0 }
+function l $fib(l %n.0) {
 @start
-    %tmp.4 =l add %a.0, 9
+    %tmp.4 =l cslel %n.0, 1
     # ^ binary expression
 
-    ret %tmp.4
+    jnz %tmp.4, @if.6, @else.6
+@if.6
+    ret %n.0
+
+    # ^ return statement
+
+@else.6
+    %tmp.15 =l sub %n.0, 1
+
+    # ^ binary expression
+
+
+    %tmp.14 =l call $fib(l %tmp.15)
+
+    # ^ function call
+
+
+    %tmp.19 =l sub %n.0, 2
+
+    # ^ binary expression
+
+
+    %tmp.18 =l call $fib(l %tmp.19)
+
+    # ^ function call
+
+
+    %tmp.13 =l add %tmp.14, %tmp.18
+
+    # ^ binary expression
+
+
+    ret %tmp.13
+
+    # ^ return statement
+
+@end.6
+    # ^ if statement
+    ret 0
     # ^ return statement
 }
 # ^ function declaration
 
-export function w $main() {
+export function l $main() {
 @start
-    %xdd.addr.8 =l alloc8 4
-    %tmp.9 =s div s_58, s_10
-    # ^ float literal statement
-
-    stores %tmp.9, %xdd.addr.8
-    %xdd.8 =s loads %xdd.addr.8
-    # ^ declaration statement
-
-    %lol.addr.10 =l alloc8 8
-    %tmp.11 =l call $ahoj(w 9)
+    %tmp.27 =l call $fib(w 40)
     # ^ function call
 
-    storel %tmp.11, %lol.addr.10
-    %lol.10 =l loadl %lol.addr.10
-    # ^ declaration statement
-
-    %tmp.15 =l add 5, 7
-    # ^ binary expression
-
-    %tmp.13 =w call $printf(l $main.0, ..., w %tmp.15, l %lol.10)
-    # ^ function call
-
-    %tmp.21 =d div d_58, d_10
-    # ^ float literal statement
-
-    %tmp.19 =w call $printf(l $main.1, ..., d %tmp.21)
-    # ^ function call
-
-    %tmp.24 =l call $ahoj(w 9)
-    # ^ function call
-
-    %tmp.22 =w call $printf(l $main.2, ..., l %tmp.24)
+    %tmp.25 =w call $printf(l $main.0, ..., l %tmp.27)
     # ^ function call
 
     ret 0
