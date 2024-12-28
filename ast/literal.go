@@ -57,7 +57,7 @@ func (l StringLiteralStatement) SetLocation(row uint64, column uint64) {
 }
 
 type IntLiteralStatement struct {
-	Value int32
+	Value int64
 	Loc   tokens.Location
 }
 
@@ -75,7 +75,7 @@ func (l IntLiteralStatement) SetLocation(row uint64, column uint64) {
 }
 
 type FloatLiteralStatement struct {
-	Value float32
+	Value float64
 	Loc   tokens.Location
 }
 

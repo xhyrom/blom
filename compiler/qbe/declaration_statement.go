@@ -4,7 +4,6 @@ import (
 	"blom/ast"
 	"blom/compiler"
 	"fmt"
-	"strings"
 )
 
 type Variable struct {
@@ -12,39 +11,35 @@ type Variable struct {
 	id          int
 }
 
-func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, indent int) string {
-	indentation := strings.Repeat("    ", indent-1)
-
+func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, indent int) ([]string, string) {
 	env := c.Environment
 
-	if stmt.Value.Kind() == ast.BinaryExpressionNode || stmt.Value.Kind() == ast.FunctionCallNode || stmt.Value.Kind() == ast.FloatLiteralNode {
-		result := fmt.Sprintf("%%%s.addr.%d =l alloc8 %d\n", stmt.Name, env.TempCounter, c.AllocSize(stmt.Type))
-		result += fmt.Sprintf("%s%s\n", indentation, c.CompileStatement(stmt.Value, indent))
-		result += fmt.Sprintf("%sstore%s %%tmp.%d, %%%s.addr.%d\n", indentation, c.StoreType(stmt.Type), env.TempCounter, stmt.Name, env.TempCounter)
-		result += fmt.Sprintf("%s%%%s.%d =%s load%s %%%s.addr.%d", indentation, stmt.Name, env.TempCounter, c.StoreType(stmt.Type), stmt.Type, stmt.Name, env.TempCounter)
+	result := make([]string, 0)
 
-		env.Set(stmt.Name, &Variable{
-			declaration: stmt,
-			id:          env.TempCounter,
-		})
+	id := env.TempCounter
 
-		env.TempCounter += 1
+	result = append(result, fmt.Sprintf("%%%s.addr.%d =l alloc8 %d", stmt.Name, id, c.AllocSize(stmt.Type)))
+	env.TempCounter += 1
 
-		return result
+	stat, statIdentifier := c.CompileStatement(stmt.Value, indent)
+
+	for _, stat := range stat {
+		result = append(result, stat)
 	}
 
-	result := fmt.Sprintf("%%%s.addr.%d =l alloc8 %d\n", stmt.Name, env.TempCounter, c.AllocSize(stmt.Type))
-	result += fmt.Sprintf("%sstore%s %s, %%%s.addr.%d\n", indentation, c.StoreType(stmt.Type), c.CompileStatement(stmt.Value, indent), stmt.Name, env.TempCounter)
-	result += fmt.Sprintf("%s%%%s.%d =%s load%s %%%s.addr.%d", indentation, stmt.Name, env.TempCounter, c.StoreType(stmt.Type), stmt.Type, stmt.Name, env.TempCounter)
+	result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmt.Type), statIdentifier, stmt.Name, id))
+
+	name := fmt.Sprintf("%%%s.%d", stmt.Name, id)
+	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmt.Type), stmt.Type, stmt.Name, id))
 
 	env.Set(stmt.Name, &Variable{
 		declaration: stmt,
-		id:          env.TempCounter,
+		id:          id,
 	})
 
-	env.TempCounter += 1
+	result = append(result, "# ^ declaration statement\n")
 
-	return result
+	return result, name
 }
 
 func (c *Compiler) AllocSize(t compiler.Type) int {

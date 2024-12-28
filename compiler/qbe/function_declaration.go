@@ -4,11 +4,11 @@ import (
 	"blom/ast"
 )
 
-func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, ident int) string {
+func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, ident int) []string {
 	c.Environment.SetFunction(stmt.Name, stmt)
 
 	if stmt.IsNative() {
-		return ""
+		return []string{}
 	}
 
 	c.Environment.CurrentFunction = stmt
@@ -32,9 +32,12 @@ func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, ide
 	result += ") {\n"
 	result += "@start\n"
 
-	result += c.CompileBlock(*stmt.Body, ident)
+	block := c.CompileBlock(*stmt.Body, ident)
+	for _, b := range block {
+		result += b
+	}
 
-	result += "}\n"
+	result += "}"
 
-	return result
+	return []string{result, "# ^ function declaration\n"}
 }

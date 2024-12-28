@@ -54,7 +54,7 @@ var types = []string{
 	Boolean:          "bool",
 	Word:             "w",
 	Long:             "l",
-	Single:           "f",
+	Single:           "s",
 	Double:           "d",
 	Char:             "c",
 	String:           "l",
