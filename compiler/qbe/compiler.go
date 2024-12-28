@@ -2,6 +2,7 @@ package qbe
 
 import (
 	"blom/ast"
+	"blom/compiler"
 	"blom/env"
 	"fmt"
 	"strconv"
@@ -13,6 +14,15 @@ type Compiler struct {
 	data        []string
 	dataCounter int
 	Environment *env.Environment[*Variable]
+}
+
+type Additional struct {
+	Name string
+	Type compiler.Type
+}
+
+func (a *Additional) String() string {
+	return fmt.Sprintf("%s %s", a.Type, a.Name)
 }
 
 func New(file string) Compiler {
@@ -46,7 +56,7 @@ func (c *Compiler) CompileBlock(block ast.BlockStatement, indent int) []string {
 	indentation := strings.Repeat("    ", indent)
 
 	for _, stmt := range block.Body {
-		compiled, _ := c.CompileStatement(stmt, indent)
+		compiled, _ := c.CompileStatement(stmt, indent, nil)
 		for _, compiled := range compiled {
 			result = append(result, indentation+compiled+"\n")
 		}
@@ -55,39 +65,50 @@ func (c *Compiler) CompileBlock(block ast.BlockStatement, indent int) []string {
 	return result
 }
 
-func (c *Compiler) CompileStatement(stmt ast.Statement, indent int) ([]string, string) {
+func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType *compiler.Type) ([]string, *Additional) {
+	c.Environment.TempCounter += 1
+
 	switch stmt := stmt.(type) {
 	case *ast.IntLiteralStatement:
 		val := strconv.FormatInt(int64(stmt.Value), 10)
-		return []string{}, fmt.Sprintf("w %s", val)
+		return []string{}, &Additional{
+			Name: val,
+			Type: compiler.Word,
+		}
 	case *ast.FloatLiteralStatement:
-		return c.CompileFloatLiteralStatement(stmt, indent)
+		return c.CompileFloatLiteralStatement(stmt, indent, expectedType)
 	case *ast.StringLiteralStatement:
 		id := c.dataCounter
 
 		c.data = append(c.data, fmt.Sprintf("data $%s.%d = { b \"%s\", b 0 }", c.Environment.CurrentFunction.Name, id, stmt.Value))
 		c.dataCounter += 1
 
-		return []string{}, fmt.Sprintf("l $%s.%d", c.Environment.CurrentFunction.Name, id)
+		return []string{}, &Additional{
+			Name: fmt.Sprintf("$%s.%d", c.Environment.CurrentFunction.Name, id),
+			Type: compiler.String,
+		} //fmt.Sprintf("l $%s.%d", c.Environment.CurrentFunction.Name, id)
 	case *ast.DeclarationStatement:
 		return c.CompileDeclarationStatement(stmt, indent)
 	case *ast.IdentifierLiteralStatement:
 		variable := c.Environment.Get(stmt.Value)
 
-		return []string{}, fmt.Sprintf("%s %%%s.%d", c.StoreType(variable.declaration.Type), stmt.Value, variable.id)
+		return []string{}, &Additional{
+			Name: fmt.Sprintf("%%%s.%d", stmt.Value, variable.id),
+			Type: variable.declaration.Type,
+		}
 	case *ast.FunctionCall:
-		return c.CompileFunctionCall(stmt, indent)
+		return c.CompileFunctionCall(stmt, indent, expectedType)
 	case *ast.FunctionDeclaration:
-		return c.CompileFunctionDeclaration(stmt, indent+1), ""
+		return c.CompileFunctionDeclaration(stmt, indent+1), nil
 	case *ast.ReturnStatement:
-		return c.CompileReturnStatement(stmt, indent)
+		return c.CompileReturnStatement(stmt, indent, expectedType)
 	case *ast.BlockStatement:
-		return c.CompileBlock(*stmt, indent+1), ""
+		return c.CompileBlock(*stmt, indent+1), nil
 	case *ast.BinaryExpression:
-		return c.CompileBinaryExpression(stmt, indent)
+		return c.CompileBinaryExpression(stmt, indent, expectedType)
 	}
 
 	fmt.Printf("Unknown statement: %T\n", stmt)
 
-	return []string{}, ""
+	return []string{}, nil
 }

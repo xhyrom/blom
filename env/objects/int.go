@@ -6,7 +6,7 @@ import (
 )
 
 type IntObject struct {
-	Value int32
+	Value int64
 }
 
 func (i *IntObject) Type() compiler.Type {

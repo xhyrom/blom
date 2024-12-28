@@ -3,6 +3,7 @@ package qbe
 import (
 	"blom/ast"
 	"blom/compiler"
+	"blom/debug"
 	"fmt"
 )
 
@@ -11,7 +12,7 @@ type Variable struct {
 	id          int
 }
 
-func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, indent int) ([]string, string) {
+func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, indent int) ([]string, *Additional) {
 	env := c.Environment
 
 	result := make([]string, 0)
@@ -19,15 +20,19 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, i
 	id := env.TempCounter
 
 	result = append(result, fmt.Sprintf("%%%s.addr.%d =l alloc8 %d", stmt.Name, id, c.AllocSize(stmt.Type)))
-	env.TempCounter += 1
 
-	stat, statIdentifier := c.CompileStatement(stmt.Value, indent)
+	stat, statIdentifier := c.CompileStatement(stmt.Value, indent, &stmt.Type)
+
+	if stmt.Type != statIdentifier.Type {
+		dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
+		dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", stmt.Type.Inspect(), statIdentifier.Type.Inspect()), true)
+	}
 
 	for _, stat := range stat {
 		result = append(result, stat)
 	}
 
-	result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmt.Type), statIdentifier, stmt.Name, id))
+	result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmt.Type), statIdentifier.Name, stmt.Name, id))
 
 	name := fmt.Sprintf("%%%s.%d", stmt.Name, id)
 	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmt.Type), stmt.Type, stmt.Name, id))
@@ -39,7 +44,10 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, i
 
 	result = append(result, "# ^ declaration statement\n")
 
-	return result, name
+	return result, &Additional{
+		Name: name,
+		Type: stmt.Type,
+	}
 }
 
 func (c *Compiler) AllocSize(t compiler.Type) int {

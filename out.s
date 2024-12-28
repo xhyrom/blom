@@ -15,7 +15,14 @@ main.1:
 .data
 .balign 8
 main.2:
-	.ascii "gumi %f hm?\n"
+	.ascii "xdd: %f\n"
+	.byte 0
+/* end data */
+
+.data
+.balign 8
+main.3:
+	.ascii "gumi %s hm?\n"
 	.byte 0
 /* end data */
 
@@ -45,6 +52,11 @@ main:
 	leaq main.2(%rip), %rdi
 	movl $1, %eax
 	callq printf
+	callq ahoj
+	movq %rax, %rsi
+	leaq main.3(%rip), %rdi
+	movl $0, %eax
+	callq printf
 	movl $0, %eax
 	leave
 	ret
@@ -56,7 +68,7 @@ main:
 .section .rodata
 .p2align 3
 .Lfp0:
-	.int -1717986918
-	.int 1075157401 /* 5.400000 */
+	.int 858993459
+	.int 1075262259 /* 5.800000 */
 
 .section .note.GNU-stack,"",@progbits

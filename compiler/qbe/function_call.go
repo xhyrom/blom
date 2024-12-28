@@ -2,11 +2,12 @@ package qbe
 
 import (
 	"blom/ast"
+	"blom/compiler"
 	"blom/debug"
 	"fmt"
 )
 
-func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int) ([]string, string) {
+func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int, expectedType *compiler.Type) ([]string, *Additional) {
 	function := c.Environment.GetFunction(stmt.Name)
 
 	if function == nil {
@@ -15,7 +16,6 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int) ([]str
 	}
 
 	name := fmt.Sprintf("%%tmp.%d", c.Environment.TempCounter)
-	c.Environment.TempCounter += 1
 
 	result := make([]string, 0)
 	callResult := fmt.Sprintf("%s =%s call $%s(", name, c.StoreType(function.ReturnType), stmt.Name)
@@ -27,13 +27,13 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int) ([]str
 
 		param := stmt.Parameters[i]
 
-		stat, identifier := c.CompileStatement(param, ident)
+		stat, identifier := c.CompileStatement(param, ident, expectedType)
 
 		for _, s := range stat {
 			result = append(result, s)
 		}
 
-		callResult += identifier
+		callResult += identifier.String()
 	}
 
 	if function.Variadic {
@@ -50,13 +50,13 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int) ([]str
 
 			param := stmt.Parameters[i]
 
-			stat, identifier := c.CompileStatement(param, ident)
+			stat, identifier := c.CompileStatement(param, ident, expectedType)
 
 			for _, s := range stat {
 				result = append(result, s)
 			}
 
-			callResult += identifier
+			callResult += identifier.String()
 		}
 	}
 
@@ -66,5 +66,8 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int) ([]str
 
 	result = append(result, "# ^ function call\n")
 
-	return result, name
+	return result, &Additional{
+		Name: name,
+		Type: function.ReturnType,
+	} //fmt.Sprintf("%s %s", c.StoreType(function.ReturnType), name)
 }

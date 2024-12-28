@@ -69,21 +69,21 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 		case compiler.Single:
 			switch v := value.(type) {
 			case int64:
-				return &objects.FloatObject{Value: float32(v)}
+				return &objects.FloatObject{Value: float64(v)}
 			case int32:
-				return &objects.FloatObject{Value: float32(v)}
+				return &objects.FloatObject{Value: float64(v)}
 			case int16:
-				return &objects.FloatObject{Value: float32(v)}
+				return &objects.FloatObject{Value: float64(v)}
 			case int8:
-				return &objects.FloatObject{Value: float32(v)}
+				return &objects.FloatObject{Value: float64(v)}
 			case uint64:
-				return &objects.FloatObject{Value: float32(v)}
+				return &objects.FloatObject{Value: float64(v)}
 			case uint32:
-				return &objects.FloatObject{Value: float32(v)}
+				return &objects.FloatObject{Value: float64(v)}
 			case uint16:
-				return &objects.FloatObject{Value: float32(v)}
+				return &objects.FloatObject{Value: float64(v)}
 			case uint8:
-				return &objects.FloatObject{Value: float32(v)}
+				return &objects.FloatObject{Value: float64(v)}
 			}
 		case compiler.Long:
 			switch v := value.(type) {
@@ -107,21 +107,21 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 		case compiler.Word:
 			switch v := value.(type) {
 			case int64:
-				return &objects.IntObject{Value: int32(v)}
+				return &objects.IntObject{Value: int64(v)}
 			case int32:
-				return &objects.IntObject{Value: int32(v)}
+				return &objects.IntObject{Value: int64(v)}
 			case int16:
-				return &objects.IntObject{Value: int32(v)}
+				return &objects.IntObject{Value: int64(v)}
 			case int8:
-				return &objects.IntObject{Value: int32(v)}
+				return &objects.IntObject{Value: int64(v)}
 			case uint64:
-				return &objects.IntObject{Value: int32(v)}
+				return &objects.IntObject{Value: int64(v)}
 			case uint32:
-				return &objects.IntObject{Value: int32(v)}
+				return &objects.IntObject{Value: int64(v)}
 			case uint16:
-				return &objects.IntObject{Value: int32(v)}
+				return &objects.IntObject{Value: int64(v)}
 			case uint8:
-				return &objects.IntObject{Value: int32(v)}
+				return &objects.IntObject{Value: int64(v)}
 			}
 		case compiler.Halfword:
 			switch v := value.(type) {

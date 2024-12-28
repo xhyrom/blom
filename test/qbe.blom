@@ -5,10 +5,11 @@ fun ahoj() -> string {
 }
 
 fun main() -> i32 {
-    f64 xdd = 5.4;
+    f32 xdd = 5.8;
     string lol = ahoj();
 
     printf("%d - %s\n", 5 + 7, lol)
-    printf("gumi %f hm?\n", xdd)
+    printf("xdd: %f\n", 5.8)
+    printf("gumi %s hm?\n", ahoj())
     return 0;
 }

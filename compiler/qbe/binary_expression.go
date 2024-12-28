@@ -2,16 +2,16 @@ package qbe
 
 import (
 	"blom/ast"
+	"blom/compiler"
 	"blom/tokens"
 	"fmt"
 )
 
-func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent int) ([]string, string) {
+func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent int, expectedType *compiler.Type) ([]string, *Additional) {
 	name := fmt.Sprintf("%%tmp.%d", c.Environment.TempCounter)
-	c.Environment.TempCounter += 1
 
-	left, leftVar := c.CompileStatement(stmt.Left, indent)
-	right, rightVar := c.CompileStatement(stmt.Right, indent)
+	left, leftVar := c.CompileStatement(stmt.Left, indent, expectedType)
+	right, rightVar := c.CompileStatement(stmt.Right, indent, expectedType)
 
 	result := make([]string, 0)
 
@@ -30,11 +30,14 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent in
 		exp += "add"
 	}
 
-	exp += " " + leftVar[2:] + ", " + rightVar[2:]
+	exp += " " + leftVar.Name + ", " + rightVar.Name
 
 	result = append(result, exp)
 
 	result = append(result, "# ^ binary expression\n")
 
-	return result, fmt.Sprintf("l %s", name)
+	return result, &Additional{
+		Name: name,
+		Type: leftVar.Type,
+	} //fmt.Sprintf("l %s", name)
 }
