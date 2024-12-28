@@ -40,6 +40,18 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent in
 		exp += "mul"
 	case tokens.Slash:
 		exp += "div"
+	case tokens.PercentSign:
+		exp += "rem"
+	case tokens.Ampersand:
+		exp += "and"
+	case tokens.VerticalLine:
+		exp += "or"
+	case tokens.CircumflexAccent:
+		exp += "xor"
+	case tokens.DoubleLessThan:
+		exp += "shl"
+	case tokens.DoubleGreaterThan:
+		exp += "shr"
 	case tokens.Equals:
 		exp += "ceq" + c.StoreType(leftVar.Type).String()
 	case tokens.LessThan:
