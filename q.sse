@@ -1,48 +1,50 @@
-data $ahoj.0 = { b "Guten Tag!", b 0 }
-data $main.1 = { b "%d - %s\n", b 0 }
-data $main.2 = { b "xdd: %f\n", b 0 }
-data $main.3 = { b "gumi %s hm?\n", b 0 }
-function l $ahoj() {
+data $main.0 = { b "%d - %d\n", b 0 }
+data $main.1 = { b "xdd: %f\n", b 0 }
+data $main.2 = { b "gumi %d hm?\n", b 0 }
+function l $ahoj(l %a.0) {
 @start
-    ret $ahoj.0
+    %tmp.4 =l add %a.0, 9
+    # ^ binary expression
+
+    ret %tmp.4
     # ^ return statement
 }
 # ^ function declaration
 
 export function w $main() {
 @start
-    %xdd.addr.6 =l alloc8 4
-    %tmp.7 =s div s_58, s_10
+    %xdd.addr.8 =l alloc8 4
+    %tmp.9 =s div s_58, s_10
     # ^ float literal statement
 
-    stores %tmp.7, %xdd.addr.6
-    %xdd.6 =s loads %xdd.addr.6
+    stores %tmp.9, %xdd.addr.8
+    %xdd.8 =s loads %xdd.addr.8
     # ^ declaration statement
 
-    %lol.addr.8 =l alloc8 1
-    %tmp.9 =l call $ahoj()
+    %lol.addr.10 =l alloc8 8
+    %tmp.11 =l call $ahoj(w 9)
     # ^ function call
 
-    storel %tmp.9, %lol.addr.8
-    %lol.8 =l loadl %lol.addr.8
+    storel %tmp.11, %lol.addr.10
+    %lol.10 =l loadl %lol.addr.10
     # ^ declaration statement
 
-    %tmp.12 =l add 5, 7
+    %tmp.15 =l add 5, 7
     # ^ binary expression
 
-    %tmp.10 =w call $printf(l $main.1, ..., w %tmp.12, l %lol.8)
+    %tmp.13 =w call $printf(l $main.0, ..., w %tmp.15, l %lol.10)
     # ^ function call
 
-    %tmp.18 =d div d_58, d_10
+    %tmp.21 =d div d_58, d_10
     # ^ float literal statement
 
-    %tmp.16 =w call $printf(l $main.2, ..., d %tmp.18)
+    %tmp.19 =w call $printf(l $main.1, ..., d %tmp.21)
     # ^ function call
 
-    %tmp.21 =l call $ahoj()
+    %tmp.24 =l call $ahoj(w 9)
     # ^ function call
 
-    %tmp.19 =w call $printf(l $main.3, ..., l %tmp.21)
+    %tmp.22 =w call $printf(l $main.2, ..., l %tmp.24)
     # ^ function call
 
     ret 0

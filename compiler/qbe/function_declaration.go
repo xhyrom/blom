@@ -2,6 +2,7 @@ package qbe
 
 import (
 	"blom/ast"
+	"fmt"
 )
 
 func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, ident int) []string {
@@ -26,7 +27,12 @@ func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, ide
 			result += ", "
 		}
 
-		result += param.Type.String() + " %" + param.Name
+		result += fmt.Sprintf("%s %%%s.%d", param.Type, param.Name, i)
+
+		c.Environment.Set(param.Name, &Variable{
+			Type: param.Type,
+			Id:   i,
+		})
 	}
 
 	result += ") {\n"

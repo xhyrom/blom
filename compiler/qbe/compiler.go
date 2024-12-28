@@ -3,6 +3,7 @@ package qbe
 import (
 	"blom/ast"
 	"blom/compiler"
+	"blom/debug"
 	"blom/env"
 	"fmt"
 	"strconv"
@@ -91,10 +92,14 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType
 		return c.CompileDeclarationStatement(stmt, indent)
 	case *ast.IdentifierLiteralStatement:
 		variable := c.Environment.Get(stmt.Value)
+		if variable == nil {
+			dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
+			dbg.ThrowError(fmt.Sprintf("Variable '%s' is not defined", stmt.Value), true)
+		}
 
 		return []string{}, &Additional{
-			Name: fmt.Sprintf("%%%s.%d", stmt.Value, variable.id),
-			Type: variable.declaration.Type,
+			Name: fmt.Sprintf("%%%s.%d", stmt.Value, variable.Id),
+			Type: variable.Type,
 		}
 	case *ast.FunctionCall:
 		return c.CompileFunctionCall(stmt, indent, expectedType)

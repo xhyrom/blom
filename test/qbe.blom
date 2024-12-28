@@ -1,15 +1,15 @@
 fun @native printf(format: string, ...) -> i32;
 
-fun ahoj() -> string {
-    return "Guten Tag!";
+fun ahoj(a: i64) -> i64 {
+    return a + 9;
 }
 
 fun main() -> i32 {
     f32 xdd = 5.8;
-    string lol = ahoj();
+    i64 lol = ahoj(9);
 
-    printf("%d - %s\n", 5 + 7, lol)
+    printf("%d - %d\n", 5 + 7, lol)
     printf("xdd: %f\n", 5.8)
-    printf("gumi %s hm?\n", ahoj())
+    printf("gumi %d hm?\n", ahoj(9))
     return 0;
 }

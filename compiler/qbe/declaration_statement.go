@@ -8,8 +8,8 @@ import (
 )
 
 type Variable struct {
-	declaration *ast.DeclarationStatement
-	id          int
+	Type compiler.Type
+	Id   int
 }
 
 func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, indent int) ([]string, *Additional) {
@@ -38,8 +38,8 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, i
 	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmt.Type), stmt.Type, stmt.Name, id))
 
 	env.Set(stmt.Name, &Variable{
-		declaration: stmt,
-		id:          id,
+		Type: stmt.Type,
+		Id:   id,
 	})
 
 	result = append(result, "# ^ declaration statement\n")

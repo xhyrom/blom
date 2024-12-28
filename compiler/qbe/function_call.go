@@ -25,6 +25,11 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int, expect
 			callResult += ", "
 		}
 
+		if len(stmt.Parameters) <= i {
+			dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
+			dbg.ThrowError(fmt.Sprintf("Function '%s' expects %d arguments, but got %d", stmt.Name, len(function.Arguments), len(stmt.Parameters)), true)
+		}
+
 		param := stmt.Parameters[i]
 
 		stat, identifier := c.CompileStatement(param, ident, expectedType)
