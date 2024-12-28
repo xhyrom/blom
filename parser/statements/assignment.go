@@ -15,7 +15,7 @@ func ParseAssignment(p Parser, redeclaration bool) *ast.DeclarationStatement {
 	if redeclaration {
 		name := p.Consume()
 
-		p.Consume()
+		eq := p.Consume()
 
 		value, _ := p.ParseExpression()
 
@@ -28,6 +28,8 @@ func ParseAssignment(p Parser, redeclaration bool) *ast.DeclarationStatement {
 			Name:          name.Value,
 			Value:         value,
 			Redeclaration: true,
+			Type:          nil,
+			Loc:           eq.Location,
 		}
 	}
 
@@ -68,7 +70,7 @@ func ParseAssignment(p Parser, redeclaration bool) *ast.DeclarationStatement {
 		Name:          name.Value,
 		Value:         value,
 		Redeclaration: false,
-		Type:          valueType,
+		Type:          &valueType,
 		Loc:           right.Location,
 	}
 }

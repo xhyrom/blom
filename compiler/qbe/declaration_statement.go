@@ -19,26 +19,41 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, i
 
 	id := env.TempCounter
 
-	result = append(result, fmt.Sprintf("%%%s.addr.%d =l alloc8 %d", stmt.Name, id, c.AllocSize(stmt.Type)))
+	var stmtType compiler.Type
+	if stmt.Redeclaration {
+		original := env.Get(stmt.Name)
+		stmtType = original.Type
+	} else {
+		stmtType = *stmt.Type
+	}
 
-	stat, statIdentifier := c.CompileStatement(stmt.Value, indent, &stmt.Type)
+	result = append(result, fmt.Sprintf("%%%s.addr.%d =l alloc8 %d", stmt.Name, id, c.AllocSize(stmtType)))
 
-	if stmt.Type != statIdentifier.Type {
+	stat, statIdentifier := c.CompileStatement(stmt.Value, indent, stmt.Type)
+
+	if stmt.Redeclaration {
+		original := env.Get(stmt.Name)
+
+		if original.Type != statIdentifier.Type {
+			dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
+			dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", original.Type.Inspect(), statIdentifier.Type.Inspect()), true)
+		}
+	} else if stmtType != statIdentifier.Type {
 		dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
-		dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", stmt.Type.Inspect(), statIdentifier.Type.Inspect()), true)
+		dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", stmtType.Inspect(), statIdentifier.Type.Inspect()), true)
 	}
 
 	for _, stat := range stat {
 		result = append(result, stat)
 	}
 
-	result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmt.Type), statIdentifier.Name, stmt.Name, id))
+	result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmtType), statIdentifier.Name, stmt.Name, id))
 
 	name := fmt.Sprintf("%%%s.%d", stmt.Name, id)
-	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmt.Type), stmt.Type, stmt.Name, id))
+	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmtType), stmtType, stmt.Name, id))
 
 	env.Set(stmt.Name, &Variable{
-		Type: stmt.Type,
+		Type: stmtType,
 		Id:   id,
 	})
 
@@ -46,7 +61,7 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, i
 
 	return result, &Additional{
 		Name: name,
-		Type: stmt.Type,
+		Type: stmtType,
 	}
 }
 

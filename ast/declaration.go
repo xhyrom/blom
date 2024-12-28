@@ -7,7 +7,7 @@ import (
 
 type DeclarationStatement struct {
 	Name          string
-	Type          compiler.Type
+	Type          *compiler.Type
 	Value         Statement
 	Redeclaration bool
 	Loc           tokens.Location

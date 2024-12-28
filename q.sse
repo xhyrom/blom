@@ -1,58 +1,27 @@
-data $main.0 = { b "fib(50) = %d\n", b 0 }
-function l $fib(l %n.0) {
+data $main.0 = { b "first: %f\n", b 0 }
+data $main.1 = { b "second: %f\n", b 0 }
+export function w $main() {
 @start
-    %tmp.4 =l cslel %n.0, 1
-    # ^ binary expression
+    %a.addr.3 =l alloc8 8
+    %tmp.4 =d div d_5, d_10
+    # ^ float literal statement
 
-    jnz %tmp.4, @if.6, @else.6
-@if.6
-    ret %n.0
+    stored %tmp.4, %a.addr.3
+    %a.3 =d loadd %a.addr.3
+    # ^ declaration statement
 
-    # ^ return statement
-
-@else.6
-    %tmp.15 =l sub %n.0, 1
-
-    # ^ binary expression
-
-
-    %tmp.14 =l call $fib(l %tmp.15)
-
+    %tmp.5 =w call $printf(l $main.0, ..., d %a.3)
     # ^ function call
 
+    %a.addr.8 =l alloc8 8
+    %tmp.9 =d div d_94, d_10
+    # ^ float literal statement
 
-    %tmp.19 =l sub %n.0, 2
+    stored %tmp.9, %a.addr.8
+    %a.8 =d loadd %a.addr.8
+    # ^ declaration statement
 
-    # ^ binary expression
-
-
-    %tmp.18 =l call $fib(l %tmp.19)
-
-    # ^ function call
-
-
-    %tmp.13 =l add %tmp.14, %tmp.18
-
-    # ^ binary expression
-
-
-    ret %tmp.13
-
-    # ^ return statement
-
-@end.6
-    # ^ if statement
-    ret 0
-    # ^ return statement
-}
-# ^ function declaration
-
-export function l $main() {
-@start
-    %tmp.27 =l call $fib(w 40)
-    # ^ function call
-
-    %tmp.25 =w call $printf(l $main.0, ..., l %tmp.27)
+    %tmp.10 =w call $printf(l $main.1, ..., d %a.8)
     # ^ function call
 
     ret 0

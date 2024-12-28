@@ -19,7 +19,7 @@ func InterpretDeclarationStatement(interpreter Interpreter, environment *env.Env
 
 	obj := interpreter.InterpretStatement(statement.Value, environment)
 
-	if statement.Type != obj.Type() {
+	if *statement.Type != obj.Type() {
 		dbg := debug.NewSourceLocation(interpreter.Source(), statement.Location().Row, statement.Location().Column)
 		dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration: %s != %s", statement.Type.Inspect(), obj.Type().Inspect()), true)
 	}

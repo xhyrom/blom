@@ -1,0 +1,14 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun main() -> i32 {
+    f64 a = 0.5;
+
+    printf("first: %f\n", a)
+
+    a = 9.4;
+
+
+    printf("second: %f\n", a)
+
+    return 0;
+}

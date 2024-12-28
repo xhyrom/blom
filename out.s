@@ -1,48 +1,29 @@
 .data
 .balign 8
 main.0:
-	.ascii "fib(50) = %d\n"
+	.ascii "first: %f\n"
 	.byte 0
 /* end data */
 
-.text
-fib:
-	pushq %rbp
-	movq %rsp, %rbp
-	subq $8, %rsp
-	pushq %rbx
-	movq %rdi, %rbx
-	cmpq $1, %rbx
-	jle .Lbb2
-	movq %rbx, %rdi
-	subq $1, %rdi
-	callq fib
-	xchgq %rax, %rbx
-	movq %rax, %rdi
-	subq $2, %rdi
-	callq fib
-	addq %rbx, %rax
-	jmp .Lbb3
-.Lbb2:
-	movq %rbx, %rax
-.Lbb3:
-	popq %rbx
-	leave
-	ret
-.type fib, @function
-.size fib, .-fib
-/* end function fib */
+.data
+.balign 8
+main.1:
+	.ascii "second: %f\n"
+	.byte 0
+/* end data */
 
 .text
 .globl main
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	movl $40, %edi
-	callq fib
-	movq %rax, %rsi
+	movsd ".Lfp1"(%rip), %xmm0
 	leaq main.0(%rip), %rdi
-	movl $0, %eax
+	movl $1, %eax
+	callq printf
+	movsd ".Lfp0"(%rip), %xmm0
+	leaq main.1(%rip), %rdi
+	movl $1, %eax
 	callq printf
 	movl $0, %eax
 	leave
@@ -50,5 +31,18 @@ main:
 .type main, @function
 .size main, .-main
 /* end function main */
+
+/* floating point constants */
+.section .rodata
+.p2align 3
+.Lfp0:
+	.int -858993459
+	.int 1076022476 /* 9.400000 */
+
+.section .rodata
+.p2align 3
+.Lfp1:
+	.int 0
+	.int 1071644672 /* 0.500000 */
 
 .section .note.GNU-stack,"",@progbits
