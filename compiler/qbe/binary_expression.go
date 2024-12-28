@@ -36,6 +36,10 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent in
 		exp += "add"
 	case tokens.Minus:
 		exp += "sub"
+	case tokens.Asterisk:
+		exp += "mul"
+	case tokens.Slash:
+		exp += "div"
 	case tokens.Equals:
 		exp += "ceq" + c.StoreType(leftVar.Type).String()
 	case tokens.LessThan:

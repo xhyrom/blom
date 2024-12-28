@@ -117,6 +117,8 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType
 		return c.CompileBlock(*stmt, indent+1), nil
 	case *ast.BinaryExpression:
 		return c.CompileBinaryExpression(stmt, indent, expectedType)
+	case *ast.UnaryExpression:
+		return c.CompileUnaryExpression(stmt, indent, expectedType)
 	case *ast.IfStatement:
 		return c.CompileIfStatement(stmt, indent), nil
 	case *ast.CompileTimeFunctionCall:

@@ -1,30 +1,27 @@
-data $main.0 = { b "first: %f\n", b 0 }
-data $main.1 = { b "second: %f\n", b 0 }
-export function w $main() {
+data $main.0 = { b "result: %d\n", b 0 }
+export function ub $main() {
 @start
-    %a.addr.3 =l alloc8 8
-    %tmp.4 =d div d_5, d_10
-    # ^ float literal statement
+    %a.addr.3 =l alloc8 4
+    %tmp.8 =w mul 5, -1
+    # ^ unary expression
 
-    stored %tmp.4, %a.addr.3
-    %a.3 =d loadd %a.addr.3
-    # ^ declaration statement
-
-    %tmp.5 =w call $printf(l $main.0, ..., d %a.3)
-    # ^ function call
-
-    %a.addr.8 =l alloc8 8
-    %tmp.10 =d div d_93, d_10
-    # ^ float literal statement
-
-    %tmp.9 =d add %tmp.10, d_1
+    %tmp.7 =w add %tmp.8, 6
     # ^ binary expression
 
-    stored %tmp.9, %a.addr.8
-    %a.8 =d loadd %a.addr.8
+    %tmp.6 =w mul %tmp.7, 9
+    # ^ binary expression
+
+    %tmp.5 =w div %tmp.6, 3
+    # ^ binary expression
+
+    %tmp.4 =w mul %tmp.5, 1000
+    # ^ binary expression
+
+    storew %tmp.4, %a.addr.3
+    %a.3 =w loadw %a.addr.3
     # ^ declaration statement
 
-    %tmp.13 =w call $printf(l $main.1, ..., d %a.8)
+    %tmp.14 =w call $printf(l $main.0, ..., w %a.3)
     # ^ function call
 
     ret 0

@@ -1,14 +1,7 @@
 .data
 .balign 8
 main.0:
-	.ascii "first: %f\n"
-	.byte 0
-/* end data */
-
-.data
-.balign 8
-main.1:
-	.ascii "second: %f\n"
+	.ascii "result: %d\n"
 	.byte 0
 /* end data */
 
@@ -17,13 +10,9 @@ main.1:
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	movsd ".Lfp1"(%rip), %xmm0
+	movl $3000, %esi
 	leaq main.0(%rip), %rdi
-	movl $1, %eax
-	callq printf
-	movsd ".Lfp0"(%rip), %xmm0
-	leaq main.1(%rip), %rdi
-	movl $1, %eax
+	movl $0, %eax
 	callq printf
 	movl $0, %eax
 	leave
@@ -31,18 +20,5 @@ main:
 .type main, @function
 .size main, .-main
 /* end function main */
-
-/* floating point constants */
-.section .rodata
-.p2align 3
-.Lfp0:
-	.int -1717986918
-	.int 1076140441 /* 10.300000 */
-
-.section .rodata
-.p2align 3
-.Lfp1:
-	.int 0
-	.int 1071644672 /* 0.500000 */
 
 .section .note.GNU-stack,"",@progbits
