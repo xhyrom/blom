@@ -39,6 +39,8 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement) (
 			dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
 			dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", original.Type.Inspect(), statIdentifier.Type.Inspect()), true)
 		}
+
+		id = original.Id // reuse the same id
 	} else if stmt.Value.Kind() != ast.IfNode && stmtType != statIdentifier.Type {
 		dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
 		dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", stmtType.Inspect(), statIdentifier.Type.Inspect()), true)

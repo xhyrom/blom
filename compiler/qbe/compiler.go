@@ -140,6 +140,8 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, expectedType *compiler.T
 		return c.CompileUnaryExpression(stmt, expectedType)
 	case *ast.IfStatement:
 		return c.CompileIfStatement(stmt)
+	case *ast.WhileLoopStatement:
+		return c.CompileWhileLoopStatement(stmt)
 	case *ast.CompileTimeFunctionCall:
 		return c.CompileCompileTimeFunctionCall(stmt)
 	}

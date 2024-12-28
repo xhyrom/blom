@@ -55,7 +55,7 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, expectedT
 	case tokens.Equals:
 		exp += "ceq" + c.StoreType(leftVar.Type).String()
 	case tokens.LessThan:
-		exp += "clt" + c.StoreType(leftVar.Type).String()
+		exp += "cslt" + c.StoreType(leftVar.Type).String()
 	case tokens.LessThanOrEqual:
 		exp += "csle" + c.StoreType(leftVar.Type).String()
 	case tokens.GreaterThan:

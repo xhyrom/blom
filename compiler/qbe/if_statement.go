@@ -3,13 +3,9 @@ package qbe
 import (
 	"blom/ast"
 	"fmt"
-
-	"github.com/gookit/goutil/dump"
 )
 
 func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) ([]string, *Additional) {
-	dump.P(stmt)
-
 	result := make([]string, 0)
 
 	condition, conditionIdentifier := c.CompileStatement(stmt.Condition, nil)
