@@ -17,17 +17,23 @@ func (c *Compiler) CompileUnaryExpression(stmt *ast.UnaryExpression, indent int,
 		result = append(result, r)
 	}
 
-	exp := fmt.Sprintf("%s =%s mul", name, c.StoreType(operandVar.Type))
-
-	multiplicator := ""
+	operation := ""
+	right := ""
 	switch stmt.Operator {
 	case tokens.Plus:
-		multiplicator = "1"
+		operation = "mul"
+		right = "1"
 	case tokens.Minus:
-		multiplicator = "-1"
+		operation = "mul"
+		right = "-1"
+	case tokens.Tilde:
+		operation = "xor"
+		right = "-1"
 	}
 
-	exp += " " + c.StoreVal(operandVar) + ", " + multiplicator
+	exp := fmt.Sprintf("%s =%s %s", name, c.StoreType(operandVar.Type), operation)
+
+	exp += " " + c.StoreVal(operandVar) + ", " + right
 
 	result = append(result, exp)
 

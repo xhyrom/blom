@@ -10,7 +10,7 @@ main.0:
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	movl $3000, %esi
+	movl $16777216, %esi
 	leaq main.0(%rip), %rdi
 	movl $0, %eax
 	callq printf

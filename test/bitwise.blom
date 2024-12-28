@@ -1,3 +1,9 @@
+fun @native printf(format: string, ...) -> i32;
+
 fun main() {
-    return (~2 >> 5 & 3 & 1685478) << 55;
+    i32 a = (~2 >> 5 & 3 & 1685478) << 55;
+
+    printf("result: %d\n", a)
+
+    return 0;
 }
