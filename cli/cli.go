@@ -7,6 +7,7 @@ import (
 	"blom/tokens"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/gookit/goutil/dump"
@@ -66,4 +67,14 @@ func Run(args []string) {
 	sse, err := compiler.Compile(ast)
 
 	fmt.Println(sse)
+
+	err = os.WriteFile("out.sse", []byte(sse), 0644)
+	if err != nil {
+		panic(err)
+	}
+
+	cmd := exec.Command("sh", "-c", "qbe -o out.s out.sse && cc out.s -o a.out && ./a.out")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Run()
 }

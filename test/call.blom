@@ -1,7 +1,11 @@
+fun @native printf(format: string, ...) -> i32;
+
 fun abc(a: i64) -> i32 {
     return @cast(a, i32) + @cast(95, i32);
 }
 
 fun main() -> i32 {
-    return abc(5);
+    printf("result: %d\n", abc(5))
+
+    return 0;
 }

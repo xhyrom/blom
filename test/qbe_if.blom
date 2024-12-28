@@ -1,6 +1,6 @@
 fun @native printf(format: string, ...) -> i32;
 
-fun fib(n: i64) -> i64 {
+fun fib(n: i32) -> i32 {
     if n <= 1 {
         return n;
     }
@@ -8,7 +8,7 @@ fun fib(n: i64) -> i64 {
     return 0;
 }
 
-fun main() -> i64 {
+fun main() -> i32 {
     printf("fib(50) = %d\n", fib(40))
     return 0;
 }

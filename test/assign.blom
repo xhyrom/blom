@@ -1,25 +1,26 @@
-fun asd() -> i64 {
+fun @native printf(format: string, ...) -> i32;
+
+fun asd() -> i32 {
     return 1;
 }
 
-fun main() -> i64 {
-    i64 a = 7 + 6;
+fun main() -> i32 {
+    i32 a = 7 + 6;
 
     {
-        i64 a = 8;
+        i32 a = 8;
         a = 9;
     }
 
-    i64 b = if a == 13 {
-        i64 c = 15;
+    i32 b = if a == 13 {
+        i32 c = 15;
         return c;
     } else {
         return 2;
     };
 
-    return if a + b > 0 {
-        return a + b;
-    } else {
-        return 0;
-    };
+    printf("a: %d\n", a)
+    printf("b: %d\n", b)
+
+    return 0;
 }

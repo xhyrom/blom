@@ -1,12 +1,12 @@
 fun @native printf(format: string, ...) -> i32;
 
-fun ahoj(a: i64) -> i64 {
+fun ahoj(a: i32) -> i32 {
     return a + 9;
 }
 
 fun main() -> i32 {
     f32 xdd = 5.8;
-    i64 lol = ahoj(9);
+    i32 lol = ahoj(9);
 
     printf("%d - %d\n", 5 + 7, lol)
     printf("xdd: %f\n", 5.8)
