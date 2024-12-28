@@ -1,60 +1,22 @@
-data $main.0 = { b "here\n", b 0 }
-data $main.1 = { b "outer: %d\n", b 0 }
-export function w $main(w %argc.0, l %argv.1) {
+export function w $main() {
 @start
-    %a.addr.3 =l alloc8 4
-    %tmp.5 =w ceqw 7, 7
-    # ^ binary expression
-    jnz %tmp.5, @if.7, @else.7
-@if.7
-    %tmp.12 =w add 5, 6
-    # ^ binary expression
-    %tmp.10 =w csgtw %argc.0, %tmp.12
-    # ^ binary expression
-    jnz %tmp.10, @if.14, @else.14
-@if.14
-    %tmp.17 =w mul 1, -1
-    # ^ unary expression
-    storew %tmp.17, %a.addr.3
-    # ^ return statement
-@else.14
-    %c.addr.19 =l alloc8 4
-    %tmp.20 =w add 999, 245
-    # ^ binary expression
-    storew %tmp.20, %c.addr.19
-    %c.19 =w loadw %c.addr.19
+    %i.addr.2 =l alloc8 4
+    storew 0, %i.addr.2
+    %i.2 =w loadw %i.addr.2
     # ^ declaration statement
-    %tmp.25 =w add 5, 6
-    # ^ binary expression
-    %tmp.24 =w add %tmp.25, %c.19
-    # ^ binary expression
-    storew %tmp.24, %a.addr.3
-    # ^ return statement
-@end.14
-    # ^ if statement
-    jmp @end.7
-@else.7
-    storew 7, %a.addr.3
-    # ^ return statement
-@end.7
-    # ^ if statement
-    %a.3 =w loadw %a.addr.3
+    %a.addr.4 =l alloc8 4
+    storew 5, %a.addr.4
+    %a.4 =w loadw %a.addr.4
     # ^ declaration statement
-    %tmp.32 =w ceqw 2, 2
-    # ^ binary expression
-    jnz %tmp.32, @if.34, @end.34
-@if.34
-    %tmp.36 =w call $printf(l $main.0, ...)
-    # ^ function call
-    %tmp.39 =w mul 1, -1
-    # ^ unary expression
-    ret %tmp.39
-    # ^ return statement
-@end.34
-    # ^ if statement
-    %tmp.41 =w call $printf(l $main.1, ..., w %a.3)
-    # ^ function call
-    ret 0
+    %g.addr.7 =l alloc8 4
+    storew 0, %g.addr.7
+    %g.7 =w loadw %g.addr.7
+    # ^ declaration statement
+    ret %i.2
     # ^ return statement
 }
 # ^ function declaration
+    %tmp.14 =w call $main()
+    # ^ function call
+    ret %tmp.14
+    # ^ return statement

@@ -144,7 +144,7 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, expectedType *compiler.T
 		return c.CompileCompileTimeFunctionCall(stmt)
 	}
 
-	fmt.Printf("Unknown statement: %T\n", stmt)
+	panic(fmt.Sprintf("Unknown statement: %T\n", stmt))
 
 	return []string{}, nil
 }

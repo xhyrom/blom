@@ -6,9 +6,13 @@ import (
 	"blom/env"
 	"blom/env/objects"
 	"fmt"
+
+	"github.com/gookit/goutil/dump"
 )
 
 func InterpretDeclarationStatement(interpreter Interpreter, environment *env.Environment[objects.Object], statement *ast.DeclarationStatement) {
+	dump.P(statement, environment.Variables, statement.Name)
+
 	if statement.Redeclaration {
 		_, found := environment.Parent.FindVariable(statement.Name)
 		if environment.Parent != nil && found && environment.Get(statement.Name) == nil {

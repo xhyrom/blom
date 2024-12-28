@@ -10,7 +10,7 @@ type Parser interface {
 	IsEof() bool
 	Current() tokens.Token
 	Consume() tokens.Token
-	ParseStatement() (ast.Statement, error)
+	ParseStatement() ([]ast.Statement, error)
 	ParseExpression() (ast.Expression, error)
 	ParsePrimaryExpression() (ast.Expression, error)
 }

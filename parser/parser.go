@@ -46,13 +46,15 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 	for !p.IsEof() {
 		beforeLocation := p.Current().Location
 
-		stmt, _ := p.ParseStatement()
-		if _, ok := stmt.(*ast.FunctionDeclaration); !ok {
-			dbg := debug.NewSourceLocation(p.Source(), beforeLocation.Row, beforeLocation.Column)
-			dbg.ThrowError("Top-level statements must be function declarations.", true, debug.NewHint("Non-function declaration instead", ""))
-		}
+		stmts, _ := p.ParseStatement()
+		for _, stmt := range stmts {
+			if _, ok := stmt.(*ast.FunctionDeclaration); !ok {
+				dbg := debug.NewSourceLocation(p.Source(), beforeLocation.Row, beforeLocation.Column)
+				dbg.ThrowError("Top-level statements must be function declarations.", true, debug.NewHint("Non-function declaration instead", ""))
+			}
 
-		prog.Body = append(prog.Body, stmt)
+			prog.Body = append(prog.Body, stmt)
+		}
 	}
 
 	return prog
@@ -89,28 +91,34 @@ func (p *Parser) Advance() {
 	p.tokens = p.tokens[1:]
 }
 
-func (p *Parser) ParseStatement() (ast.Statement, error) {
+func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 	switch p.Current().Kind {
 	case tokens.Fun:
-		return statements.ParseFunction(p), nil
+		return []ast.Statement{statements.ParseFunction(p)}, nil
 	case tokens.Return:
-		return statements.ParseReturn(p), nil
+		return []ast.Statement{statements.ParseReturn(p)}, nil
 	case tokens.For:
-		return statements.ParseForLoop(p), nil
+		decl, while := statements.ParseForLoop(p)
+		if decl != nil {
+			return []ast.Statement{decl, while}, nil
+		}
+
+		return []ast.Statement{while}, nil
 	case tokens.While:
-		return statements.ParseWhileLoop(p), nil
+		return []ast.Statement{statements.ParseWhileLoop(p)}, nil
 	case tokens.Identifier:
 		if p.Next().Kind == tokens.Identifier {
 
-			return statements.ParseAssignment(p, false), nil
+			return []ast.Statement{statements.ParseAssignment(p, false)}, nil
 		}
 
 		if p.Next().Kind == tokens.Assign {
-			return statements.ParseAssignment(p, true), nil
+			return []ast.Statement{statements.ParseAssignment(p, true)}, nil
 		}
 	}
 
-	return p.ParseExpression()
+	exp, err := p.ParseExpression()
+	return []ast.Statement{exp}, err
 }
 
 func (p *Parser) ParseExpression() (ast.Expression, error) {
