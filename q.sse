@@ -1,20 +1,40 @@
-data $s.2a = { b "abc", b 0 }
-data $s.2 = { b "lol: %d", b 0 }
+data $guhu.0 = { b "lol", b 0 }
+data $main.1 = { b "ccc: %f\n", b 0 }
+data $main.2 = { b "lol: %d\n", b 0 }
+data $main.3 = { b "lul: %d\n", b 0 }
+data $main.4 = { b "lal: %s\n", b 0 }
 function w $abc() {
 @start
-    %r = w add 7, 5
-    ret %r
+    %tmp.0 =l add 7, 5
+    ret %tmp.0
+}
+
+function l $guhu() {
+@start
+    ret $guhu.0
 }
 
 export function w $main() {
 @start
-    %a.addr = l alloc8 4
-    storel $s.2a, %a.addr
-    %a =l loadl %a.addr
-    %c.addr = l alloc8 4
-    storel 9, %c.addr
-    %c =l loadl %c.addr
-    call $puts(l %a)
-    call $printf(l $s.2, ..., l %c)
+    %c.addr.0 =l alloc8 8
+    %tmp.0 =d div d_55, d_1
+    stored %tmp.0, %c.addr.0
+    %c.0 =d loadd %c.addr.0
+    %g.addr.1 =l alloc8 8
+    %tmp.1 =l add 555, 45
+    storel %tmp.1, %g.addr.1
+    %g.1 =l loadl %g.addr.1
+    %a.addr.2 =l alloc8 1
+    %tmp.2 =w call $abc()
+    storew %tmp.2, %a.addr.2
+    %a.2 =w loadub %a.addr.2
+    %b.addr.3 =l alloc8 1
+    %tmp.3 =l call $guhu()
+    storel %tmp.3, %b.addr.3
+    %b.3 =l loadl %b.addr.3
+    %tmp.4 =w call $printf(l $main.1, ..., d %c.0)
+    %tmp.4 =w call $printf(l $main.2, ..., l %g.1)
+    %tmp.4 =w call $printf(l $main.3, ..., w %a.2)
+    %tmp.4 =w call $printf(l $main.4, ..., l %b.3)
     ret 0
 }

@@ -3,19 +3,18 @@ package qbe
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/env"
 	"fmt"
 )
 
-func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, env *env.Environment, ident int) string {
-	function := env.GetFunction(stmt.Name)
+func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int) string {
+	function := c.Environment.GetFunction(stmt.Name)
 
 	if function == nil {
 		dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
 		dbg.ThrowError(fmt.Sprintf("Function '%s' is not defined", stmt.Name), true)
 	}
 
-	result := "call $" + stmt.Name + "("
+	result := fmt.Sprintf("%%tmp.%d =%s call $%s(", c.Environment.TempCounter, c.StoreType(function.ReturnType), stmt.Name)
 
 	for i := range function.Arguments {
 		if i > 0 {
@@ -23,7 +22,7 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, env *env.Environm
 		}
 
 		param := stmt.Parameters[i]
-		result += "l " + c.CompileStatement(param, env, ident)
+		result += c.CompileStatement(param, ident)
 	}
 
 	if function.Variadic {
@@ -39,7 +38,7 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, env *env.Environm
 			}
 
 			param := stmt.Parameters[i]
-			result += "l " + c.CompileStatement(param, env, ident)
+			result += c.CompileStatement(param, ident)
 		}
 	}
 

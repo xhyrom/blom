@@ -2,15 +2,15 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/env"
 	"blom/tokens"
+	"fmt"
 )
 
-func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, env *env.Environment, ident int) string {
-	left := c.CompileStatement(stmt.Left, env, ident)
-	right := c.CompileStatement(stmt.Right, env, ident)
+func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent int) string {
+	left := c.CompileStatement(stmt.Left, indent)
+	right := c.CompileStatement(stmt.Right, indent)
 
-	result := "w "
+	result := fmt.Sprintf("%%tmp.%d =%s ", c.Environment.TempCounter, "l")
 
 	switch stmt.Operator {
 	case tokens.Plus:
