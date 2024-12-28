@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int, expectedType *compiler.Type) ([]string, *Additional) {
+func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, expectedType *compiler.Type) ([]string, *Additional) {
 	function := c.Environment.GetFunction(stmt.Name)
 
 	if function == nil {
@@ -32,7 +32,7 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int, expect
 
 		param := stmt.Parameters[i]
 
-		stat, identifier := c.CompileStatement(param, ident, expectedType)
+		stat, identifier := c.CompileStatement(param, expectedType)
 
 		for _, s := range stat {
 			result = append(result, s)
@@ -55,7 +55,7 @@ func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, ident int, expect
 
 			param := stmt.Parameters[i]
 
-			stat, identifier := c.CompileStatement(param, ident, expectedType)
+			stat, identifier := c.CompileStatement(param, expectedType)
 
 			for _, s := range stat {
 				result = append(result, s)

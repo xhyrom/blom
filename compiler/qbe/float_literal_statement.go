@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (c *Compiler) CompileFloatLiteralStatement(stmt *ast.FloatLiteralStatement, ident int, expectedType *compiler.Type) ([]string, *Additional) {
+func (c *Compiler) CompileFloatLiteralStatement(stmt *ast.FloatLiteralStatement, expectedType *compiler.Type) ([]string, *Additional) {
 	if expectedType == nil {
 		double := compiler.Double
 		expectedType = &double

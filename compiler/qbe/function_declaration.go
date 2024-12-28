@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, ident int) []string {
+func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration) []string {
 	c.Environment.SetFunction(stmt.Name, stmt)
 
 	if stmt.IsNative() {
@@ -38,7 +38,7 @@ func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, ide
 	result += ") {\n"
 	result += "@start\n"
 
-	block := c.CompileBlock(*stmt.Body, ident)
+	block, _ := c.CompileBlock(*stmt.Body, false)
 	for _, b := range block {
 		result += b
 	}

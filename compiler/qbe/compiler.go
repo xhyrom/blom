@@ -19,6 +19,7 @@ type Compiler struct {
 
 type Additional struct {
 	Name string
+	Id   int
 	Type compiler.Type
 	Raw  bool
 }
@@ -37,10 +38,10 @@ func New(file string) Compiler {
 func (c *Compiler) Compile(program *ast.Program) (string, error) {
 	result := ""
 
-	block := c.CompileBlock(ast.BlockStatement{
+	block, _ := c.CompileBlock(ast.BlockStatement{
 		Body: program.Body,
 		Loc:  program.Loc,
-	}, 0)
+	}, false)
 
 	for _, data := range c.data {
 		result += data + "\n"
@@ -53,12 +54,22 @@ func (c *Compiler) Compile(program *ast.Program) (string, error) {
 	return result, nil
 }
 
-func (c *Compiler) CompileBlock(block ast.BlockStatement, indent int) []string {
+func (c *Compiler) CompileBlock(block ast.BlockStatement, labels bool) ([]string, *Additional) {
 	result := make([]string, 0)
-	indentation := strings.Repeat("    ", indent)
+
+	id := c.Environment.TempCounter
+	if labels {
+		result = append(result, fmt.Sprintf("@block.start.%d", id))
+	}
 
 	for _, stmt := range block.Body {
-		compiled, _ := c.CompileStatement(stmt, indent, nil)
+		indentation := strings.Repeat("    ", 1)
+
+		if stmt.Kind() == ast.FunctionDeclarationNode || labels {
+			indentation = ""
+		}
+
+		compiled, _ := c.CompileStatement(stmt, nil)
 		for _, compiled := range compiled {
 			if strings.HasPrefix(compiled, "@") {
 				result = append(result, compiled+"\n")
@@ -68,10 +79,18 @@ func (c *Compiler) CompileBlock(block ast.BlockStatement, indent int) []string {
 		}
 	}
 
-	return result
+	if labels {
+		result = append(result, fmt.Sprintf("@block.end.%d", id))
+
+		c.Environment.TempCounter += 1
+	}
+
+	return result, &Additional{
+		Id: id,
+	}
 }
 
-func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType *compiler.Type) ([]string, *Additional) {
+func (c *Compiler) CompileStatement(stmt ast.Statement, expectedType *compiler.Type) ([]string, *Additional) {
 	c.Environment.TempCounter += 1
 
 	switch stmt := stmt.(type) {
@@ -83,7 +102,7 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType
 			Raw:  true,
 		}
 	case *ast.FloatLiteralStatement:
-		return c.CompileFloatLiteralStatement(stmt, indent, expectedType)
+		return c.CompileFloatLiteralStatement(stmt, expectedType)
 	case *ast.StringLiteralStatement:
 		id := c.dataCounter
 
@@ -95,7 +114,7 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType
 			Type: compiler.String,
 		} //fmt.Sprintf("l $%s.%d", c.Environment.CurrentFunction.Name, id)
 	case *ast.DeclarationStatement:
-		return c.CompileDeclarationStatement(stmt, indent)
+		return c.CompileDeclarationStatement(stmt)
 	case *ast.IdentifierLiteralStatement:
 		variable := c.Environment.Get(stmt.Value)
 		if variable == nil {
@@ -108,21 +127,21 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, indent int, expectedType
 			Type: variable.Type,
 		}
 	case *ast.FunctionCall:
-		return c.CompileFunctionCall(stmt, indent, expectedType)
+		return c.CompileFunctionCall(stmt, expectedType)
 	case *ast.FunctionDeclaration:
-		return c.CompileFunctionDeclaration(stmt, indent+1), nil
+		return c.CompileFunctionDeclaration(stmt), nil
 	case *ast.ReturnStatement:
-		return c.CompileReturnStatement(stmt, indent, expectedType)
+		return c.CompileReturnStatement(stmt, expectedType)
 	case *ast.BlockStatement:
-		return c.CompileBlock(*stmt, indent+1), nil
+		return c.CompileBlock(*stmt, true)
 	case *ast.BinaryExpression:
-		return c.CompileBinaryExpression(stmt, indent, expectedType)
+		return c.CompileBinaryExpression(stmt, expectedType)
 	case *ast.UnaryExpression:
-		return c.CompileUnaryExpression(stmt, indent, expectedType)
+		return c.CompileUnaryExpression(stmt, expectedType)
 	case *ast.IfStatement:
-		return c.CompileIfStatement(stmt, indent), nil
+		return c.CompileIfStatement(stmt), nil
 	case *ast.CompileTimeFunctionCall:
-		return c.CompileCompileTimeFunctionCall(stmt, indent)
+		return c.CompileCompileTimeFunctionCall(stmt)
 	}
 
 	fmt.Printf("Unknown statement: %T\n", stmt)

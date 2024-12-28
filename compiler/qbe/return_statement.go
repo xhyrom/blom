@@ -7,10 +7,10 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) CompileReturnStatement(stmt *ast.ReturnStatement, ident int, expectedType *compiler.Type) ([]string, *Additional) {
+func (c *Compiler) CompileReturnStatement(stmt *ast.ReturnStatement, expectedType *compiler.Type) ([]string, *Additional) {
 	result := make([]string, 0)
 
-	s, identifier := c.CompileStatement(stmt.Value, ident, expectedType)
+	s, identifier := c.CompileStatement(stmt.Value, expectedType)
 	for _, s := range s {
 		result = append(result, s)
 	}

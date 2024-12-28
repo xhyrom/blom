@@ -12,7 +12,7 @@ type Variable struct {
 	Id   int
 }
 
-func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, indent int) ([]string, *Additional) {
+func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement) ([]string, *Additional) {
 	env := c.Environment
 
 	result := make([]string, 0)
@@ -29,7 +29,7 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.DeclarationStatement, i
 
 	result = append(result, fmt.Sprintf("%%%s.addr.%d =l alloc8 %d", stmt.Name, id, c.AllocSize(stmtType)))
 
-	stat, statIdentifier := c.CompileStatement(stmt.Value, indent, stmt.Type)
+	stat, statIdentifier := c.CompileStatement(stmt.Value, stmt.Type)
 
 	if stmt.Redeclaration {
 		original := env.Get(stmt.Name)

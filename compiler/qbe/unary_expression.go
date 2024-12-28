@@ -7,10 +7,10 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) CompileUnaryExpression(stmt *ast.UnaryExpression, indent int, expectedType *compiler.Type) ([]string, *Additional) {
+func (c *Compiler) CompileUnaryExpression(stmt *ast.UnaryExpression, expectedType *compiler.Type) ([]string, *Additional) {
 	name := fmt.Sprintf("%%tmp.%d", c.Environment.TempCounter)
 
-	operand, operandVar := c.CompileStatement(stmt.Operand, indent, expectedType)
+	operand, operandVar := c.CompileStatement(stmt.Operand, expectedType)
 	result := make([]string, 0)
 
 	for _, r := range operand {

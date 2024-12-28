@@ -8,11 +8,11 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, indent int, expectedType *compiler.Type) ([]string, *Additional) {
+func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, expectedType *compiler.Type) ([]string, *Additional) {
 	name := fmt.Sprintf("%%tmp.%d", c.Environment.TempCounter)
 
-	left, leftVar := c.CompileStatement(stmt.Left, indent, expectedType)
-	right, rightVar := c.CompileStatement(stmt.Right, indent, expectedType)
+	left, leftVar := c.CompileStatement(stmt.Left, expectedType)
+	right, rightVar := c.CompileStatement(stmt.Right, expectedType)
 
 	if leftVar.Type != rightVar.Type {
 		dbg := debug.NewSourceLocation(c.Source, stmt.OperatorLoc.Row, stmt.OperatorLoc.Column)

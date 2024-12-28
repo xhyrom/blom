@@ -1,19 +1,32 @@
-function w $abc(l %a.0) {
-@start
-    %tmp.3 =w add %a.0, 95
-    # ^ binary expression
-
-    ret %tmp.3
-    # ^ return statement
-}
-# ^ function declaration
-
+data $main.0 = { b "inner: %d\n", b 0 }
+data $main.1 = { b "outer: %d\n", b 0 }
 export function w $main() {
 @start
-    %tmp.10 =w call $abc(w 5)
+    %a.addr.3 =l alloc8 4
+    storew 7, %a.addr.3
+    %a.3 =w loadw %a.addr.3
+    # ^ declaration statement
+
+@block.start.5
+    %a.addr.6 =l alloc8 4
+
+    storew 5, %a.addr.6
+
+    %a.6 =w loadw %a.addr.6
+
+    # ^ declaration statement
+
+
+    %tmp.8 =w call $printf(l $main.0, ..., w %a.6)
+
     # ^ function call
 
-    ret %tmp.10
+
+@block.end.5
+    %tmp.12 =w call $printf(l $main.1, ..., w %a.6)
+    # ^ function call
+
+    ret 0
     # ^ return statement
 }
 # ^ function declaration

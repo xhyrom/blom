@@ -1,0 +1,15 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun main() -> i32 {
+    i32 a = 7;
+
+    {
+        i32 a = 5;
+
+        printf("inner: %d\n", a)
+    }
+
+    printf("outer: %d\n", a)
+
+    return 0;
+}

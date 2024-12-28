@@ -7,12 +7,12 @@ import (
 	"github.com/gookit/goutil/dump"
 )
 
-func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement, indent int) []string {
+func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) []string {
 	dump.P(stmt)
 
 	result := make([]string, 0)
 
-	condition, conditionIdentifier := c.CompileStatement(stmt.Condition, indent, nil)
+	condition, conditionIdentifier := c.CompileStatement(stmt.Condition, nil)
 
 	for _, data := range condition {
 		result = append(result, data)
@@ -30,7 +30,7 @@ func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement, indent int) []strin
 	// if block
 	result = append(result, fmt.Sprintf("@if.%d", id))
 
-	thenBlock, _ := c.CompileStatement(stmt.Then, indent-2, nil)
+	thenBlock, _ := c.CompileStatement(stmt.Then, nil)
 	for _, data := range thenBlock {
 		result = append(result, data)
 	}
@@ -39,7 +39,7 @@ func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement, indent int) []strin
 	if stmt.HasElse() {
 		result = append(result, fmt.Sprintf("@else.%d", id))
 
-		elseBlock, _ := c.CompileStatement(stmt.Else, indent-2, nil)
+		elseBlock, _ := c.CompileStatement(stmt.Else, nil)
 		for _, data := range elseBlock {
 			result = append(result, data)
 		}

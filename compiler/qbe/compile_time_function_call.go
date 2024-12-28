@@ -5,11 +5,11 @@ import (
 	"blom/compiler"
 )
 
-func (c *Compiler) CompileCompileTimeFunctionCall(call *ast.CompileTimeFunctionCall, indent int) ([]string, *Additional) {
+func (c *Compiler) CompileCompileTimeFunctionCall(call *ast.CompileTimeFunctionCall) ([]string, *Additional) {
 	exp := call.Parameters[0]
 	castType, _ := compiler.ParseType(call.Parameters[1].(*ast.IdentifierLiteralStatement).Value)
 
-	stmt, stmtAdd := c.CompileStatement(exp, indent, &castType)
+	stmt, stmtAdd := c.CompileStatement(exp, &castType)
 
 	ad := &Additional{
 		Name: stmtAdd.Name,
