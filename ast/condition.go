@@ -21,3 +21,11 @@ func (i *IfStatement) SetLocation(row uint64, column uint64) {
 	i.Loc.Row = row
 	i.Loc.Column = column
 }
+
+func (i *IfStatement) HasElse() bool {
+	if i.Else.(*BlockStatement) != nil {
+		return true
+	}
+
+	return false
+}

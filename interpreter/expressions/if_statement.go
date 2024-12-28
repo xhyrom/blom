@@ -17,7 +17,7 @@ func InterpretIfStatement(interpreter Interpreter, environment *env.Environment[
 		return interpreter.InterpretStatement(statement.Then, environment)
 	}
 
-	if statement.Else != nil {
+	if statement.HasElse() {
 		return interpreter.InterpretStatement(statement.Else, environment)
 	}
 

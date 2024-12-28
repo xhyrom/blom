@@ -20,10 +20,10 @@ func ParseIf(p Parser) *ast.IfStatement {
 		dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
 	}
 
-	then_block := ParseBlock(p)
-	else_block := &ast.BlockStatement{}
+	thenBlock := ParseBlock(p)
+	var elseBlock *ast.BlockStatement = nil
 
-	loc := then_block.Loc
+	loc := thenBlock.Loc
 
 	maybe_else := p.Current()
 	if maybe_else.Kind == tokens.Else {
@@ -36,14 +36,14 @@ func ParseIf(p Parser) *ast.IfStatement {
 
 		block := ParseBlock(p)
 
-		else_block = block
-		loc = else_block.Loc
+		elseBlock = block
+		loc = elseBlock.Loc
 	}
 
 	return &ast.IfStatement{
 		Condition: condition,
-		Then:      then_block,
-		Else:      else_block,
+		Then:      thenBlock,
+		Else:      elseBlock,
 		Loc:       loc,
 	}
 }
