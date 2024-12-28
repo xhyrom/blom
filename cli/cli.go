@@ -2,6 +2,7 @@ package cli
 
 import (
 	"blom/compiler/qbe"
+	"blom/interpreter"
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
@@ -16,6 +17,7 @@ import (
 func Run(args []string) {
 	var emitTokens bool
 	var emitAst bool
+	var emitSse bool
 	var inputFile string
 
 	for _, arg := range args {
@@ -24,6 +26,8 @@ func Run(args []string) {
 			emitTokens = true
 		case "-ast", "--emit-ast":
 			emitAst = true
+		case "-sse", "--emit-sse":
+			emitSse = true
 		default:
 			if strings.HasSuffix(arg, ".blom") {
 				inputFile = arg
@@ -60,19 +64,26 @@ func Run(args []string) {
 		dump.Println(ast)
 	}
 
-	//inp := interpreter.New(inputFile)
-	//dump.Println(inp.Interpret(ast))
+	inp := interpreter.New(inputFile)
+
+	fmt.Printf("Interpreting %s\n", inputFile)
+	inp.Interpret(ast)
 
 	compiler := qbe.New(inputFile)
 	sse, err := compiler.Compile(ast)
 
-	fmt.Println(sse)
+	if emitSse {
+		fmt.Println(sse)
+	}
+
+	fmt.Println()
 
 	err = os.WriteFile("out.sse", []byte(sse), 0644)
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Printf("Compiling and running %s\n", inputFile)
 	cmd := exec.Command("sh", "-c", "qbe -o out.s out.sse && cc -O3 out.s -o a.out && ./a.out")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

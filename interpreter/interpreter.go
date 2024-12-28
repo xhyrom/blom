@@ -18,12 +18,19 @@ func New(source string) *Interpreter {
 	}
 }
 
-func (intrepreter *Interpreter) Interpret(program *ast.Program) objects.Object {
-	program.Body = append(program.Body, &ast.ReturnStatement{
-		Value: &ast.FunctionCall{
-			Name:       "main",
-			Parameters: []ast.Expression{},
-		},
+func (intrepreter *Interpreter) Interpret(prg *ast.Program) objects.Object {
+	// copy program body to avoid modifying the original
+	var program *ast.Program = &ast.Program{
+		Body: make([]ast.Statement, 0),
+	}
+
+	for _, stmt := range prg.Body {
+		program.Body = append(program.Body, stmt)
+	}
+
+	program.Body = append(program.Body, &ast.FunctionCall{
+		Name:       "main",
+		Parameters: []ast.Expression{},
 	})
 
 	return intrepreter.InterpretBlock(&ast.BlockStatement{
