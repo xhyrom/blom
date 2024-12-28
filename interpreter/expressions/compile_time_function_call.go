@@ -7,11 +7,11 @@ import (
 	"blom/env/objects"
 )
 
-func InterpretCompileTimeFunctionCall(interpreter Interpreter, environment *env.Environment, call *ast.CompileTimeFunctionCall) objects.Object {
+func InterpretCompileTimeFunctionCall(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.CompileTimeFunctionCall) objects.Object {
 	return runFunction(interpreter, environment, call)
 }
 
-func runFunction(interpreter Interpreter, environment *env.Environment, call *ast.CompileTimeFunctionCall) objects.Object {
+func runFunction(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.CompileTimeFunctionCall) objects.Object {
 	switch call.Name {
 	case "cast":
 		return cast(interpreter, environment, call)
@@ -20,7 +20,7 @@ func runFunction(interpreter Interpreter, environment *env.Environment, call *as
 	panic("Unknown compile time function call")
 }
 
-func cast(interpreter Interpreter, environment *env.Environment, call *ast.CompileTimeFunctionCall) objects.Object {
+func cast(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.CompileTimeFunctionCall) objects.Object {
 	stmt := interpreter.InterpretStatement(call.Parameters[0], environment)
 	requiredType, _ := compiler.ParseType(call.Parameters[1].(*ast.IdentifierLiteralStatement).Value)
 

@@ -29,10 +29,10 @@ func (intrepreter *Interpreter) Interpret(program *ast.Program) objects.Object {
 	return intrepreter.InterpretBlock(&ast.BlockStatement{
 		Body: program.Body,
 		Loc:  program.Loc,
-	}, env.New())
+	}, env.New[objects.Object]())
 }
 
-func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environment *env.Environment) objects.Object {
+func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environment *env.Environment[objects.Object]) objects.Object {
 	//fmt.Printf("Interpreting block %v\n", body.Location())
 
 	envi := env.New(*environment)
@@ -55,7 +55,7 @@ func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environ
 	return nil
 }
 
-func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environment *env.Environment) objects.Object {
+func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environment *env.Environment[objects.Object]) objects.Object {
 	switch stmt := stmt.(type) {
 	case *ast.CharLiteralStatement:
 		return &objects.CharacterObject{Value: stmt.Value}
@@ -66,7 +66,12 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 	case *ast.FloatLiteralStatement:
 		return &objects.FloatObject{Value: stmt.Value}
 	case *ast.IdentifierLiteralStatement:
-		return environment.FindVariable(stmt.Value)
+		variable, found := environment.FindVariable(stmt.Value)
+		if !found {
+			return nil
+		}
+
+		return variable
 	case *ast.BlockStatement:
 		return intrepreter.InterpretBlock(stmt, environment)
 	case *ast.FunctionDeclaration:

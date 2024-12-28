@@ -2,14 +2,14 @@ fun @native printf(format: string, ...) -> i32;
 
 
 fun lol(c: f32) -> i32 {
-    return 2.5 + 4;
+    return c + 4;
 }
 
 
 fun main() -> i32 {
-    f32 g = 55.0;
-    f64 c = lol(g);
+    f64 c = lol(5.5);
 
     printf("ccc: %f\n", c)
+
     return 0;
 }

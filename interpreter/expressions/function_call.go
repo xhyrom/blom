@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment, call *ast.FunctionCall) objects.Object {
+func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.FunctionCall) objects.Object {
 	function := environment.FindFunction(call.Name)
 
 	env := env.New(*environment)

@@ -6,7 +6,7 @@ import (
 	"blom/env/objects"
 )
 
-func InterpretForLoopStatement(interpreter Interpreter, environment *env.Environment, statement *ast.ForLoopStatement) {
+func InterpretForLoopStatement(interpreter Interpreter, environment *env.Environment[objects.Object], statement *ast.ForLoopStatement) {
 	declaration := statement.Declaration
 	condition := statement.Condition
 	step := statement.Step
@@ -31,7 +31,7 @@ func InterpretForLoopStatement(interpreter Interpreter, environment *env.Environ
 	}
 }
 
-func InterpretWhileLoopStatement(interpreter Interpreter, environment *env.Environment, statement *ast.WhileLoopStatement) {
+func InterpretWhileLoopStatement(interpreter Interpreter, environment *env.Environment[objects.Object], statement *ast.WhileLoopStatement) {
 	condition := statement.Condition
 	body := statement.Body
 

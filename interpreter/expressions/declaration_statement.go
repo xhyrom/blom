@@ -4,12 +4,14 @@ import (
 	"blom/ast"
 	"blom/debug"
 	"blom/env"
+	"blom/env/objects"
 	"fmt"
 )
 
-func InterpretDeclarationStatement(interpreter Interpreter, environment *env.Environment, statement *ast.DeclarationStatement) {
+func InterpretDeclarationStatement(interpreter Interpreter, environment *env.Environment[objects.Object], statement *ast.DeclarationStatement) {
 	if statement.Redeclaration {
-		if environment.Parent != nil && environment.Parent.FindVariable(statement.Name) != nil && environment.Get(statement.Name) == nil {
+		_, found := environment.Parent.FindVariable(statement.Name)
+		if environment.Parent != nil && found && environment.Get(statement.Name) == nil {
 			environment.Parent.Set(statement.Name, interpreter.InterpretStatement(statement.Value, environment))
 			return
 		}
