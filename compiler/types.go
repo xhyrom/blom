@@ -78,3 +78,11 @@ func (t Type) Inspect() string {
 func (t Type) String() string {
 	return types[t]
 }
+
+func (t Type) IsNumeric() bool {
+	return t == UnsignedByte || t == UnsignedHalfword || t == UnsignedWord || t == UnsignedLong || t == Byte || t == Halfword || t == Word || t == Long || t == Single || t == Double
+}
+
+func (t Type) IsInteger() bool {
+	return t == UnsignedByte || t == UnsignedHalfword || t == UnsignedWord || t == UnsignedLong || t == Byte || t == Halfword || t == Word || t == Long
+}

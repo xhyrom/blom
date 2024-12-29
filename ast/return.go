@@ -3,7 +3,7 @@ package ast
 import "blom/tokens"
 
 type ReturnStatement struct {
-	Value Statement
+	Value Expression
 	Loc   tokens.Location
 }
 

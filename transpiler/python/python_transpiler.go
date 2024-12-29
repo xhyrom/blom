@@ -84,9 +84,9 @@ func (t PythonTranspiler) TranspileStatement(stmt ast.Statement, environment *en
 		return t.TranspileUnaryExpression(stmt, environment, indent)
 	case ast.UnaryExpression:
 		return t.TranspileUnaryExpression(&stmt, environment, indent)
-	case *ast.DeclarationStatement:
+	case *ast.VariableDeclarationStatement:
 		return t.TranspileDeclarationStatement(stmt, environment, indent)
-	case ast.DeclarationStatement:
+	case ast.VariableDeclarationStatement:
 		return t.TranspileDeclarationStatement(&stmt, environment, indent)
 	case *ast.ReturnStatement:
 		return t.TranspileReturnStatement(stmt, environment, indent)

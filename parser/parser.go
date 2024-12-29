@@ -109,11 +109,11 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 	case tokens.Identifier:
 		if p.Next().Kind == tokens.Identifier {
 
-			return []ast.Statement{statements.ParseAssignment(p, false)}, nil
+			return []ast.Statement{statements.ParseVariableDeclaration(p)}, nil
 		}
 
 		if p.Next().Kind == tokens.Assign {
-			return []ast.Statement{statements.ParseAssignment(p, true)}, nil
+			return []ast.Statement{statements.ParseAssignment(p)}, nil
 		}
 	}
 

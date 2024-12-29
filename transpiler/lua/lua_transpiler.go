@@ -76,9 +76,9 @@ func (t LuaTranspiler) TranspileStatement(stmt ast.Statement) string {
 		return t.TranspileUnaryExpression(stmt)
 	case ast.UnaryExpression:
 		return t.TranspileUnaryExpression(&stmt)
-	case *ast.DeclarationStatement:
+	case *ast.VariableDeclarationStatement:
 		return t.TranspileDeclarationStatement(stmt)
-	case ast.DeclarationStatement:
+	case ast.VariableDeclarationStatement:
 		return t.TranspileDeclarationStatement(&stmt)
 	case *ast.ReturnStatement:
 		return t.TranspileReturnStatement(stmt)

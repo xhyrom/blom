@@ -87,7 +87,7 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		return expressions.InterpretBinaryExpression(intrepreter, environment, stmt)
 	case *ast.UnaryExpression:
 		return expressions.InterpretUnaryExpression(intrepreter, environment, stmt)
-	case *ast.DeclarationStatement:
+	case *ast.VariableDeclarationStatement:
 		expressions.InterpretDeclarationStatement(intrepreter, environment, stmt)
 	case *ast.ReturnStatement:
 		return expressions.InterpretReturnStatement(intrepreter, environment, stmt)

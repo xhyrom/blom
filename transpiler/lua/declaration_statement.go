@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func (t LuaTranspiler) TranspileDeclarationStatement(declaration *ast.DeclarationStatement) string {
+func (t LuaTranspiler) TranspileDeclarationStatement(declaration *ast.VariableDeclarationStatement) string {
 	result := t.TranspileAndFunctionifyStatement(declaration.Value)
 
 	if declaration.Redeclaration {

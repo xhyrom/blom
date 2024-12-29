@@ -9,7 +9,7 @@ type Transpiler interface {
 	TranspileFunctionDeclaration(declaration *ast.FunctionDeclaration) string
 	TranspileBinaryExpression(expression *ast.BinaryExpression) string
 	TranspileUnaryExpression(expression *ast.UnaryExpression) string
-	TranspileDeclarationStatement(declaration *ast.DeclarationStatement) string
+	TranspileDeclarationStatement(declaration *ast.VariableDeclarationStatement) string
 	TranspileReturnStatement(statement *ast.ReturnStatement) string
 	TranspileIfStatement(statement *ast.IfStatement) string
 	TranspileFunctionCall(call *ast.FunctionCall) string

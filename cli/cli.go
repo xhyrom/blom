@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"blom/analyzer"
 	"blom/compiler/qbe"
 	"blom/interpreter"
 	"blom/lexer"
@@ -63,6 +64,11 @@ func Run(args []string) {
 	if emitAst {
 		dump.Println(ast)
 	}
+
+	analyzer := analyzer.New(inputFile, ast)
+	analyzer.Analyze()
+
+	os.Exit(1)
 
 	inp := interpreter.New(inputFile)
 

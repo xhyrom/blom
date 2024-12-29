@@ -113,7 +113,7 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, expectedType *compiler.T
 			Name: fmt.Sprintf("$%s.%d", c.Environment.CurrentFunction.Name, id),
 			Type: compiler.String,
 		} //fmt.Sprintf("l $%s.%d", c.Environment.CurrentFunction.Name, id)
-	case *ast.DeclarationStatement:
+	case *ast.VariableDeclarationStatement:
 		return c.CompileDeclarationStatement(stmt)
 	case *ast.IdentifierLiteralStatement:
 		variable := c.Environment.Get(stmt.Value)

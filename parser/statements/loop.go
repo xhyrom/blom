@@ -11,17 +11,17 @@ import (
 // Parses a for loop statement that can have form:
 // for <declaration>; <condition>; <step>; { <body> }
 // for <condition>; <step>; { <body> }
-func ParseForLoop(p Parser) (*ast.DeclarationStatement, *ast.WhileLoopStatement) {
+func ParseForLoop(p Parser) (*ast.VariableDeclarationStatement, *ast.WhileLoopStatement) {
 	p.Consume()
 
-	var declaration *ast.DeclarationStatement
+	var declaration *ast.VariableDeclarationStatement
 	var condition *ast.BinaryExpression
 
 	if p.Current().Kind == tokens.Identifier {
 		stmts, _ := p.ParseStatement()
 
 		for _, stmt := range stmts {
-			if decl, ok := stmt.(*ast.DeclarationStatement); ok {
+			if decl, ok := stmt.(*ast.VariableDeclarationStatement); ok {
 				declaration = decl
 			} else if bin, ok := stmt.(*ast.BinaryExpression); ok {
 				condition = bin
@@ -46,15 +46,15 @@ func ParseForLoop(p Parser) (*ast.DeclarationStatement, *ast.WhileLoopStatement)
 		p.Consume() // consume the semicolon
 	}
 
-	var step *ast.DeclarationStatement
+	var step *ast.AssignmentStatement
 	location := p.Current().Location
 	stmts, _ := p.ParseStatement()
 	for _, stmt := range stmts {
-		if decl, ok := stmt.(*ast.DeclarationStatement); ok {
+		if decl, ok := stmt.(*ast.AssignmentStatement); ok {
 			step = decl
 		} else {
 			dbg := debug.NewSourceLocation(p.Source(), location.Row, location.Column)
-			dbg.ThrowError(fmt.Sprintf("Expected declaration, got %T", stmt), true)
+			dbg.ThrowError(fmt.Sprintf("Expected assignment, got %T", stmt), true)
 		}
 	}
 
