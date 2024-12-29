@@ -1,120 +1,119 @@
 package ast
 
 import (
-	"blom/compiler"
 	"blom/tokens"
 )
 
-type IdentifierLiteralStatement struct {
+type IdentifierLiteral struct {
 	Value string
-	Type  compiler.Type
+	Type  Type
 	Loc   tokens.Location
 }
 
-func (l IdentifierLiteralStatement) Kind() NodeKind {
+func (l IdentifierLiteral) Kind() NodeKind {
 	return IdentifierLiteralNode
 }
 
-func (l IdentifierLiteralStatement) Location() tokens.Location {
+func (l IdentifierLiteral) Location() tokens.Location {
 	return l.Loc
 }
 
-func (l IdentifierLiteralStatement) SetLocation(row uint64, column uint64) {
+func (l IdentifierLiteral) SetLocation(row uint64, column uint64) {
 	l.Loc.Row = row
 	l.Loc.Column = column
 }
 
-type CharLiteralStatement struct {
+type CharLiteral struct {
 	Value rune
-	Type  compiler.Type
+	Type  Type
 	Loc   tokens.Location
 }
 
-func (l CharLiteralStatement) Kind() NodeKind {
+func (l CharLiteral) Kind() NodeKind {
 	return CharLiteralNode
 }
 
-func (l CharLiteralStatement) Location() tokens.Location {
+func (l CharLiteral) Location() tokens.Location {
 	return l.Loc
 }
 
-func (l CharLiteralStatement) SetLocation(row uint64, column uint64) {
+func (l CharLiteral) SetLocation(row uint64, column uint64) {
 	l.Loc.Row = row
 	l.Loc.Column = column
 }
 
-type StringLiteralStatement struct {
+type StringLiteral struct {
 	Value string
-	Type  compiler.Type
+	Type  Type
 	Loc   tokens.Location
 }
 
-func (l StringLiteralStatement) Kind() NodeKind {
+func (l StringLiteral) Kind() NodeKind {
 	return StringLiteralNode
 }
 
-func (l StringLiteralStatement) Location() tokens.Location {
+func (l StringLiteral) Location() tokens.Location {
 	return l.Loc
 }
 
-func (l StringLiteralStatement) SetLocation(row uint64, column uint64) {
+func (l StringLiteral) SetLocation(row uint64, column uint64) {
 	l.Loc.Row = row
 	l.Loc.Column = column
 }
 
-type IntLiteralStatement struct {
+type IntLiteral struct {
 	Value int64
-	Type  compiler.Type
+	Type  Type
 	Loc   tokens.Location
 }
 
-func (l IntLiteralStatement) Kind() NodeKind {
+func (l IntLiteral) Kind() NodeKind {
 	return IntLiteralNode
 }
 
-func (l IntLiteralStatement) Location() tokens.Location {
+func (l IntLiteral) Location() tokens.Location {
 	return l.Loc
 }
 
-func (l IntLiteralStatement) SetLocation(row uint64, column uint64) {
+func (l IntLiteral) SetLocation(row uint64, column uint64) {
 	l.Loc.Row = row
 	l.Loc.Column = column
 }
 
-type FloatLiteralStatement struct {
+type FloatLiteral struct {
 	Value float64
-	Type  compiler.Type
+	Type  Type
 	Loc   tokens.Location
 }
 
-func (l FloatLiteralStatement) Kind() NodeKind {
+func (l FloatLiteral) Kind() NodeKind {
 	return FloatLiteralNode
 }
 
-func (l FloatLiteralStatement) Location() tokens.Location {
+func (l FloatLiteral) Location() tokens.Location {
 	return l.Loc
 }
 
-func (l FloatLiteralStatement) SetLocation(row uint64, column uint64) {
+func (l FloatLiteral) SetLocation(row uint64, column uint64) {
 	l.Loc.Row = row
 	l.Loc.Column = column
 }
 
-type BooleanLiteralStatement struct {
+type BooleanLiteral struct {
 	Value bool
-	Type  compiler.Type
+	Type  Type
 	Loc   tokens.Location
 }
 
-func (l BooleanLiteralStatement) Kind() NodeKind {
+func (l BooleanLiteral) Kind() NodeKind {
 	return BooleanLiteralNode
 }
 
-func (l BooleanLiteralStatement) Location() tokens.Location {
+func (l BooleanLiteral) Location() tokens.Location {
 	return l.Loc
 }
 
-func (l BooleanLiteralStatement) SetLocation(row uint64, column uint64) {
+func (l BooleanLiteral) SetLocation(row uint64, column uint64) {
 	l.Loc.Row = row
 	l.Loc.Column = column
 }

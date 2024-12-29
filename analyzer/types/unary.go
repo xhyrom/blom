@@ -2,14 +2,13 @@ package types
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/env"
 	"blom/tokens"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression, scope *env.Environment[*Variable]) ast.Type {
 	operand := a.analyzeExpression(expression.Operand, scope)
 
 	if !operand.IsNumeric() {
@@ -18,7 +17,7 @@ func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression, s
 			fmt.Sprintf(
 				"Unary expression '%s' expects a numeric operand, got '%s'",
 				expression.Operator,
-				operand.Inspect(),
+				operand,
 			),
 			true,
 		)
@@ -35,7 +34,7 @@ func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression, s
 			dbg.ThrowError(
 				fmt.Sprintf(
 					"Unary expression '~' expects an integer operand, got '%s'",
-					operand.Inspect(),
+					operand,
 				),
 				true,
 			)
@@ -44,5 +43,5 @@ func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression, s
 		return operand
 	}
 
-	return compiler.Void
+	return ast.Void
 }

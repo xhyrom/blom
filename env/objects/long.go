@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type LongObject struct {
 	Value int64
 }
 
-func (i *LongObject) Type() compiler.Type {
-	return compiler.Long
+func (i *LongObject) Type() ast.Type {
+	return ast.Int64
 }
 
 func (i *LongObject) Inspect() string {

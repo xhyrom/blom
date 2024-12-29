@@ -1,13 +1,12 @@
 package ast
 
 import (
-	"blom/compiler"
 	"blom/tokens"
 )
 
 type VariableDeclarationStatement struct {
 	Name  string
-	Type  compiler.Type
+	Type  Type
 	Value Expression
 	Loc   tokens.Location
 }

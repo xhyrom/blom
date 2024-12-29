@@ -1,13 +1,13 @@
 package objects
 
-import "blom/compiler"
+import "blom/ast"
 
 type StringObject struct {
 	Value string
 }
 
-func (s *StringObject) Type() compiler.Type {
-	return compiler.String
+func (s *StringObject) Type() ast.Type {
+	return ast.String
 }
 
 func (s *StringObject) Inspect() string {

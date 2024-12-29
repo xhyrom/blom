@@ -2,7 +2,6 @@ package statements
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/tokens"
 )
@@ -13,7 +12,7 @@ import (
 func ParseVariableDeclaration(p Parser) *ast.VariableDeclarationStatement {
 	valueTypeToken := p.Consume()
 
-	valueType, err := compiler.ParseType(valueTypeToken.Value)
+	valueType, err := ast.ParseType(valueTypeToken.Value)
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), valueTypeToken.Location.Row, valueTypeToken.Location.Column)
 		dbg.ThrowError(err.Error(), true)

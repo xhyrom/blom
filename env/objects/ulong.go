@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type UnsignedLongObject struct {
 	Value uint64
 }
 
-func (i *UnsignedLongObject) Type() compiler.Type {
-	return compiler.UnsignedLong
+func (i *UnsignedLongObject) Type() ast.Type {
+	return ast.UnsignedInt64
 }
 
 func (i *UnsignedLongObject) Inspect() string {

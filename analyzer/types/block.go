@@ -2,16 +2,15 @@ package types
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/env"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement, scope *env.Environment[*Variable]) ast.Type {
 	newScope := env.New(*scope)
 
-	lastReturnType := compiler.Void
+	lastReturnType := ast.Void
 
 	for _, statement := range block.Body {
 		if statement.Kind() == ast.ReturnNode {
@@ -32,8 +31,8 @@ func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement, scope *env.Enviro
 	return lastReturnType
 }
 
-func handleInconsistentReturnTypes(a *TypeAnalyzer, expression ast.Expression, returnType compiler.Type, lastReturnType compiler.Type) {
-	if lastReturnType == compiler.Void || lastReturnType == returnType {
+func handleInconsistentReturnTypes(a *TypeAnalyzer, expression ast.Expression, returnType ast.Type, lastReturnType ast.Type) {
+	if lastReturnType == ast.Void || lastReturnType == returnType {
 		return
 	}
 
@@ -41,8 +40,8 @@ func handleInconsistentReturnTypes(a *TypeAnalyzer, expression ast.Expression, r
 	dbg.ThrowError(
 		fmt.Sprintf(
 			"Return type '%s' does not match the previous return type '%s'",
-			returnType.Inspect(),
-			lastReturnType.Inspect(),
+			returnType,
+			lastReturnType,
 		),
 		true,
 	)

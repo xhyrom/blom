@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type BooleanObject struct {
 	Value bool
 }
 
-func (b *BooleanObject) Type() compiler.Type {
-	return compiler.Boolean
+func (b *BooleanObject) Type() ast.Type {
+	return ast.Boolean
 }
 
 func (b *BooleanObject) Inspect() string {

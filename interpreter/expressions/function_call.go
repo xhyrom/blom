@@ -43,7 +43,7 @@ func nativeInterpretFunctionCall(interpreter Interpreter, environment *env.Envir
 }
 
 func interpretPrintf(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.FunctionCall) objects.Object {
-	format := call.Parameters[0].(*ast.StringLiteralStatement).Value
+	format := call.Parameters[0].(*ast.StringLiteral).Value
 
 	args := make([]interface{}, 0)
 

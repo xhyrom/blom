@@ -1,9 +1,8 @@
 package qbe
 
 import (
-	"errors"
+	"blom/ast"
 	"fmt"
-	"slices"
 	"strings"
 )
 
@@ -28,25 +27,6 @@ const (
 	Null
 )
 
-var humanTypes = []string{
-	Byte:             "i8",
-	UnsignedByte:     "u8",
-	Halfword:         "i16",
-	UnsignedHalfword: "u16",
-	Word:             "i32",
-	UnsignedWord:     "u32",
-	Long:             "i64",
-	UnsignedLong:     "u64",
-	Single:           "f32",
-	Double:           "f64",
-	// Custom
-	Boolean: "bool",
-	Char:    "char",
-	String:  "string",
-	Void:    "void",
-	Null:    "null",
-}
-
 var types = []string{
 	Byte:             "b",
 	UnsignedByte:     "ub",
@@ -66,17 +46,41 @@ var types = []string{
 	Null:    "",
 }
 
-func ParseHumanType(str string) (Type, error) {
-	index := slices.Index(humanTypes, str)
-	if index == -1 {
-		return 0, errors.New(fmt.Sprintf("Unknown type '%s'", str))
+func RemapAstType(t ast.Type) Type {
+	switch t {
+	case ast.Int8:
+		return Byte
+	case ast.UnsignedInt8:
+		return UnsignedByte
+	case ast.Int16:
+		return Halfword
+	case ast.UnsignedInt16:
+		return UnsignedHalfword
+	case ast.Int32:
+		return Word
+	case ast.UnsignedInt32:
+		return UnsignedWord
+	case ast.Int64:
+		return Long
+	case ast.UnsignedInt64:
+		return UnsignedLong
+	case ast.Float32:
+		return Single
+	case ast.Float64:
+		return Double
+	case ast.Boolean:
+		return Boolean
+	case ast.Char:
+		return Char
+	case ast.String:
+		return String
+	case ast.Void:
+		return Void
+	case ast.Null:
+		return Null
 	}
 
-	return Type(index), nil
-}
-
-func (t Type) IntoHumanReadable() string {
-	return humanTypes[t]
+	panic(fmt.Sprintf("Unknown type '%s'", t))
 }
 
 func (t Type) String() string {

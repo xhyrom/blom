@@ -16,8 +16,8 @@ func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.Variab
 			fmt.Sprintf(
 				"Variable '%s' declared as '%s', but assigned with '%s'",
 				statement.Name,
-				statement.Type.Inspect(),
-				valueType.Inspect(),
+				statement.Type,
+				valueType,
 			),
 			true,
 		)
@@ -51,8 +51,8 @@ func (a *TypeAnalyzer) analyzeAssignmentStatement(statement *ast.AssignmentState
 			fmt.Sprintf(
 				"Variable '%s' declared as '%s', but assigned with '%s'",
 				statement.Name,
-				variable.Type.Inspect(),
-				valueType.Inspect(),
+				variable.Type,
+				valueType,
 			),
 			true,
 		)

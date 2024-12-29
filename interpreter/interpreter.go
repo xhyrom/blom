@@ -60,22 +60,22 @@ func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environ
 
 func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environment *env.Environment[objects.Object]) objects.Object {
 	switch stmt := stmt.(type) {
-	case *ast.CharLiteralStatement:
+	case *ast.CharLiteral:
 		return &objects.CharacterObject{Value: stmt.Value}
-	case *ast.StringLiteralStatement:
+	case *ast.StringLiteral:
 		return &objects.StringObject{Value: stmt.Value}
-	case *ast.IntLiteralStatement:
+	case *ast.IntLiteral:
 		return &objects.IntObject{Value: int32(stmt.Value)}
-	case *ast.FloatLiteralStatement:
+	case *ast.FloatLiteral:
 		return &objects.FloatObject{Value: float32(stmt.Value)}
-	case *ast.BooleanLiteralStatement:
+	case *ast.BooleanLiteral:
 		var value int32 = 0
 		if stmt.Value {
 			value = 1
 		}
 
 		return &objects.IntObject{Value: value}
-	case *ast.IdentifierLiteralStatement:
+	case *ast.IdentifierLiteral:
 		variable, found := environment.FindVariable(stmt.Value)
 		if !found {
 			panic(fmt.Sprintf("Variable %s not found", stmt.Value))

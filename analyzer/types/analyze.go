@@ -2,7 +2,6 @@ package types
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/env"
 	"fmt"
@@ -15,7 +14,7 @@ type TypeAnalyzer struct {
 }
 
 type Variable struct {
-	Type compiler.Type
+	Type ast.Type
 }
 
 func New(file string, program *ast.Program, functions map[string]*ast.FunctionDeclaration) *TypeAnalyzer {
@@ -38,7 +37,7 @@ func (a *TypeAnalyzer) Analyze() {
 	}
 }
 
-func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Environment[*Variable]) (compiler.Type, bool) {
+func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Environment[*Variable]) (ast.Type, bool) {
 	switch statement := statement.(type) {
 	case *ast.FunctionDeclaration:
 		a.analyzeFunctionDeclaration(statement)
@@ -69,43 +68,43 @@ func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Envi
 		return a.analyzeExpression(statement, scope), true
 	}
 
-	return compiler.Void, false
+	return ast.Void, false
 }
 
-func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.Environment[*Variable]) ast.Type {
 	switch expression.(type) {
-	case *ast.IntLiteralStatement:
-		intLiteral := expression.(*ast.IntLiteralStatement)
-		intLiteral.Type = compiler.Word
+	case *ast.IntLiteral:
+		intLiteral := expression.(*ast.IntLiteral)
+		intLiteral.Type = ast.Int32
 
-		return compiler.Word
-	case *ast.FloatLiteralStatement:
-		floatLiteral := expression.(*ast.FloatLiteralStatement)
-		floatLiteral.Type = compiler.Single
+		return ast.Int32
+	case *ast.FloatLiteral:
+		floatLiteral := expression.(*ast.FloatLiteral)
+		floatLiteral.Type = ast.Float32
 
-		return compiler.Single
-	case *ast.StringLiteralStatement:
-		stringLiteral := expression.(*ast.StringLiteralStatement)
-		stringLiteral.Type = compiler.String
+		return ast.Float32
+	case *ast.StringLiteral:
+		stringLiteral := expression.(*ast.StringLiteral)
+		stringLiteral.Type = ast.String
 
-		return compiler.String
-	case *ast.CharLiteralStatement:
-		charLiteral := expression.(*ast.CharLiteralStatement)
-		charLiteral.Type = compiler.Char
+		return ast.String
+	case *ast.CharLiteral:
+		charLiteral := expression.(*ast.CharLiteral)
+		charLiteral.Type = ast.Char
 
-		return compiler.Char
-	case *ast.IdentifierLiteralStatement:
-		identifier := expression.(*ast.IdentifierLiteralStatement)
+		return ast.Char
+	case *ast.IdentifierLiteral:
+		identifier := expression.(*ast.IdentifierLiteral)
 		typ := a.analyzeIdentifier(identifier, scope)
 
 		identifier.Type = typ
 
 		return typ
-	case *ast.BooleanLiteralStatement:
-		booleanLiteral := expression.(*ast.BooleanLiteralStatement)
-		booleanLiteral.Type = compiler.Boolean
+	case *ast.BooleanLiteral:
+		booleanLiteral := expression.(*ast.BooleanLiteral)
+		booleanLiteral.Type = ast.Boolean
 
-		return compiler.Boolean
+		return ast.Boolean
 	case *ast.BinaryExpression:
 		binaryExpression := expression.(*ast.BinaryExpression)
 		return a.analyzeBinaryExpression(binaryExpression, scope)
@@ -120,39 +119,39 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.E
 		return a.analyzeFunctionCall(functionCall, scope)
 	case *ast.CompileTimeFunctionCall:
 		compileTimeFunctionCall := expression.(*ast.CompileTimeFunctionCall)
-		return a.analyzeCompileTimeFunctionCall(compileTimeFunctionCall, scope)
+		return a.analyzeCompileTimeFunctionCall(compileTimeFunctionCall)
 	case *ast.BlockStatement:
 		blockStatement := expression.(*ast.BlockStatement)
 		return a.analyzeBlock(blockStatement, scope)
 	}
 
-	return compiler.Void
+	return ast.Void
 }
 
-func (a *TypeAnalyzer) setExpressionType(expression ast.Expression, newType compiler.Type, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) setExpressionType(expression ast.Expression, newType ast.Type) ast.Type {
 	switch expression.(type) {
-	case *ast.IntLiteralStatement:
-		intLiteral := expression.(*ast.IntLiteralStatement)
+	case *ast.IntLiteral:
+		intLiteral := expression.(*ast.IntLiteral)
 		intLiteral.Type = newType
 
 		return newType
-	case *ast.FloatLiteralStatement:
-		floatLiteral := expression.(*ast.FloatLiteralStatement)
+	case *ast.FloatLiteral:
+		floatLiteral := expression.(*ast.FloatLiteral)
 		floatLiteral.Type = newType
 
 		return newType
-	case *ast.StringLiteralStatement:
-		stringLiteral := expression.(*ast.StringLiteralStatement)
+	case *ast.StringLiteral:
+		stringLiteral := expression.(*ast.StringLiteral)
 		stringLiteral.Type = newType
 
 		return newType
-	case *ast.CharLiteralStatement:
-		charLiteral := expression.(*ast.CharLiteralStatement)
+	case *ast.CharLiteral:
+		charLiteral := expression.(*ast.CharLiteral)
 		charLiteral.Type = newType
 
 		return newType
-	case *ast.IdentifierLiteralStatement:
-		identifier := expression.(*ast.IdentifierLiteralStatement)
+	case *ast.IdentifierLiteral:
+		identifier := expression.(*ast.IdentifierLiteral)
 		identifier.Type = newType
 
 		return newType

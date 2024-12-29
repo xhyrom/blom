@@ -5,7 +5,7 @@ import (
 	"blom/env"
 )
 
-func (c *Compiler) CompileBooleanLiteralStatement(stmt *ast.BooleanLiteralStatement, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
+func (c *Compiler) CompileBooleanLiteralStatement(stmt *ast.BooleanLiteral, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
 	var value int64 = 0
 
 	if stmt.Value {
@@ -13,7 +13,7 @@ func (c *Compiler) CompileBooleanLiteralStatement(stmt *ast.BooleanLiteralStatem
 	}
 
 	return c.CompileStatement(
-		&ast.IntLiteralStatement{
+		&ast.IntLiteral{
 			Value: value,
 			Type:  stmt.Type,
 		},

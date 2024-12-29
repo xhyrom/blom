@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type CharacterObject struct {
 	Value rune
 }
 
-func (c *CharacterObject) Type() compiler.Type {
-	return compiler.Char
+func (c *CharacterObject) Type() ast.Type {
+	return ast.Char
 }
 
 func (c *CharacterObject) Inspect() string {

@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type ByteObject struct {
 	Value int8
 }
 
-func (i *ByteObject) Type() compiler.Type {
-	return compiler.Byte
+func (i *ByteObject) Type() ast.Type {
+	return ast.Int8
 }
 
 func (i *ByteObject) Inspect() string {

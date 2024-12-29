@@ -2,14 +2,13 @@ package types
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/env"
 	"blom/tokens"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression, scope *env.Environment[*Variable]) ast.Type {
 	left := a.analyzeExpression(expression.Left, scope)
 	right := a.analyzeExpression(expression.Right, scope)
 
@@ -19,8 +18,8 @@ func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression,
 			fmt.Sprintf(
 				"Binary expression '%s' has mismatched types '%s' and '%s'",
 				expression.Operator,
-				left.Inspect(),
-				right.Inspect(),
+				left,
+				right,
 			),
 			true,
 		)
@@ -28,17 +27,17 @@ func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression,
 
 	switch expression.Operator {
 	case tokens.Equals:
-		return compiler.Boolean
+		return ast.Boolean
 	//case tokens.NotEquals:
 	//	return compiler.Boolean
 	case tokens.LessThan:
-		return compiler.Boolean
+		return ast.Boolean
 	case tokens.LessThanOrEqual:
-		return compiler.Boolean
+		return ast.Boolean
 	case tokens.GreaterThan:
-		return compiler.Boolean
+		return ast.Boolean
 	case tokens.GreaterThanOrEqual:
-		return compiler.Boolean
+		return ast.Boolean
 	}
 
 	return left

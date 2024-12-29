@@ -1,9 +1,9 @@
 package objects
 
-import "blom/compiler"
+import "blom/ast"
 
 type Object interface {
-	Type() compiler.Type
+	Type() ast.Type
 	Inspect() string
 	Add(other Object) Object
 	Subtract(other Object) Object

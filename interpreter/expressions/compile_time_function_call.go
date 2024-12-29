@@ -2,7 +2,6 @@ package expressions
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/env"
 	"blom/env/objects"
 )
@@ -22,7 +21,7 @@ func runFunction(interpreter Interpreter, environment *env.Environment[objects.O
 
 func cast(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.CompileTimeFunctionCall) objects.Object {
 	stmt := interpreter.InterpretStatement(call.Parameters[0], environment)
-	requiredType, _ := compiler.ParseType(call.Parameters[1].(*ast.IdentifierLiteralStatement).Value)
+	requiredType, _ := ast.ParseType(call.Parameters[1].(*ast.IdentifierLiteral).Value)
 
 	switch stmt := stmt.(type) {
 	case *objects.UnsignedLongObject, *objects.UnsignedByteObject, *objects.ShortObject, *objects.LongObject, *objects.FloatObject, *objects.ByteObject, *objects.DoubleObject, *objects.IntObject:
@@ -47,7 +46,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 		}
 
 		switch requiredType {
-		case compiler.Double:
+		case ast.Float64:
 			switch v := value.(type) {
 			case int64:
 				return &objects.DoubleObject{Value: float64(v)}
@@ -70,7 +69,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.DoubleObject{Value: float64(v)}
 			}
-		case compiler.Single:
+		case ast.Float32:
 			switch v := value.(type) {
 			case int64:
 				return &objects.FloatObject{Value: float32(v)}
@@ -93,7 +92,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.FloatObject{Value: float32(v)}
 			}
-		case compiler.Long:
+		case ast.Int64:
 			switch v := value.(type) {
 			case int64:
 				return &objects.LongObject{Value: int64(v)}
@@ -116,7 +115,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.LongObject{Value: int64(v)}
 			}
-		case compiler.Word:
+		case ast.Int32:
 			switch v := value.(type) {
 			case int64:
 				return &objects.IntObject{Value: int32(v)}
@@ -139,7 +138,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.IntObject{Value: int32(v)}
 			}
-		case compiler.Halfword:
+		case ast.Int16:
 			switch v := value.(type) {
 			case int64:
 				return &objects.ShortObject{Value: int16(v)}
@@ -162,7 +161,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.ShortObject{Value: int16(v)}
 			}
-		case compiler.Byte:
+		case ast.Int8:
 			switch v := value.(type) {
 			case int64:
 				return &objects.ByteObject{Value: int8(v)}
@@ -185,7 +184,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.ByteObject{Value: int8(v)}
 			}
-		case compiler.UnsignedLong:
+		case ast.UnsignedInt64:
 			switch v := value.(type) {
 			case int64:
 				return &objects.UnsignedLongObject{Value: uint64(v)}
@@ -208,7 +207,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.UnsignedLongObject{Value: uint64(v)}
 			}
-		case compiler.UnsignedWord:
+		case ast.UnsignedInt32:
 			switch v := value.(type) {
 			case int64:
 				return &objects.UnsignedIntObject{Value: uint32(v)}
@@ -231,7 +230,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.UnsignedIntObject{Value: uint32(v)}
 			}
-		case compiler.UnsignedHalfword:
+		case ast.UnsignedInt16:
 			switch v := value.(type) {
 			case int64:
 				return &objects.UnsignedShortObject{Value: uint16(v)}
@@ -254,7 +253,7 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case float64:
 				return &objects.UnsignedShortObject{Value: uint16(v)}
 			}
-		case compiler.UnsignedByte:
+		case ast.UnsignedInt8:
 			switch v := value.(type) {
 			case int64:
 				return &objects.UnsignedByteObject{Value: uint8(v)}

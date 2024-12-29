@@ -110,18 +110,18 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, scope *env.Environment[*
 	c.tempCounter += 1
 
 	switch stmt := stmt.(type) {
-	case *ast.IntLiteralStatement:
+	case *ast.IntLiteral:
 		val := strconv.FormatInt(int64(stmt.Value), 10)
 		return []string{}, &QbeIdentifier{
 			Name: val,
 			Raw:  true,
 			Type: stmt.Type,
 		}
-	case *ast.FloatLiteralStatement:
+	case *ast.FloatLiteral:
 		return c.CompileFloatLiteralStatement(stmt)
-	case *ast.BooleanLiteralStatement:
+	case *ast.BooleanLiteral:
 		return c.CompileBooleanLiteralStatement(stmt, scope)
-	case *ast.StringLiteralStatement:
+	case *ast.StringLiteral:
 		id := c.dataCounter
 
 		c.data = append(c.data, fmt.Sprintf("data $.%d = { b \"%s\", b 0 }", id, stmt.Value))
@@ -135,7 +135,7 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, scope *env.Environment[*
 		return c.CompileVariableDeclarationStatement(stmt, scope, c.tempCounter)
 	case *ast.AssignmentStatement:
 		return c.CompileAssignmentStatement(stmt, scope)
-	case *ast.IdentifierLiteralStatement:
+	case *ast.IdentifierLiteral:
 		variable, exists := scope.FindVariable(stmt.Value)
 		if !exists {
 			panic("VARIABLE NOT FOUND IN COMPILER, SHOULD HAPPEN IN ANALYZER")

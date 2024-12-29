@@ -40,25 +40,25 @@ func (t LuaTranspiler) TranspileBlock(block ast.BlockStatement) string {
 
 func (t LuaTranspiler) TranspileStatement(stmt ast.Statement) string {
 	switch stmt := stmt.(type) {
-	case *ast.CharLiteralStatement:
+	case *ast.CharLiteral:
 		return "'" + string(stmt.Value) + "'"
-	case ast.CharLiteralStatement:
+	case ast.CharLiteral:
 		return "'" + string(stmt.Value) + "'"
-	case *ast.StringLiteralStatement:
+	case *ast.StringLiteral:
 		return "\"" + stmt.Value + "\""
-	case ast.StringLiteralStatement:
+	case ast.StringLiteral:
 		return "\"" + stmt.Value + "\""
-	case *ast.IntLiteralStatement:
+	case *ast.IntLiteral:
 		return strconv.FormatInt(stmt.Value, 10)
-	case ast.IntLiteralStatement:
+	case ast.IntLiteral:
 		return strconv.FormatInt(stmt.Value, 10)
-	case *ast.FloatLiteralStatement:
+	case *ast.FloatLiteral:
 		return strconv.FormatFloat(stmt.Value, 'f', -1, 64)
-	case ast.FloatLiteralStatement:
+	case ast.FloatLiteral:
 		return strconv.FormatFloat(stmt.Value, 'f', -1, 64)
-	case *ast.IdentifierLiteralStatement:
+	case *ast.IdentifierLiteral:
 		return stmt.Value
-	case ast.IdentifierLiteralStatement:
+	case ast.IdentifierLiteral:
 		return stmt.Value
 	case *ast.BlockStatement:
 		return t.TranspileBlock(*stmt)

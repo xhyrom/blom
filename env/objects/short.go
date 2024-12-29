@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type ShortObject struct {
 	Value int16
 }
 
-func (i *ShortObject) Type() compiler.Type {
-	return compiler.Halfword
+func (i *ShortObject) Type() ast.Type {
+	return ast.Int16
 }
 
 func (i *ShortObject) Inspect() string {

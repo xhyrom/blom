@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type FloatObject struct {
 	Value float32
 }
 
-func (i *FloatObject) Type() compiler.Type {
-	return compiler.Single
+func (i *FloatObject) Type() ast.Type {
+	return ast.Float32
 }
 
 func (i *FloatObject) Inspect() string {

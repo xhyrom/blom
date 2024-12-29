@@ -2,7 +2,6 @@ package types
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/env"
 	"fmt"
@@ -10,12 +9,12 @@ import (
 
 func (a *TypeAnalyzer) analyzeIfStatement(expression *ast.IfStatement, scope *env.Environment[*Variable]) {
 	conditionType := a.analyzeExpression(expression.Condition, scope)
-	if conditionType != compiler.Boolean {
+	if conditionType != ast.Boolean {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Condition)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Condition requires a 'boolean' type, but got '%s'",
-				conditionType.Inspect(),
+				conditionType,
 			),
 			true,
 		)
@@ -28,14 +27,14 @@ func (a *TypeAnalyzer) analyzeIfStatement(expression *ast.IfStatement, scope *en
 	}
 }
 
-func (a *TypeAnalyzer) analyzeIfExpression(expression *ast.IfStatement, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) analyzeIfExpression(expression *ast.IfStatement, scope *env.Environment[*Variable]) ast.Type {
 	conditionType := a.analyzeExpression(expression.Condition, scope)
-	if conditionType != compiler.Boolean {
+	if conditionType != ast.Boolean {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Condition)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Condition requires a 'boolean' type, but got '%s'",
-				conditionType.Inspect(),
+				conditionType,
 			),
 			true,
 		)
@@ -51,8 +50,8 @@ func (a *TypeAnalyzer) analyzeIfExpression(expression *ast.IfStatement, scope *e
 			dbg.ThrowError(
 				fmt.Sprintf(
 					"Branched blocks must have the same return type, but got '%s' and '%s'",
-					returnType.Inspect(),
-					elseReturnType.Inspect(),
+					returnType,
+					elseReturnType,
 				),
 				true,
 			)

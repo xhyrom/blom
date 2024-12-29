@@ -148,35 +148,35 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 	case tokens.CharLiteral:
 		token := p.Consume()
 		value := []rune(token.Value)[0]
-		return &ast.CharLiteralStatement{
+		return &ast.CharLiteral{
 			Value: value,
 			Loc:   token.Location,
 		}, nil
 	case tokens.StringLiteral:
 		token := p.Consume()
 		value := token.Value
-		return &ast.StringLiteralStatement{
+		return &ast.StringLiteral{
 			Value: value,
 			Loc:   token.Location,
 		}, nil
 	case tokens.IntLiteral:
 		token := p.Consume()
 		value, _ := strconv.ParseInt(token.Value, 10, 64)
-		return &ast.IntLiteralStatement{
+		return &ast.IntLiteral{
 			Value: int64(value),
 			Loc:   token.Location,
 		}, nil
 	case tokens.FloatLiteral:
 		token := p.Consume()
 		value, _ := strconv.ParseFloat(token.Value, 64)
-		return &ast.FloatLiteralStatement{
+		return &ast.FloatLiteral{
 			Value: float64(value),
 			Loc:   token.Location,
 		}, nil
 	case tokens.BooleanLiteral:
 		token := p.Consume()
 		value, _ := strconv.ParseBool(token.Value)
-		return &ast.BooleanLiteralStatement{
+		return &ast.BooleanLiteral{
 			Value: value,
 			Loc:   token.Location,
 		}, nil

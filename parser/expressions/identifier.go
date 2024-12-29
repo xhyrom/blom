@@ -12,7 +12,7 @@ func ParseIdentifier(p Parser) ast.Statement {
 		return ParseFunctionCall(p, token, false)
 	}
 
-	return &ast.IdentifierLiteralStatement{
+	return &ast.IdentifierLiteral{
 		Value: token.Value,
 		Loc:   token.Location,
 	}

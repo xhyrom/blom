@@ -2,13 +2,12 @@ package types
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/env"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeIdentifier(expression *ast.IdentifierLiteralStatement, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) analyzeIdentifier(expression *ast.IdentifierLiteral, scope *env.Environment[*Variable]) ast.Type {
 	variable, exists := scope.FindVariable(expression.Value)
 
 	if !exists {

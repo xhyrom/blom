@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type IntObject struct {
 	Value int32
 }
 
-func (i *IntObject) Type() compiler.Type {
-	return compiler.Word
+func (i *IntObject) Type() ast.Type {
+	return ast.Int32
 }
 
 func (i *IntObject) Inspect() string {

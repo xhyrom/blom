@@ -1,20 +1,17 @@
 package ast
 
-import (
-	"blom/compiler"
-	"blom/tokens"
-)
+import "blom/tokens"
 
 type FunctionArgument struct {
 	Name string
-	Type compiler.Type
+	Type Type
 }
 
 type FunctionDeclaration struct {
 	Name        string
 	Arguments   []FunctionArgument
 	Annotations []Annotation
-	ReturnType  compiler.Type
+	ReturnType  Type
 	Body        *BlockStatement
 	Variadic    bool
 	Loc         tokens.Location

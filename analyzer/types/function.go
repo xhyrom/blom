@@ -2,7 +2,6 @@ package types
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/env"
 	"fmt"
@@ -30,8 +29,8 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 					fmt.Sprintf(
 						"Function '%s' returns '%s', but declared to return '%s'",
 						function.Name,
-						returnType.Inspect(),
-						function.ReturnType.Inspect(),
+						returnType,
+						function.ReturnType,
 					),
 					true,
 				)
@@ -42,7 +41,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 	}
 }
 
-func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.Environment[*Variable]) ast.Type {
 	function := a.GlobalScope.GetFunction(call.Name)
 	if function == nil {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
@@ -78,8 +77,8 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.En
 					"Function '%s' expects argument %d to be of type '%s', but got '%s'.",
 					call.Name,
 					i+1,
-					function.Arguments[i].Type.Inspect(),
-					paramType.Inspect(),
+					function.Arguments[i].Type,
+					paramType,
 				),
 				true,
 			)

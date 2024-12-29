@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (c *Compiler) CompileFloatLiteralStatement(stmt *ast.FloatLiteralStatement) ([]string, *QbeIdentifier) {
+func (c *Compiler) CompileFloatLiteralStatement(stmt *ast.FloatLiteral) ([]string, *QbeIdentifier) {
 	name := fmt.Sprintf("%%tmp.%d", c.tempCounter)
 
 	floatStr := strconv.FormatFloat(stmt.Value, 'f', -1, 64)

@@ -2,7 +2,6 @@ package statements
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
 	"blom/parser/expressions"
 	"blom/tokens"
@@ -74,7 +73,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 
 	fn.Arguments = arguments
 
-	var returnType compiler.Type = compiler.Word
+	var returnType ast.Type = ast.Int32
 
 	if len(arguments) == 0 {
 		p.Consume()
@@ -97,7 +96,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 		}
 
 		var err error
-		returnType, err = compiler.ParseType(returnTypeToken.Value)
+		returnType, err = ast.ParseType(returnTypeToken.Value)
 
 		if err != nil {
 			dbg := debug.NewSourceLocation(p.Source(), returnTypeToken.Location.Row, returnTypeToken.Location.Column)
@@ -145,7 +144,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 	if !hasReturn {
 		block.Body = append(block.Body, &ast.ReturnStatement{
 			Loc: block.Loc,
-			Value: &ast.IntLiteralStatement{
+			Value: &ast.IntLiteral{
 				Value: 0,
 			},
 		})
@@ -196,7 +195,7 @@ func parseArgument(p Parser, fun *ast.FunctionDeclaration) (*ast.FunctionArgumen
 		dbg.ThrowError(fmt.Sprintf("Argument type must be a valid type, got \"%s\"", typToken.Value), true)
 	}
 
-	typ, err := compiler.ParseType(typToken.Value)
+	typ, err := ast.ParseType(typToken.Value)
 
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), typToken.Location.Row, typToken.Location.Column)

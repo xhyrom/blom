@@ -2,23 +2,21 @@ package types
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
-	"blom/env"
 )
 
-func (a *TypeAnalyzer) analyzeCompileTimeFunctionCall(call *ast.CompileTimeFunctionCall, scope *env.Environment[*Variable]) compiler.Type {
+func (a *TypeAnalyzer) analyzeCompileTimeFunctionCall(call *ast.CompileTimeFunctionCall) ast.Type {
 	switch call.Name {
 	case "cast":
-		return analyzeCastFunctionCall(a, call, scope)
+		return analyzeCastFunctionCall(a, call)
 	default:
-		return compiler.Null
+		return ast.Null
 	}
 }
 
-func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.CompileTimeFunctionCall, scope *env.Environment[*Variable]) compiler.Type {
+func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.CompileTimeFunctionCall) ast.Type {
 	if len(call.Parameters) != 2 {
-		return compiler.Null
+		return ast.Null
 	}
 
 	literal := call.Parameters[0]
@@ -39,9 +37,9 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.CompileTimeFunctionCall,
 		)
 	}
 
-	identifierLiteral := identifierLiteralExpr.(*ast.IdentifierLiteralStatement)
+	identifierLiteral := identifierLiteralExpr.(*ast.IdentifierLiteral)
 
-	castType, err := compiler.ParseType(identifierLiteral.Value)
+	castType, err := ast.ParseType(identifierLiteral.Value)
 	if err != nil {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
@@ -50,7 +48,7 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.CompileTimeFunctionCall,
 		)
 	}
 
-	a.setExpressionType(literal, castType, scope)
+	a.setExpressionType(literal, castType)
 
 	return castType
 }

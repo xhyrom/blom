@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"blom/compiler"
+	"blom/ast"
 	"fmt"
 )
 
@@ -9,8 +9,8 @@ type UnsignedByteObject struct {
 	Value uint8
 }
 
-func (i *UnsignedByteObject) Type() compiler.Type {
-	return compiler.UnsignedByte
+func (i *UnsignedByteObject) Type() ast.Type {
+	return ast.UnsignedInt8
 }
 
 func (i *UnsignedByteObject) Inspect() string {
