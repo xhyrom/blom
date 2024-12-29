@@ -21,7 +21,7 @@ func (c *Compiler) CompileCompileTimeFunctionCall(call *ast.CompileTimeFunctionC
 			result = append(result, s)
 		}
 
-		result = append(result, fmt.Sprintf("%s =%s exts %s", name, c.StoreType(castType), stmtAdd.Name))
+		result = append(result, fmt.Sprintf("%s =%s %s %s", name, c.StoreType(castType), convertOperation(c, stmtAdd.Type, castType), stmtAdd.Name))
 
 		ad := &QbeIdentifier{
 			Name: name,
@@ -39,4 +39,29 @@ func (c *Compiler) CompileCompileTimeFunctionCall(call *ast.CompileTimeFunctionC
 	}
 
 	return stmt, ad
+}
+
+func convertOperation(c *Compiler, original compiler.Type, new compiler.Type) string {
+	if !original.IsInteger() && !new.IsInteger() {
+		return "exts" // TODO: finish
+	}
+
+	var first, second string
+	if original.IsFloatingPoint() {
+		first = original.String()
+	} else {
+		first = "s" + c.StoreType(original).String()
+	}
+
+	if new.IsFloatingPoint() {
+		second = "f"
+	} else {
+		second = "si"
+	}
+
+	return fmt.Sprintf(
+		"%sto%s",
+		first,
+		second,
+	)
 }

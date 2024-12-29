@@ -49,6 +49,7 @@ func interpretPrintf(interpreter Interpreter, environment *env.Environment[objec
 
 	for _, param := range call.Parameters[1:] {
 		obj := interpreter.InterpretStatement(param, environment)
+
 		switch obj := obj.(type) {
 		case *objects.IntObject:
 			args = append(args, obj.Value)

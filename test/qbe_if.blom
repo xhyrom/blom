@@ -9,6 +9,6 @@ fun fib(n: i32) -> i32 {
 }
 
 fun main() -> i32 {
-    printf("fib(50) = %d\n", fib(40))
+    printf("fib(50) = %d\n", fib(30));
     return 0;
 }

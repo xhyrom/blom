@@ -1,8 +1,10 @@
+fun @native printf(format: string, ...) -> i32;
+
 fun main() {
-    i64 a = 18;
+    i32 a = 18;
 
     {
-        i64 a = 7;
+        i32 a = 7;
         a = 9;
 
         {
@@ -10,6 +12,8 @@ fun main() {
             a = 10;
         }
     }
+
+    printf("%d\n", a);
 
     return a;
 }

@@ -4,18 +4,19 @@ import (
 	"blom/ast"
 	"blom/compiler"
 	"blom/debug"
+	"blom/env"
 )
 
-func (a *TypeAnalyzer) analyzeCompileTimeFunctionCall(call *ast.CompileTimeFunctionCall) compiler.Type {
+func (a *TypeAnalyzer) analyzeCompileTimeFunctionCall(call *ast.CompileTimeFunctionCall, scope *env.Environment[*Variable]) compiler.Type {
 	switch call.Name {
 	case "cast":
-		return analyzeCastFunctionCall(a, call)
+		return analyzeCastFunctionCall(a, call, scope)
 	default:
 		return compiler.Null
 	}
 }
 
-func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.CompileTimeFunctionCall) compiler.Type {
+func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.CompileTimeFunctionCall, scope *env.Environment[*Variable]) compiler.Type {
 	if len(call.Parameters) != 2 {
 		return compiler.Null
 	}
@@ -48,6 +49,8 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.CompileTimeFunctionCall)
 			true,
 		)
 	}
+
+	a.setExpressionType(literal, castType, scope)
 
 	return castType
 }

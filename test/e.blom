@@ -1,0 +1,24 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun fact(n: i64) -> i64 {
+    if n <= @cast(1, i64) {
+        return @cast(1, i64);
+    }
+
+    return n * fact(n - @cast(1, i64));
+}
+
+fun eulersnumber() -> f64 {
+    f64 res = @cast(0.0, f64);
+
+    for i64 i = @cast(0, i64); i < @cast(50, i64); i = i + @cast(1, i64); {
+        i64 g = fact(i);
+        res = res + @cast(1.0, f64) / @cast(g, f64);
+    }
+
+    return res;
+}
+
+fun main() {
+    printf("e: %f\n", eulersnumber());
+}

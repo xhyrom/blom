@@ -1,0 +1,4 @@
+fun main() {
+    i64 a = @cast(5, i64);
+    f64 b = @cast(a, f64);
+}

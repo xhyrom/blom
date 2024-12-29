@@ -8,13 +8,13 @@ fun main() -> i32 {
 
         {
             i32 a = 3;
-            printf("innermost: %d\n", a)
+            printf("innermost: %d\n", a);
         }
 
-        printf("inner: %d\n", a)
+        printf("inner: %d\n", a);
     }
 
-    printf("outer: %d\n", a)
+    printf("outer: %d\n", a);
 
     return 0;
 }

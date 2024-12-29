@@ -120,11 +120,43 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.E
 		return a.analyzeFunctionCall(functionCall, scope)
 	case *ast.CompileTimeFunctionCall:
 		compileTimeFunctionCall := expression.(*ast.CompileTimeFunctionCall)
-		return a.analyzeCompileTimeFunctionCall(compileTimeFunctionCall)
+		return a.analyzeCompileTimeFunctionCall(compileTimeFunctionCall, scope)
 	case *ast.BlockStatement:
 		blockStatement := expression.(*ast.BlockStatement)
 		return a.analyzeBlock(blockStatement, scope)
 	}
 
 	return compiler.Void
+}
+
+func (a *TypeAnalyzer) setExpressionType(expression ast.Expression, newType compiler.Type, scope *env.Environment[*Variable]) compiler.Type {
+	switch expression.(type) {
+	case *ast.IntLiteralStatement:
+		intLiteral := expression.(*ast.IntLiteralStatement)
+		intLiteral.Type = newType
+
+		return newType
+	case *ast.FloatLiteralStatement:
+		floatLiteral := expression.(*ast.FloatLiteralStatement)
+		floatLiteral.Type = newType
+
+		return newType
+	case *ast.StringLiteralStatement:
+		stringLiteral := expression.(*ast.StringLiteralStatement)
+		stringLiteral.Type = newType
+
+		return newType
+	case *ast.CharLiteralStatement:
+		charLiteral := expression.(*ast.CharLiteralStatement)
+		charLiteral.Type = newType
+
+		return newType
+	case *ast.IdentifierLiteralStatement:
+		identifier := expression.(*ast.IdentifierLiteralStatement)
+		identifier.Type = newType
+
+		return newType
+	}
+
+	panic("unreachable")
 }

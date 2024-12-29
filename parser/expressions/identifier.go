@@ -9,7 +9,7 @@ func ParseIdentifier(p Parser) ast.Statement {
 	token := p.Consume()
 
 	if p.Current().Kind == tokens.LeftParenthesis {
-		return ParseFunctionCall(p, token)
+		return ParseFunctionCall(p, token, false)
 	}
 
 	return &ast.IdentifierLiteralStatement{

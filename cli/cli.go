@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/gookit/goutil/dump"
 )
@@ -74,7 +75,11 @@ func Run(args []string) {
 
 	fmt.Printf("Interpreting %s\n", inputFile)
 
+	startTime := time.Now()
 	inp.Interpret(ast, int64(len(os.Args)-1))
+	endTime := time.Since(startTime)
+
+	fmt.Printf("Interpreted %s ran for %s\n", inputFile, endTime)
 
 	fmt.Println()
 
@@ -92,11 +97,15 @@ func Run(args []string) {
 	}
 
 	fmt.Printf("Running %s\n", inputFile)
+	startTime = time.Now()
 	cmd := exec.Command("sh", "-c", "qbe -o out.s out.sse && cc -O3 out.s -o a.out && ./a.out")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Run()
 	cmd.Wait()
+	endTime = time.Since(startTime)
+
+	fmt.Printf("Compiled %s ran for %s\n", inputFile, endTime)
 
 	os.Exit(cmd.ProcessState.ExitCode())
 }

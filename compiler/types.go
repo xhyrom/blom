@@ -86,3 +86,7 @@ func (t Type) IsNumeric() bool {
 func (t Type) IsInteger() bool {
 	return t == UnsignedByte || t == UnsignedHalfword || t == UnsignedWord || t == UnsignedLong || t == Byte || t == Halfword || t == Word || t == Long
 }
+
+func (t Type) IsFloatingPoint() bool {
+	return t == Single || t == Double
+}

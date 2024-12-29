@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseFunctionCall(p Parser, identifier tokens.Token) *ast.FunctionCall {
+func ParseFunctionCall(p Parser, identifier tokens.Token, requiresSemicolon bool) *ast.FunctionCall {
 	p.Consume()
 
 	name := identifier.Value
@@ -43,6 +43,19 @@ func ParseFunctionCall(p Parser, identifier tokens.Token) *ast.FunctionCall {
 	}
 
 	last := p.Consume()
+
+	if requiresSemicolon {
+		if p.Consume().Kind != tokens.Semicolon {
+			dbg := debug.NewSourceLocation(p.Source(), last.Location.Row, last.Location.Column+1)
+			dbg.ThrowError(
+				"Expected semicolon",
+				true,
+				debug.NewHint("Did you forget to add a semicolon?", ";"),
+			)
+		} else {
+			last = p.Current()
+		}
+	}
 
 	return &ast.FunctionCall{
 		Name:       name,

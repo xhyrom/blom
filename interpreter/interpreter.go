@@ -68,10 +68,17 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		return &objects.IntObject{Value: int32(stmt.Value)}
 	case *ast.FloatLiteralStatement:
 		return &objects.FloatObject{Value: float32(stmt.Value)}
+	case *ast.BooleanLiteralStatement:
+		var value int32 = 0
+		if stmt.Value {
+			value = 1
+		}
+
+		return &objects.IntObject{Value: value}
 	case *ast.IdentifierLiteralStatement:
 		variable, found := environment.FindVariable(stmt.Value)
 		if !found {
-			return nil
+			panic(fmt.Sprintf("Variable %s not found", stmt.Value))
 		}
 
 		return variable

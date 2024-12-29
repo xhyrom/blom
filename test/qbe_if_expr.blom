@@ -18,12 +18,12 @@ fun main(argc: i32, argv: string) -> i32 {
     };
 
     if a == 2 {
-        printf("here\n")
+        printf("here\n");
 
         return -1;
     }
 
-    printf("outer: %d\n", a)
+    printf("outer: %d\n", a);
 
     return 0;
 }

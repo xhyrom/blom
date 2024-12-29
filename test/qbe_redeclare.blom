@@ -3,11 +3,11 @@ fun @native printf(format: string, ...) -> i32;
 fun main() -> i32 {
     f32 a = 0.5;
 
-    printf("first: %f\n", @cast(a, f64))
+    printf("first: %f\n", @cast(a, f64));
 
     a = 9.3 + @cast(9, f32);
 
-    printf("second: %f\n", @cast(a, f64))
+    printf("second: %f\n", @cast(a, f64));
 
     return 0;
 }

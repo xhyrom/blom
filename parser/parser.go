@@ -100,12 +100,11 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 		return []ast.Statement{statements.ParseWhileLoop(p)}, nil
 	case tokens.Identifier:
 		if p.Next().Kind == tokens.Identifier {
-
 			return []ast.Statement{statements.ParseVariableDeclaration(p)}, nil
 		}
 
-		if p.Next().Kind == tokens.Assign {
-			return []ast.Statement{statements.ParseAssignment(p)}, nil
+		if p.Next().Kind == tokens.LeftParenthesis {
+			return []ast.Statement{expressions.ParseFunctionCall(p, p.Consume(), true)}, nil
 		}
 	}
 
@@ -184,6 +183,10 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 	case tokens.AtMark:
 		return expressions.ParseCompileTimeFunctionCall(p), nil
 	case tokens.Identifier:
+		if p.Next().Kind == tokens.Assign {
+			return statements.ParseAssignment(p), nil
+		}
+
 		return expressions.ParseIdentifier(p), nil
 	case tokens.If:
 		return expressions.ParseIf(p), nil
