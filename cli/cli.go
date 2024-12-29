@@ -3,6 +3,7 @@ package cli
 import (
 	"blom/analyzer"
 	"blom/compiler/qbe"
+	"blom/interpreter"
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
@@ -69,10 +70,10 @@ func Run(args []string) {
 
 	//os.Exit(1)
 
-	//inp := interpreter.New(inputFile)
+	inp := interpreter.New(inputFile)
 
-	//fmt.Printf("Interpreting %s\n", inputFile)
-	//inp.Interpret(ast)
+	fmt.Printf("Interpreting %s\n", inputFile)
+	inp.Interpret(ast)
 
 	fmt.Printf("Compiling %s\n", inputFile)
 	compiler := qbe.New(inputFile, analyzer.Functions)

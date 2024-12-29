@@ -40,14 +40,10 @@ func (intrepreter *Interpreter) Interpret(prg *ast.Program) objects.Object {
 }
 
 func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environment *env.Environment[objects.Object]) objects.Object {
-	//fmt.Printf("Interpreting block %v\n", body.Location())
-
 	envi := env.New(*environment)
 
 	for _, stmt := range body.Body {
 		value := interpreter.InterpretStatement(stmt, envi)
-
-		//fmt.Printf("Interpreting statement %T, value: %v\n", stmt, value)
 
 		switch stmt.(type) {
 		case *ast.ReturnStatement:
@@ -89,6 +85,8 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		return expressions.InterpretUnaryExpression(intrepreter, environment, stmt)
 	case *ast.VariableDeclarationStatement:
 		expressions.InterpretDeclarationStatement(intrepreter, environment, stmt)
+	case *ast.AssignmentStatement:
+		expressions.InterpretAssignmentStatement(intrepreter, environment, stmt)
 	case *ast.ReturnStatement:
 		return expressions.InterpretReturnStatement(intrepreter, environment, stmt)
 	case *ast.IfStatement:
