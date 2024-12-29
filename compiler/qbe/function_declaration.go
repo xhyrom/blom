@@ -6,8 +6,6 @@ import (
 )
 
 func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration) []string {
-	c.Environment.SetFunction(stmt.Name, stmt)
-
 	if stmt.IsNative() {
 		return []string{}
 	}

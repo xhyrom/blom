@@ -4,11 +4,12 @@ import (
 	"blom/ast"
 	"blom/compiler"
 	"blom/debug"
+	"blom/env"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStatement) {
-	condition := a.analyzeExpression(statement.Condition)
+func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStatement, scope *env.Environment[*Variable]) {
+	condition := a.analyzeExpression(statement.Condition, scope)
 
 	if condition != compiler.Boolean {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, statement.Condition)
@@ -21,5 +22,5 @@ func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStateme
 		)
 	}
 
-	a.analyzeStatement(statement.Body)
+	a.analyzeStatement(statement.Body, scope)
 }

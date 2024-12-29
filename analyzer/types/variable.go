@@ -3,11 +3,12 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
+	"blom/env"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.VariableDeclarationStatement) {
-	valueType := a.analyzeExpression(statement.Value)
+func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.VariableDeclarationStatement, scope *env.Environment[*Variable]) {
+	valueType := a.analyzeExpression(statement.Value, scope)
 
 	if statement.Type != valueType {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, statement.Value)
@@ -22,12 +23,12 @@ func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.Variab
 		)
 	}
 
-	a.Environment.Set(statement.Name, &Variable{Type: valueType})
+	scope.Set(statement.Name, &Variable{Type: valueType})
 }
 
-func (a *TypeAnalyzer) analyzeAssignmentStatement(statement *ast.AssignmentStatement) {
-	variable := a.Environment.Get(statement.Name)
-	if variable == nil {
+func (a *TypeAnalyzer) analyzeAssignmentStatement(statement *ast.AssignmentStatement, scope *env.Environment[*Variable]) {
+	variable, exists := scope.FindVariable(statement.Name)
+	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, statement)
 		dbg.ThrowError(
 			fmt.Sprintf(
@@ -42,7 +43,7 @@ func (a *TypeAnalyzer) analyzeAssignmentStatement(statement *ast.AssignmentState
 		)
 	}
 
-	valueType := a.analyzeExpression(statement.Value)
+	valueType := a.analyzeExpression(statement.Value, scope)
 
 	if variable.Type != valueType {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, statement.Value)

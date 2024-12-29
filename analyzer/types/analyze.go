@@ -11,44 +11,52 @@ import (
 type TypeAnalyzer struct {
 	Source      string
 	Program     *ast.Program
-	Environment *env.Environment[*Variable]
+	GlobalScope *env.Environment[*Variable]
 }
 
 type Variable struct {
 	Type compiler.Type
 }
 
-func New(file string, program *ast.Program) *TypeAnalyzer {
+func New(file string, program *ast.Program, functions map[string]*ast.FunctionDeclaration) *TypeAnalyzer {
+	globalScope := env.New[*Variable]()
+
+	for _, function := range functions {
+		globalScope.SetFunction(function.Name, function)
+	}
+
 	return &TypeAnalyzer{
 		Source:      file,
 		Program:     program,
-		Environment: env.New[*Variable](),
+		GlobalScope: globalScope,
 	}
 }
 
 func (a *TypeAnalyzer) Analyze() {
 	for _, statement := range a.Program.Body {
-		a.analyzeStatement(statement)
+		a.analyzeStatement(statement, a.GlobalScope)
 	}
 }
 
-func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement) {
+func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Environment[*Variable]) {
 	switch statement := statement.(type) {
 	case *ast.FunctionDeclaration:
-		a.analyzeFunctionDeclaration(statement)
+		a.analyzeFunctionDeclaration(statement, scope)
 	case *ast.VariableDeclarationStatement:
-		a.analyzeVariableDeclarationStatement(statement)
+		a.analyzeVariableDeclarationStatement(statement, scope)
 	case *ast.AssignmentStatement:
-		a.analyzeAssignmentStatement(statement)
-	case *ast.IfStatement: // if is statement but also an expression
-		a.analyzeIfExpression(statement)
+		a.analyzeAssignmentStatement(statement, scope)
+	case *ast.IfStatement:
+		a.analyzeIfExpression(statement, scope)
 	case *ast.WhileLoopStatement:
-		a.analyzeWhileLoopStatement(statement)
+		a.analyzeWhileLoopStatement(statement, scope)
 	case *ast.FunctionCall:
-		a.analyzeFunctionCall(statement)
+		a.analyzeFunctionCall(statement, scope)
 	case *ast.BlockStatement:
+		newScope := env.New[*Variable](*scope)
+
 		for _, statement := range statement.Body {
-			a.analyzeStatement(statement)
+			a.analyzeStatement(statement, newScope)
 		}
 	default:
 		dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
@@ -64,11 +72,11 @@ func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement) {
 			),
 		)
 
-		a.analyzeExpression(statement)
+		a.analyzeExpression(statement, scope)
 	}
 }
 
-func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) compiler.Type {
+func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.Environment[*Variable]) compiler.Type {
 	switch expression.(type) {
 	case *ast.IntLiteralStatement:
 		return compiler.Word
@@ -80,21 +88,21 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) compiler.Typ
 		return compiler.Char
 	case *ast.IdentifierLiteralStatement:
 		identifier := expression.(*ast.IdentifierLiteralStatement)
-		return a.analyzeIdentifier(identifier)
+		return a.analyzeIdentifier(identifier, scope)
 	case *ast.BooleanLiteralStatement:
 		return compiler.Boolean
 	case *ast.BinaryExpression:
 		binaryExpression := expression.(*ast.BinaryExpression)
-		return a.analyzeBinaryExpression(binaryExpression)
+		return a.analyzeBinaryExpression(binaryExpression, scope)
 	case *ast.UnaryExpression:
 		unaryExpression := expression.(*ast.UnaryExpression)
-		return a.analyzeUnaryExpression(unaryExpression)
+		return a.analyzeUnaryExpression(unaryExpression, scope)
 	case *ast.IfStatement: // if is statement but also an expression
 		ifExpression := expression.(*ast.IfStatement)
-		return a.analyzeIfExpression(ifExpression)
+		return a.analyzeIfExpression(ifExpression, scope)
 	case *ast.FunctionCall:
 		functionCall := expression.(*ast.FunctionCall)
-		return a.analyzeFunctionCall(functionCall)
+		return a.analyzeFunctionCall(functionCall, scope)
 	}
 
 	return compiler.Void

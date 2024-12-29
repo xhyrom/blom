@@ -1,48 +1,38 @@
-data $main.0 = { b "%d - %d\n", b 0 }
-data $main.1 = { b "xdd: %f\n", b 0 }
-data $main.2 = { b "gumi %d hm?\n", b 0 }
-data $main.3 = { b "gumi %b hm?\n", b 0 }
-function w $ahoj(w %a.0) {
-@start
-    %tmp.4 =w add %a.0, 9
-    # ^ binary expression
-    ret %tmp.4
-    # ^ return statement
-}
-# ^ function declaration
 export function w $main() {
 @start
-    %xdd.addr.8 =l alloc8 8
-    %tmp.9 =d div d_58, d_10
-    # ^ float literal statement
-    stored %tmp.9, %xdd.addr.8
-    %xdd.8 =d loadd %xdd.addr.8
+    %c.addr.2 =l alloc8 4
+    %tmp.3 =w call $lol(w 7)
+    # ^ function call
+    storew %tmp.3, %c.addr.2
+    %c.2 =w loadw %c.addr.2
     # ^ declaration statement
-    %lol.addr.10 =l alloc8 4
-    %tmp.11 =w call $ahoj(w 9)
+    %tmp.13 =w call $lol(w %c.2)
     # ^ function call
-    storew %tmp.11, %lol.addr.10
-    %lol.10 =w loadw %lol.addr.10
-    # ^ declaration statement
-    %c.addr.13 =l alloc8 1
-    storew 0, %c.addr.13
-    %c.13 =w loadw %c.addr.13
-    # ^ declaration statement
-    %tmp.18 =w add 5, 7
-    # ^ binary expression
-    %tmp.16 =w call $printf(l $main.0, ..., w %tmp.18, w %lol.10)
+    %tmp.12 =w call $lol(w %tmp.13)
     # ^ function call
-    %tmp.24 =d div d_58, d_10
-    # ^ float literal statement
-    %tmp.22 =w call $printf(l $main.1, ..., d %tmp.24)
+    %tmp.11 =w call $lol(w %tmp.12)
     # ^ function call
-    %tmp.27 =w call $ahoj(w 9)
+    %tmp.10 =w call $lol(w %tmp.11)
     # ^ function call
-    %tmp.25 =w call $printf(l $main.2, ..., w %tmp.27)
+    %tmp.9 =w call $lol(w %tmp.10)
     # ^ function call
-    %tmp.29 =w call $printf(l $main.3, ..., w %c.13)
+    %tmp.8 =w call $lol(w %tmp.9)
     # ^ function call
-    ret 0
+    %tmp.7 =w call $lol(w %tmp.8)
+    # ^ function call
+    %tmp.6 =w call $lol(w %tmp.7)
+    # ^ function call
+    ret %tmp.6
     # ^ return statement
 }
 # ^ function declaration
+function w $lol(w %g.0) {
+@start
+    ret %g.0
+    # ^ return statement
+}
+# ^ function declaration
+    %c.addr.18 =l alloc8 4
+    storew 5, %c.addr.18
+    %c.18 =w loadw %c.addr.18
+    # ^ declaration statement

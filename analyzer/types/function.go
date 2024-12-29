@@ -4,23 +4,25 @@ import (
 	"blom/ast"
 	"blom/compiler"
 	"blom/debug"
+	"blom/env"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclaration) {
+func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclaration, scope *env.Environment[*Variable]) {
+	functionScope := env.New[*Variable](*scope)
+
 	for _, arg := range function.Arguments {
-		a.Environment.Set(arg.Name, &Variable{Type: arg.Type})
+		functionScope.Set(arg.Name, &Variable{Type: arg.Type})
 	}
 
 	if function.IsNative() {
-		a.Environment.SetFunction(function.Name, function)
 		return
 	}
 
 	for _, statement := range function.Body.Body {
 		if statement.Kind() == ast.ReturnNode {
 			ret := statement.(*ast.ReturnStatement)
-			returnType := a.analyzeExpression(ret.Value)
+			returnType := a.analyzeExpression(ret.Value, functionScope)
 
 			if returnType != function.ReturnType {
 				dbg := debug.NewSourceLocationFromExpression(a.Source, ret)
@@ -35,15 +37,13 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 				)
 			}
 		} else {
-			a.analyzeStatement(statement)
+			a.analyzeStatement(statement, functionScope)
 		}
 	}
-
-	a.Environment.SetFunction(function.Name, function)
 }
 
-func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) compiler.Type {
-	function := a.Environment.GetFunction(call.Name)
+func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.Environment[*Variable]) compiler.Type {
+	function := scope.FindFunction(call.Name)
 	if function == nil {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
@@ -73,7 +73,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) compiler.Type
 	}
 
 	for i, param := range call.Parameters {
-		paramType := a.analyzeExpression(param)
+		paramType := a.analyzeExpression(param, scope)
 
 		if paramType != function.Arguments[i].Type {
 			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)

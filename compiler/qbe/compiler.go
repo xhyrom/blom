@@ -14,6 +14,7 @@ type Compiler struct {
 	Source      string
 	data        []string
 	dataCounter int
+	GlobalScope *env.Environment[*Variable]
 	Environment *env.Environment[*Variable]
 }
 
@@ -28,9 +29,16 @@ func (a *Additional) String() string {
 	return fmt.Sprintf("%s %s", a.Type, a.Name)
 }
 
-func New(file string) Compiler {
+func New(file string, functions map[string]*ast.FunctionDeclaration) Compiler {
+	globalScope := env.New[*Variable]()
+
+	for _, function := range functions {
+		globalScope.SetFunction(function.Name, function)
+	}
+
 	return Compiler{
 		Source:      file,
+		GlobalScope: globalScope,
 		Environment: env.New[*Variable](),
 	}
 }

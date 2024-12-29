@@ -1,6 +1,9 @@
 package tokens
 
-import "slices"
+import (
+	"fmt"
+	"slices"
+)
 
 type TokenKind int
 
@@ -185,15 +188,19 @@ type Location struct {
 	Column uint64
 }
 
-type Token struct {
-	Kind     TokenKind
-	Location Location
-	Value    string
-}
-
 func (l *Location) Copy() Location {
 	return Location{
 		Row:    l.Row,
 		Column: l.Column,
 	}
+}
+
+func (l Location) String() string {
+	return fmt.Sprintf("%d:%d", l.Row, l.Column)
+}
+
+type Token struct {
+	Kind     TokenKind
+	Location Location
+	Value    string
 }

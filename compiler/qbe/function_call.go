@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Compiler) CompileFunctionCall(stmt *ast.FunctionCall, expectedType *compiler.Type) ([]string, *Additional) {
-	function := c.Environment.GetFunction(stmt.Name)
+	function := c.GlobalScope.GetFunction(stmt.Name)
 
 	if function == nil {
 		dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)

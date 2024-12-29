@@ -3,7 +3,6 @@ package cli
 import (
 	"blom/analyzer"
 	"blom/compiler/qbe"
-	"blom/interpreter"
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
@@ -68,14 +67,15 @@ func Run(args []string) {
 	analyzer := analyzer.New(inputFile, ast)
 	analyzer.Analyze()
 
-	os.Exit(1)
+	//os.Exit(1)
 
-	inp := interpreter.New(inputFile)
+	//inp := interpreter.New(inputFile)
 
-	fmt.Printf("Interpreting %s\n", inputFile)
-	inp.Interpret(ast)
+	//fmt.Printf("Interpreting %s\n", inputFile)
+	//inp.Interpret(ast)
 
-	compiler := qbe.New(inputFile)
+	fmt.Printf("Compiling %s\n", inputFile)
+	compiler := qbe.New(inputFile, analyzer.Functions)
 	sse, err := compiler.Compile(ast)
 
 	if emitSse {
@@ -89,9 +89,12 @@ func Run(args []string) {
 		panic(err)
 	}
 
-	fmt.Printf("Compiling and running %s\n", inputFile)
+	fmt.Printf("Running %s\n", inputFile)
 	cmd := exec.Command("sh", "-c", "qbe -o out.s out.sse && cc -O3 out.s -o a.out && ./a.out")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Run()
+	cmd.Wait()
+
+	os.Exit(cmd.ProcessState.ExitCode())
 }

@@ -4,11 +4,12 @@ import (
 	"blom/ast"
 	"blom/compiler"
 	"blom/debug"
+	"blom/env"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeIfExpression(expression *ast.IfStatement) compiler.Type {
-	conditionType := a.analyzeExpression(expression.Condition)
+func (a *TypeAnalyzer) analyzeIfExpression(expression *ast.IfStatement, scope *env.Environment[*Variable]) compiler.Type {
+	conditionType := a.analyzeExpression(expression.Condition, scope)
 	if conditionType != compiler.Boolean {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Condition)
 		dbg.ThrowError(
@@ -20,10 +21,10 @@ func (a *TypeAnalyzer) analyzeIfExpression(expression *ast.IfStatement) compiler
 		)
 	}
 
-	a.analyzeStatement(expression.Then)
+	a.analyzeStatement(expression.Then, scope)
 
 	if expression.HasElse() {
-		a.analyzeStatement(expression.Else)
+		a.analyzeStatement(expression.Else, scope)
 	}
 
 	return compiler.Void

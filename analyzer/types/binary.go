@@ -4,13 +4,14 @@ import (
 	"blom/ast"
 	"blom/compiler"
 	"blom/debug"
+	"blom/env"
 	"blom/tokens"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression) compiler.Type {
-	left := a.analyzeExpression(expression.Left)
-	right := a.analyzeExpression(expression.Right)
+func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression, scope *env.Environment[*Variable]) compiler.Type {
+	left := a.analyzeExpression(expression.Left, scope)
+	right := a.analyzeExpression(expression.Right, scope)
 
 	if left != right {
 		dbg := debug.NewSourceLocation(a.Source, expression.OperatorLoc.Row, expression.OperatorLoc.Column)
