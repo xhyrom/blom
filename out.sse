@@ -1,72 +1,70 @@
-data $.0 = { b "i: %d\n", b 0 }
-export function w $main() {
+data $.0 = { b "here\n", b 0 }
+data $.1 = { b "outer: %d\n", b 0 }
+export function w $main(w %argc.0, l %argv.1) {
 @start
-    %i.addr.3 =l alloc8 4
-    storew 0, %i.addr.3
-    %i.3 =w loadw %i.addr.3
-    # ^ declaration statement
-    %a.addr.5 =l alloc8 4
-    storew 5, %a.addr.5
-    %a.5 =w loadw %a.addr.5
-    # ^ declaration statement
-@loop.cond.7
-    %tmp.8 =w csltw %a.5, 10
+    %a.addr.3 =l alloc8 4
+    %tmp.5 =w ceqw 7, 7
     # ^ binary expression
-    jnz %tmp.8, @loop.body.7, @loop.end.7
-@loop.body.7
-    %i.addr.3 =l alloc8 4
-    %tmp.12 =w add %i.3, %a.5
+    jnz %tmp.5, @if.7, @else.7
+@if.7
+    %tmp.11 =w add 5, 6
     # ^ binary expression
-    storew %tmp.12, %i.addr.3
-    %i.3 =w loadw %i.addr.3
+    %tmp.9 =w csgtw %argc.0, %tmp.11
+    # ^ binary expression
+    jnz %tmp.9, @if.13, @else.13
+@if.13
+    %tmp.17 =w add 5, 6
+    # ^ binary expression
+    %tmp.15 =w csltw %argc.0, %tmp.17
+    # ^ binary expression
+    jnz %tmp.15, @if.19, @else.19
+@if.19
+    storew 1, %a.addr.3
+    # ^ return statement
+@else.19
+    storew 2, %a.addr.3
+    # ^ return statement
+@end.19
+    # ^ if statement
+    jmp @end.13
+@else.13
+    %c.addr.24 =l alloc8 4
+    %tmp.25 =w add 999, 245
+    # ^ binary expression
+    storew %tmp.25, %c.addr.24
+    %c.24 =w loadw %c.addr.24
     # ^ declaration statement
-    %a.addr.5 =l alloc8 4
-    %tmp.16 =w add %a.5, 1
+    %tmp.30 =w add 5, 6
     # ^ binary expression
-    storew %tmp.16, %a.addr.5
-    %a.5 =w loadw %a.addr.5
+    %tmp.29 =w add %tmp.30, %c.24
+    # ^ binary expression
+    storew %tmp.29, %a.addr.3
+    # ^ return statement
+@end.13
+    # ^ if statement
+    jmp @end.7
+@else.7
+    storew 7, %a.addr.3
+    # ^ return statement
+@end.7
+    # ^ if statement
+    %a.3 =w loadw %a.addr.3
     # ^ declaration statement
-    jmp @loop.cond.7
-@loop.end.7
-    %g.addr.19 =l alloc8 4
-    storew 0, %g.addr.19
-    %g.19 =w loadw %g.addr.19
-    # ^ declaration statement
-@loop.cond.21
-    %tmp.22 =w csltw %g.19, 10
+    %tmp.37 =w ceqw %a.3, 2
     # ^ binary expression
-    jnz %tmp.22, @loop.body.21, @loop.end.21
-@loop.body.21
-    %i.addr.3 =l alloc8 4
-    %tmp.26 =w add %i.3, %g.19
-    # ^ binary expression
-    storew %tmp.26, %i.addr.3
-    %i.3 =w loadw %i.addr.3
-    # ^ declaration statement
-    %g.addr.19 =l alloc8 4
-    %tmp.30 =w add %g.19, 1
-    # ^ binary expression
-    storew %tmp.30, %g.addr.19
-    %g.19 =w loadw %g.addr.19
-    # ^ declaration statement
-    jmp @loop.cond.21
-@loop.end.21
-@loop.cond.33
-    %tmp.34 =w csltw %i.3, 10
-    # ^ binary expression
-    jnz %tmp.34, @loop.body.33, @loop.end.33
-@loop.body.33
-    %i.addr.3 =l alloc8 4
-    %tmp.38 =w add %i.3, 1
-    # ^ binary expression
-    storew %tmp.38, %i.addr.3
-    %i.3 =w loadw %i.addr.3
-    # ^ declaration statement
-    jmp @loop.cond.33
-@loop.end.33
-    %tmp.41 =w call $printf(l $.0, ..., w %i.3)
+    jnz %tmp.37, @if.39, @end.39
+@if.39
+    %tmp.40 =w call $printf(l $.0, ...)
     # ^ function call
-    ret %i.3
+    %tmp.43 =w mul 1, -1
+    # ^ unary expression
+    ret %tmp.43
+    # ^ return statement
+@end.39
+    # ^ if statement
+    %tmp.45 =w call $printf(l $.1, ..., w %a.3)
+    # ^ function call
+    ret 0
     # ^ return statement
 }
 # ^ function declaration

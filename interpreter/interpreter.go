@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"blom/ast"
+	"blom/compiler"
 	"blom/env"
 	"blom/env/objects"
 	"blom/interpreter/expressions"
@@ -18,7 +19,7 @@ func New(source string) *Interpreter {
 	}
 }
 
-func (intrepreter *Interpreter) Interpret(prg *ast.Program) objects.Object {
+func (intrepreter *Interpreter) Interpret(prg *ast.Program, argc int64) objects.Object {
 	// copy program body to avoid modifying the original
 	var program *ast.Program = &ast.Program{
 		Body: make([]ast.Statement, 0),
@@ -29,8 +30,13 @@ func (intrepreter *Interpreter) Interpret(prg *ast.Program) objects.Object {
 	}
 
 	program.Body = append(program.Body, &ast.FunctionCall{
-		Name:       "main",
-		Parameters: []ast.Expression{},
+		Name: "main",
+		Parameters: []ast.Expression{
+			&ast.IntLiteralStatement{
+				Value: argc,
+				Type:  compiler.Word,
+			},
+		},
 	})
 
 	return intrepreter.InterpretBlock(&ast.BlockStatement{

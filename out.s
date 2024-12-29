@@ -1,7 +1,14 @@
 .data
 .balign 8
 .0:
-	.ascii "i: %d\n"
+	.ascii "here\n"
+	.byte 0
+/* end data */
+
+.data
+.balign 8
+.1:
+	.ascii "outer: %d\n"
 	.byte 0
 /* end data */
 
@@ -10,63 +17,34 @@
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $8, %rsp
-	pushq %rbx
-	movl $0, %ebx
-	movl $5, %eax
-.Lbb2:
-	cmpl $10, %eax
-	jge .Lbb4
+	cmpl $11, %edi
+	jg .Lbb4
 	subq $16, %rsp
-	movq %rsp, %rcx
-	addl %eax, %ebx
-	movl %ebx, (%rcx)
-	subq $16, %rsp
-	movq %rsp, %rcx
-	addl $1, %eax
-	movl %eax, (%rcx)
-	jmp .Lbb2
+	movq %rsp, %rax
+	movl $1244, (%rax)
+	movl $1255, %esi
+	jmp .Lbb6
 .Lbb4:
-	movl %ebx, %eax
-	movl %eax, %ebx
-	subq $16, %rsp
-	movq %rsp, %rax
-	movl $0, (%rax)
-	movl $0, %eax
-.Lbb7:
-	cmpl $10, %eax
-	jl .Lbb13
-.Lbb8:
-	cmpl $10, %ebx
-	jge .Lbb10
-	subq $16, %rsp
-	movq %rsp, %rax
-	addl $1, %ebx
-	movl %ebx, (%rax)
-	jmp .Lbb8
-.Lbb10:
-	movl %ebx, %eax
-	movl %eax, %esi
-	leaq .0(%rip), %rdi
-	movl %eax, %ebx
+	cmpl $11, %edi
+	movl $2, %esi
+.Lbb6:
+	cmpl $2, %esi
+	jz .Lbb8
+	leaq .1(%rip), %rdi
 	movl $0, %eax
 	callq printf
-	movl %ebx, %eax
+	movl $0, %eax
+	jmp .Lbb9
+.Lbb8:
+	leaq .0(%rip), %rdi
+	movl $0, %eax
+	callq printf
+	movl $4294967295, %eax
+.Lbb9:
 	movq %rbp, %rsp
-	subq $16, %rsp
-	popq %rbx
+	subq $0, %rsp
 	leave
 	ret
-.Lbb13:
-	subq $16, %rsp
-	movq %rsp, %rcx
-	addl %eax, %ebx
-	movl %ebx, (%rcx)
-	subq $16, %rsp
-	movq %rsp, %rcx
-	addl $1, %eax
-	movl %eax, (%rcx)
-	jmp .Lbb7
 .type main, @function
 .size main, .-main
 /* end function main */

@@ -73,7 +73,8 @@ func Run(args []string) {
 	inp := interpreter.New(inputFile)
 
 	fmt.Printf("Interpreting %s\n", inputFile)
-	inp.Interpret(ast)
+
+	inp.Interpret(ast, int64(len(os.Args)-1))
 
 	fmt.Printf("Compiling %s\n", inputFile)
 	compiler := qbe.New(inputFile, analyzer.Functions)

@@ -2,7 +2,6 @@ package expressions
 
 import (
 	"blom/ast"
-	"blom/debug"
 	"blom/env"
 	"blom/env/objects"
 	"blom/tokens"
@@ -19,45 +18,36 @@ func evaluateBinaryExpression(interpreter Interpreter, environment *env.Environm
 
 	switch expression.Operator {
 	case tokens.Plus:
-		return handleTypeMismatch(interpreter, expression, left, right, left.Add(right))
+		return left.Add(right)
 	case tokens.Minus:
-		return handleTypeMismatch(interpreter, expression, left, right, left.Subtract(right))
+		return left.Subtract(right)
 	case tokens.Asterisk:
-		return handleTypeMismatch(interpreter, expression, left, right, left.Multiply(right))
+		return left.Multiply(right)
 	case tokens.Slash:
-		return handleTypeMismatch(interpreter, expression, left, right, left.Divide(right))
+		return left.Divide(right)
 	case tokens.PercentSign:
-		return handleTypeMismatch(interpreter, expression, left, right, left.Modulo(right))
+		return left.Modulo(right)
 	case tokens.Ampersand:
-		return handleTypeMismatch(interpreter, expression, left, right, left.BitwiseAnd(right))
+		return left.BitwiseAnd(right)
 	case tokens.VerticalLine:
-		return handleTypeMismatch(interpreter, expression, left, right, left.BitwiseOr(right))
+		return left.BitwiseOr(right)
 	case tokens.CircumflexAccent:
-		return handleTypeMismatch(interpreter, expression, left, right, left.BitwiseXor(right))
+		return left.BitwiseXor(right)
 	case tokens.DoubleLessThan:
-		return handleTypeMismatch(interpreter, expression, left, right, left.LeftShift(right))
+		return left.LeftShift(right)
 	case tokens.DoubleGreaterThan:
-		return handleTypeMismatch(interpreter, expression, left, right, left.RightShift(right))
+		return left.RightShift(right)
 	case tokens.Equals:
-		return handleTypeMismatch(interpreter, expression, left, right, left.Equals(right))
+		return left.Equals(right)
 	case tokens.LessThan:
-		return handleTypeMismatch(interpreter, expression, left, right, left.LessThan(right))
+		return left.LessThan(right)
 	case tokens.LessThanOrEqual:
-		return handleTypeMismatch(interpreter, expression, left, right, left.LessThanOrEqual(right))
+		return left.LessThanOrEqual(right)
 	case tokens.GreaterThan:
-		return handleTypeMismatch(interpreter, expression, left, right, left.GreaterThan(right))
+		return left.GreaterThan(right)
 	case tokens.GreaterThanOrEqual:
-		return handleTypeMismatch(interpreter, expression, left, right, left.GreaterThanOrEqual(right))
+		return left.GreaterThanOrEqual(right)
 	default:
 		panic(fmt.Sprintf("unknown operator: %s", expression.Operator))
 	}
-}
-
-func handleTypeMismatch(interpreter Interpreter, expression *ast.BinaryExpression, left objects.Object, right objects.Object, object objects.Object) objects.Object {
-	if object == nil {
-		dbg := debug.NewSourceLocation(interpreter.Source(), expression.OperatorLoc.Row, expression.OperatorLoc.Column)
-		dbg.ThrowError(fmt.Sprintf("Type mismatch: %s %s %s", left.Type(), expression.Operator, right.Type()), true)
-	}
-
-	return object
 }
