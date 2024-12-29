@@ -65,25 +65,33 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 				return &objects.DoubleObject{Value: float64(v)}
 			case uint8:
 				return &objects.DoubleObject{Value: float64(v)}
+			case float32:
+				return &objects.DoubleObject{Value: float64(v)}
+			case float64:
+				return &objects.DoubleObject{Value: float64(v)}
 			}
 		case compiler.Single:
 			switch v := value.(type) {
 			case int64:
-				return &objects.FloatObject{Value: float64(v)}
+				return &objects.FloatObject{Value: float32(v)}
 			case int32:
-				return &objects.FloatObject{Value: float64(v)}
+				return &objects.FloatObject{Value: float32(v)}
 			case int16:
-				return &objects.FloatObject{Value: float64(v)}
+				return &objects.FloatObject{Value: float32(v)}
 			case int8:
-				return &objects.FloatObject{Value: float64(v)}
+				return &objects.FloatObject{Value: float32(v)}
 			case uint64:
-				return &objects.FloatObject{Value: float64(v)}
+				return &objects.FloatObject{Value: float32(v)}
 			case uint32:
-				return &objects.FloatObject{Value: float64(v)}
+				return &objects.FloatObject{Value: float32(v)}
 			case uint16:
-				return &objects.FloatObject{Value: float64(v)}
+				return &objects.FloatObject{Value: float32(v)}
 			case uint8:
-				return &objects.FloatObject{Value: float64(v)}
+				return &objects.FloatObject{Value: float32(v)}
+			case float32:
+				return &objects.FloatObject{Value: float32(v)}
+			case float64:
+				return &objects.FloatObject{Value: float32(v)}
 			}
 		case compiler.Long:
 			switch v := value.(type) {
@@ -103,25 +111,33 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 				return &objects.LongObject{Value: int64(v)}
 			case uint8:
 				return &objects.LongObject{Value: int64(v)}
+			case float32:
+				return &objects.LongObject{Value: int64(v)}
+			case float64:
+				return &objects.LongObject{Value: int64(v)}
 			}
 		case compiler.Word:
 			switch v := value.(type) {
 			case int64:
-				return &objects.IntObject{Value: int64(v)}
+				return &objects.IntObject{Value: int32(v)}
 			case int32:
-				return &objects.IntObject{Value: int64(v)}
+				return &objects.IntObject{Value: int32(v)}
 			case int16:
-				return &objects.IntObject{Value: int64(v)}
+				return &objects.IntObject{Value: int32(v)}
 			case int8:
-				return &objects.IntObject{Value: int64(v)}
+				return &objects.IntObject{Value: int32(v)}
 			case uint64:
-				return &objects.IntObject{Value: int64(v)}
+				return &objects.IntObject{Value: int32(v)}
 			case uint32:
-				return &objects.IntObject{Value: int64(v)}
+				return &objects.IntObject{Value: int32(v)}
 			case uint16:
-				return &objects.IntObject{Value: int64(v)}
+				return &objects.IntObject{Value: int32(v)}
 			case uint8:
-				return &objects.IntObject{Value: int64(v)}
+				return &objects.IntObject{Value: int32(v)}
+			case float32:
+				return &objects.IntObject{Value: int32(v)}
+			case float64:
+				return &objects.IntObject{Value: int32(v)}
 			}
 		case compiler.Halfword:
 			switch v := value.(type) {
@@ -140,6 +156,10 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case uint16:
 				return &objects.ShortObject{Value: int16(v)}
 			case uint8:
+				return &objects.ShortObject{Value: int16(v)}
+			case float32:
+				return &objects.ShortObject{Value: int16(v)}
+			case float64:
 				return &objects.ShortObject{Value: int16(v)}
 			}
 		case compiler.Byte:
@@ -160,6 +180,10 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 				return &objects.ByteObject{Value: int8(v)}
 			case uint8:
 				return &objects.ByteObject{Value: int8(v)}
+			case float32:
+				return &objects.ByteObject{Value: int8(v)}
+			case float64:
+				return &objects.ByteObject{Value: int8(v)}
 			}
 		case compiler.UnsignedLong:
 			switch v := value.(type) {
@@ -178,6 +202,10 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case uint16:
 				return &objects.UnsignedLongObject{Value: uint64(v)}
 			case uint8:
+				return &objects.UnsignedLongObject{Value: uint64(v)}
+			case float32:
+				return &objects.UnsignedLongObject{Value: uint64(v)}
+			case float64:
 				return &objects.UnsignedLongObject{Value: uint64(v)}
 			}
 		case compiler.UnsignedWord:
@@ -198,6 +226,10 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 				return &objects.UnsignedIntObject{Value: uint32(v)}
 			case uint8:
 				return &objects.UnsignedIntObject{Value: uint32(v)}
+			case float32:
+				return &objects.UnsignedIntObject{Value: uint32(v)}
+			case float64:
+				return &objects.UnsignedIntObject{Value: uint32(v)}
 			}
 		case compiler.UnsignedHalfword:
 			switch v := value.(type) {
@@ -217,6 +249,10 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 				return &objects.UnsignedShortObject{Value: uint16(v)}
 			case uint8:
 				return &objects.UnsignedShortObject{Value: uint16(v)}
+			case float32:
+				return &objects.UnsignedShortObject{Value: uint16(v)}
+			case float64:
+				return &objects.UnsignedShortObject{Value: uint16(v)}
 			}
 		case compiler.UnsignedByte:
 			switch v := value.(type) {
@@ -235,6 +271,10 @@ func cast(interpreter Interpreter, environment *env.Environment[objects.Object],
 			case uint16:
 				return &objects.UnsignedByteObject{Value: uint8(v)}
 			case uint8:
+				return &objects.UnsignedByteObject{Value: uint8(v)}
+			case float32:
+				return &objects.UnsignedByteObject{Value: uint8(v)}
+			case float64:
 				return &objects.UnsignedByteObject{Value: uint8(v)}
 			}
 		}

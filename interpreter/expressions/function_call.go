@@ -54,12 +54,14 @@ func interpretPrintf(interpreter Interpreter, environment *env.Environment[objec
 			args = append(args, obj.Value)
 		case *objects.FloatObject:
 			args = append(args, obj.Value)
+		case *objects.DoubleObject:
+			args = append(args, obj.Value)
 		case *objects.StringObject:
 			args = append(args, obj.Value)
 		case *objects.BooleanObject:
 			args = append(args, obj.Value)
 		default:
-			args = append(args, obj.Inspect())
+			panic(fmt.Sprintf("Unsupported type %T", obj))
 		}
 	}
 

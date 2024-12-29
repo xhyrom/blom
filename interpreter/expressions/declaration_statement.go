@@ -18,4 +18,6 @@ func InterpretAssignmentStatement(interpreter Interpreter, environment *env.Envi
 		environment.Parent.Set(statement.Name, interpreter.InterpretStatement(statement.Value, environment))
 		return
 	}
+
+	environment.Set(statement.Name, interpreter.InterpretStatement(statement.Value, environment))
 }

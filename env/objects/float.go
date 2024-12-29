@@ -6,7 +6,7 @@ import (
 )
 
 type FloatObject struct {
-	Value float64
+	Value float32
 }
 
 func (i *FloatObject) Type() compiler.Type {

@@ -2,7 +2,6 @@ package interpreter
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/env"
 	"blom/env/objects"
 	"blom/interpreter/expressions"
@@ -30,13 +29,8 @@ func (intrepreter *Interpreter) Interpret(prg *ast.Program, argc int64) objects.
 	}
 
 	program.Body = append(program.Body, &ast.FunctionCall{
-		Name: "main",
-		Parameters: []ast.Expression{
-			&ast.IntLiteralStatement{
-				Value: argc,
-				Type:  compiler.Word,
-			},
-		},
+		Name:       "main",
+		Parameters: []ast.Expression{},
 	})
 
 	return intrepreter.InterpretBlock(&ast.BlockStatement{
@@ -71,9 +65,9 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 	case *ast.StringLiteralStatement:
 		return &objects.StringObject{Value: stmt.Value}
 	case *ast.IntLiteralStatement:
-		return &objects.IntObject{Value: stmt.Value}
+		return &objects.IntObject{Value: int32(stmt.Value)}
 	case *ast.FloatLiteralStatement:
-		return &objects.FloatObject{Value: stmt.Value}
+		return &objects.FloatObject{Value: float32(stmt.Value)}
 	case *ast.IdentifierLiteralStatement:
 		variable, found := environment.FindVariable(stmt.Value)
 		if !found {

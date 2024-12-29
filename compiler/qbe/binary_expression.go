@@ -2,7 +2,6 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/debug"
 	"blom/env"
 	"blom/tokens"
 	"fmt"
@@ -13,11 +12,6 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, scope *en
 
 	left, leftVar := c.CompileStatement(stmt.Left, scope)
 	right, rightVar := c.CompileStatement(stmt.Right, scope)
-
-	if leftVar.Type != rightVar.Type {
-		dbg := debug.NewSourceLocation(c.source, stmt.OperatorLoc.Row, stmt.OperatorLoc.Column)
-		dbg.ThrowError(fmt.Sprintf("Cannot perform binary operation on two different types \"%s\" and \"%s\"!", leftVar.Type.Inspect(), rightVar.Type.Inspect()), true)
-	}
 
 	result := make([]string, 0)
 

@@ -1,14 +1,14 @@
 .data
 .balign 8
 .0:
-	.ascii "here\n"
+	.ascii "first: %f\n"
 	.byte 0
 /* end data */
 
 .data
 .balign 8
 .1:
-	.ascii "outer: %d\n"
+	.ascii "second: %f\n"
 	.byte 0
 /* end data */
 
@@ -17,36 +17,32 @@
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	cmpl $11, %edi
-	jg .Lbb4
-	subq $16, %rsp
-	movq %rsp, %rax
-	movl $1244, (%rax)
-	movl $1255, %esi
-	jmp .Lbb6
-.Lbb4:
-	cmpl $11, %edi
-	movl $2, %esi
-.Lbb6:
-	cmpl $2, %esi
-	jz .Lbb8
-	leaq .1(%rip), %rdi
-	movl $0, %eax
-	callq printf
-	movl $0, %eax
-	jmp .Lbb9
-.Lbb8:
+	movsd ".Lfp1"(%rip), %xmm0
 	leaq .0(%rip), %rdi
-	movl $0, %eax
+	movl $1, %eax
 	callq printf
-	movl $4294967295, %eax
-.Lbb9:
-	movq %rbp, %rsp
-	subq $0, %rsp
+	movsd ".Lfp0"(%rip), %xmm0
+	leaq .1(%rip), %rdi
+	movl $1, %eax
+	callq printf
+	movl $0, %eax
 	leave
 	ret
 .type main, @function
 .size main, .-main
 /* end function main */
+
+/* floating point constants */
+.section .rodata
+.p2align 3
+.Lfp0:
+	.int -1073741824
+	.int 1077038284 /* 18.299999 */
+
+.section .rodata
+.p2align 3
+.Lfp1:
+	.int 0
+	.int 1071644672 /* 0.500000 */
 
 .section .note.GNU-stack,"",@progbits

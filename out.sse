@@ -1,68 +1,26 @@
-data $.0 = { b "here\n", b 0 }
-data $.1 = { b "outer: %d\n", b 0 }
-export function w $main(w %argc.0, l %argv.1) {
+data $.0 = { b "first: %f\n", b 0 }
+data $.1 = { b "second: %f\n", b 0 }
+export function w $main() {
 @start
     %a.addr.3 =l alloc8 4
-    %tmp.5 =w ceqw 7, 7
-    # ^ binary expression
-    jnz %tmp.5, @if.7, @else.7
-@if.7
-    %tmp.11 =w add 5, 6
-    # ^ binary expression
-    %tmp.9 =w csgtw %argc.0, %tmp.11
-    # ^ binary expression
-    jnz %tmp.9, @if.13, @else.13
-@if.13
-    %tmp.17 =w add 5, 6
-    # ^ binary expression
-    %tmp.15 =w csltw %argc.0, %tmp.17
-    # ^ binary expression
-    jnz %tmp.15, @if.19, @else.19
-@if.19
-    storew 1, %a.addr.3
-    # ^ return statement
-@else.19
-    storew 2, %a.addr.3
-    # ^ return statement
-@end.19
-    # ^ if statement
-    jmp @end.13
-@else.13
-    %c.addr.24 =l alloc8 4
-    %tmp.25 =w add 999, 245
-    # ^ binary expression
-    storew %tmp.25, %c.addr.24
-    %c.24 =w loadw %c.addr.24
+    %tmp.4 =s div s_5, s_10
+    # ^ float literal statement
+    stores %tmp.4, %a.addr.3
+    %a.3 =s loads %a.addr.3
     # ^ declaration statement
-    %tmp.30 =w add 5, 6
-    # ^ binary expression
-    %tmp.29 =w add %tmp.30, %c.24
-    # ^ binary expression
-    storew %tmp.29, %a.addr.3
-    # ^ return statement
-@end.13
-    # ^ if statement
-    jmp @end.7
-@else.7
-    storew 7, %a.addr.3
-    # ^ return statement
-@end.7
-    # ^ if statement
-    %a.3 =w loadw %a.addr.3
-    # ^ declaration statement
-    %tmp.37 =w ceqw %a.3, 2
-    # ^ binary expression
-    jnz %tmp.37, @if.39, @end.39
-@if.39
-    %tmp.40 =w call $printf(l $.0, ...)
+    %conv.8 =d exts %a.3
+    %tmp.5 =w call $printf(l $.0, ..., d %conv.8)
     # ^ function call
-    %tmp.43 =w mul 1, -1
-    # ^ unary expression
-    ret %tmp.43
-    # ^ return statement
-@end.39
-    # ^ if statement
-    %tmp.45 =w call $printf(l $.1, ..., w %a.3)
+    %a.addr.3 =l alloc8 4
+    %tmp.11 =s div s_93, s_10
+    # ^ float literal statement
+    %tmp.10 =s add %tmp.11, s_9
+    # ^ binary expression
+    stores %tmp.10, %a.addr.3
+    %a.3 =s loads %a.addr.3
+    # ^ declaration statement
+    %conv.17 =d exts %a.3
+    %tmp.14 =w call $printf(l $.1, ..., d %conv.17)
     # ^ function call
     ret 0
     # ^ return statement

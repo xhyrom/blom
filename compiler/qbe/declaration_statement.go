@@ -75,8 +75,10 @@ func (c *Compiler) CompileAssignmentStatement(stmt *ast.AssignmentStatement, sco
 func (c *Compiler) StoreVal(additional *QbeIdentifier) string {
 	if additional.Raw {
 		switch additional.Type {
-		case compiler.Double, compiler.Single:
+		case compiler.Double:
 			return fmt.Sprintf("d_%s", additional.Name)
+		case compiler.Single:
+			return fmt.Sprintf("s_%s", additional.Name)
 		}
 	}
 

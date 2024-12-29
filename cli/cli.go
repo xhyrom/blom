@@ -76,13 +76,14 @@ func Run(args []string) {
 
 	inp.Interpret(ast, int64(len(os.Args)-1))
 
+	fmt.Println()
+
 	fmt.Printf("Compiling %s\n", inputFile)
 	compiler := qbe.New(inputFile, analyzer.Functions)
 	sse, err := compiler.Compile(ast)
 
 	if emitSse {
 		fmt.Println(sse)
-		fmt.Println()
 	}
 
 	err = os.WriteFile("out.sse", []byte(sse), 0644)

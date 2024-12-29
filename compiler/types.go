@@ -65,7 +65,7 @@ var types = []string{
 func ParseType(str string) (Type, error) {
 	index := slices.Index(humanTypes, str)
 	if index == -1 {
-		return 0, errors.New(fmt.Sprintf("Unknown type \"%s\"", str))
+		return 0, errors.New(fmt.Sprintf("Unknown type '%s'", str))
 	}
 
 	return Type(index), nil
