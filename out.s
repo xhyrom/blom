@@ -1,58 +1,81 @@
 .data
 .balign 8
 main.0:
-	.ascii "i: %d\n"
+	.ascii "%d - %d\n"
 	.byte 0
 /* end data */
+
+.data
+.balign 8
+main.1:
+	.ascii "xdd: %f\n"
+	.byte 0
+/* end data */
+
+.data
+.balign 8
+main.2:
+	.ascii "gumi %d hm?\n"
+	.byte 0
+/* end data */
+
+.data
+.balign 8
+main.3:
+	.ascii "gumi %b hm?\n"
+	.byte 0
+/* end data */
+
+.text
+ahoj:
+	pushq %rbp
+	movq %rsp, %rbp
+	movl %edi, %eax
+	addl $9, %eax
+	leave
+	ret
+.type ahoj, @function
+.size ahoj, .-ahoj
+/* end function ahoj */
 
 .text
 .globl main
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $8, %rsp
-	pushq %rbx
-	movl $0, %ebx
-	movl $5, %eax
-.Lbb2:
-	cmpl $10, %eax
-	jge .Lbb4
-	addl %eax, %ebx
-	addl $1, %eax
-	jmp .Lbb2
-.Lbb4:
-	subq $16, %rsp
-	movq %rsp, %rcx
-	movl $0, (%rcx)
-	movl $0, %eax
-.Lbb6:
-	cmpl $10, %eax
-	jl .Lbb12
-.Lbb7:
-	cmpl $10, %ebx
-	jge .Lbb9
-	addl $1, %ebx
-	jmp .Lbb7
-.Lbb9:
-	movl %ebx, %eax
-	movl %eax, %esi
+	movl $9, %edi
+	callq ahoj
+	movl %eax, %edx
+	movl $12, %esi
 	leaq main.0(%rip), %rdi
-	movl %eax, %ebx
 	movl $0, %eax
 	callq printf
-	movl %ebx, %eax
-	movq %rbp, %rsp
-	subq $16, %rsp
-	popq %rbx
+	movsd ".Lfp0"(%rip), %xmm0
+	leaq main.1(%rip), %rdi
+	movl $1, %eax
+	callq printf
+	movl $9, %edi
+	callq ahoj
+	movl %eax, %esi
+	leaq main.2(%rip), %rdi
+	movl $0, %eax
+	callq printf
+	movl $0, %esi
+	leaq main.3(%rip), %rdi
+	movl $0, %eax
+	callq printf
+	movl $0, %eax
 	leave
 	ret
-.Lbb12:
-	addl %eax, %ebx
-	addl $1, %eax
-	movl %eax, (%rcx)
-	jmp .Lbb6
 .type main, @function
 .size main, .-main
 /* end function main */
+
+/* floating point constants */
+.section .rodata
+.p2align 3
+.Lfp0:
+	.int 858993459
+	.int 1075262259 /* 5.800000 */
 
 .section .note.GNU-stack,"",@progbits

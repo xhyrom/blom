@@ -3,6 +3,8 @@ fun lol(g: i32, c: i32) {
 }
 
 fun main() -> i32 {
+    bool c = true;
+
     i32 a = 5;
     a = 9;
 

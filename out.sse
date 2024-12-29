@@ -1,72 +1,48 @@
-data $main.0 = { b "i: %d\n", b 0 }
+data $main.0 = { b "%d - %d\n", b 0 }
+data $main.1 = { b "xdd: %f\n", b 0 }
+data $main.2 = { b "gumi %d hm?\n", b 0 }
+data $main.3 = { b "gumi %b hm?\n", b 0 }
+function w $ahoj(w %a.0) {
+@start
+    %tmp.4 =w add %a.0, 9
+    # ^ binary expression
+    ret %tmp.4
+    # ^ return statement
+}
+# ^ function declaration
 export function w $main() {
 @start
-    %i.addr.3 =l alloc8 4
-    storew 0, %i.addr.3
-    %i.3 =w loadw %i.addr.3
+    %xdd.addr.8 =l alloc8 8
+    %tmp.9 =d div d_58, d_10
+    # ^ float literal statement
+    stored %tmp.9, %xdd.addr.8
+    %xdd.8 =d loadd %xdd.addr.8
     # ^ declaration statement
-    %a.addr.5 =l alloc8 4
-    storew 5, %a.addr.5
-    %a.5 =w loadw %a.addr.5
-    # ^ declaration statement
-@loop.cond.7
-    %tmp.9 =w csltw %a.5, 10
-    # ^ binary expression
-    jnz %tmp.9, @loop.body.7, @loop.end.7
-@loop.body.7
-    %i.addr.12 =l alloc8 4
-    %tmp.13 =w add %i.3, %a.5
-    # ^ binary expression
-    storew %tmp.13, %i.addr.3
-    %i.3 =w loadw %i.addr.3
-    # ^ declaration statement
-    %a.addr.16 =l alloc8 4
-    %tmp.17 =w add %a.5, 1
-    # ^ binary expression
-    storew %tmp.17, %a.addr.5
-    %a.5 =w loadw %a.addr.5
-    # ^ declaration statement
-    jmp @loop.cond.7
-@loop.end.7
-    %g.addr.20 =l alloc8 4
-    storew 0, %g.addr.20
-    %g.20 =w loadw %g.addr.20
-    # ^ declaration statement
-@loop.cond.22
-    %tmp.24 =w csltw %g.20, 10
-    # ^ binary expression
-    jnz %tmp.24, @loop.body.22, @loop.end.22
-@loop.body.22
-    %i.addr.27 =l alloc8 4
-    %tmp.28 =w add %i.3, %g.20
-    # ^ binary expression
-    storew %tmp.28, %i.addr.3
-    %i.3 =w loadw %i.addr.3
-    # ^ declaration statement
-    %g.addr.31 =l alloc8 4
-    %tmp.32 =w add %g.20, 1
-    # ^ binary expression
-    storew %tmp.32, %g.addr.20
-    %g.20 =w loadw %g.addr.20
-    # ^ declaration statement
-    jmp @loop.cond.22
-@loop.end.22
-@loop.cond.35
-    %tmp.37 =w csltw %i.3, 10
-    # ^ binary expression
-    jnz %tmp.37, @loop.body.35, @loop.end.35
-@loop.body.35
-    %i.addr.40 =l alloc8 4
-    %tmp.41 =w add %i.3, 1
-    # ^ binary expression
-    storew %tmp.41, %i.addr.3
-    %i.3 =w loadw %i.addr.3
-    # ^ declaration statement
-    jmp @loop.cond.35
-@loop.end.35
-    %tmp.44 =w call $printf(l $main.0, ..., w %i.3)
+    %lol.addr.10 =l alloc8 4
+    %tmp.11 =w call $ahoj(w 9)
     # ^ function call
-    ret %i.3
+    storew %tmp.11, %lol.addr.10
+    %lol.10 =w loadw %lol.addr.10
+    # ^ declaration statement
+    %c.addr.13 =l alloc8 1
+    storew 0, %c.addr.13
+    %c.13 =w loadw %c.addr.13
+    # ^ declaration statement
+    %tmp.18 =w add 5, 7
+    # ^ binary expression
+    %tmp.16 =w call $printf(l $main.0, ..., w %tmp.18, w %lol.10)
+    # ^ function call
+    %tmp.24 =d div d_58, d_10
+    # ^ float literal statement
+    %tmp.22 =w call $printf(l $main.1, ..., d %tmp.24)
+    # ^ function call
+    %tmp.27 =w call $ahoj(w 9)
+    # ^ function call
+    %tmp.25 =w call $printf(l $main.2, ..., w %tmp.27)
+    # ^ function call
+    %tmp.29 =w call $printf(l $main.3, ..., w %c.13)
+    # ^ function call
+    ret 0
     # ^ return statement
 }
 # ^ function declaration

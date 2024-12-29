@@ -51,7 +51,7 @@ var types = []string{
 	UnsignedLong:     "ul",
 	Byte:             "b",
 	Halfword:         "h",
-	Boolean:          "bool",
+	Boolean:          "w",
 	Word:             "w",
 	Long:             "l",
 	Single:           "s",

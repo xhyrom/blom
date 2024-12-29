@@ -3,7 +3,6 @@ package qbe
 import (
 	"blom/ast"
 	"blom/compiler"
-	"blom/debug"
 	"fmt"
 	"strings"
 )
@@ -35,15 +34,15 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.VariableDeclarationStat
 	if stmt.Redeclaration {
 		original := env.Get(stmt.Name)
 
-		if original.Type != statIdentifier.Type {
-			dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
-			dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", original.Type.Inspect(), statIdentifier.Type.Inspect()), true)
-		}
+		//if original.Type != statIdentifier.Type {
+		//	dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
+		//	dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", original.Type.Inspect(), statIdentifier.Type.Inspect()), true)
+		//}
 
 		id = original.Id // reuse the same id
 	} else if stmt.Value.Kind() != ast.IfNode && stmtType != statIdentifier.Type {
-		dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
-		dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", stmtType.Inspect(), statIdentifier.Type.Inspect()), true)
+		//dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
+		//dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", stmtType.Inspect(), statIdentifier.Type.Inspect()), true)
 	}
 
 	if stmt.Value.Kind() == ast.IfNode {

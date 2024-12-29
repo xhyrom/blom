@@ -2,7 +2,6 @@ package parser
 
 import (
 	"blom/ast"
-	"blom/debug"
 	"blom/lexer"
 	"blom/parser/expressions"
 	"blom/parser/statements"
@@ -44,15 +43,8 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 	}
 
 	for !p.IsEof() {
-		beforeLocation := p.Current().Location
-
 		stmts, _ := p.ParseStatement()
 		for _, stmt := range stmts {
-			if _, ok := stmt.(*ast.FunctionDeclaration); !ok {
-				dbg := debug.NewSourceLocation(p.Source(), beforeLocation.Row, beforeLocation.Column)
-				dbg.ThrowError("Top-level statements must be function declarations.", true, debug.NewHint("Non-function declaration instead", ""))
-			}
-
 			prog.Body = append(prog.Body, stmt)
 		}
 	}
@@ -180,6 +172,13 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		value, _ := strconv.ParseFloat(token.Value, 64)
 		return &ast.FloatLiteralStatement{
 			Value: float64(value),
+			Loc:   token.Location,
+		}, nil
+	case tokens.BooleanLiteral:
+		token := p.Consume()
+		value, _ := strconv.ParseBool(token.Value)
+		return &ast.BooleanLiteralStatement{
+			Value: value,
 			Loc:   token.Location,
 		}, nil
 	case tokens.AtMark:

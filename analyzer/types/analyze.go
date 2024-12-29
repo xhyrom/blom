@@ -81,8 +81,8 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) compiler.Typ
 	case *ast.IdentifierLiteralStatement:
 		identifier := expression.(*ast.IdentifierLiteralStatement)
 		return a.analyzeIdentifier(identifier)
-		//case *ast.BooleanLiteralStatement:
-		//	return compiler.Boolean
+	case *ast.BooleanLiteralStatement:
+		return compiler.Boolean
 	case *ast.BinaryExpression:
 		binaryExpression := expression.(*ast.BinaryExpression)
 		return a.analyzeBinaryExpression(binaryExpression)

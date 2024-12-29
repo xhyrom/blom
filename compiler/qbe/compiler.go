@@ -103,6 +103,8 @@ func (c *Compiler) CompileStatement(stmt ast.Statement, expectedType *compiler.T
 		}
 	case *ast.FloatLiteralStatement:
 		return c.CompileFloatLiteralStatement(stmt, expectedType)
+	case *ast.BooleanLiteralStatement:
+		return c.CompileBooleanLiteralStatement(stmt, expectedType)
 	case *ast.StringLiteralStatement:
 		id := c.dataCounter
 

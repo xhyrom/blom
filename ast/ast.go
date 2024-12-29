@@ -11,6 +11,7 @@ const (
 	StringLiteralNode
 	IntLiteralNode
 	FloatLiteralNode
+	BooleanLiteralNode
 	BinaryExpressionNode
 	UnaryExpressionNode
 	VariableDeclarationNode

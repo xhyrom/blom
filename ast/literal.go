@@ -91,3 +91,21 @@ func (l FloatLiteralStatement) SetLocation(row uint64, column uint64) {
 	l.Loc.Row = row
 	l.Loc.Column = column
 }
+
+type BooleanLiteralStatement struct {
+	Value bool
+	Loc   tokens.Location
+}
+
+func (l BooleanLiteralStatement) Kind() NodeKind {
+	return BooleanLiteralNode
+}
+
+func (l BooleanLiteralStatement) Location() tokens.Location {
+	return l.Loc
+}
+
+func (l BooleanLiteralStatement) SetLocation(row uint64, column uint64) {
+	l.Loc.Row = row
+	l.Loc.Column = column
+}

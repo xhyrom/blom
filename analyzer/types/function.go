@@ -12,6 +12,11 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 		a.Environment.Set(arg.Name, &Variable{Type: arg.Type})
 	}
 
+	if function.IsNative() {
+		a.Environment.SetFunction(function.Name, function)
+		return
+	}
+
 	for _, statement := range function.Body.Body {
 		if statement.Kind() == ast.ReturnNode {
 			ret := statement.(*ast.ReturnStatement)
@@ -48,6 +53,10 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) compiler.Type
 			),
 			true,
 		)
+	}
+
+	if function.IsNative() {
+		return function.ReturnType
 	}
 
 	if len(function.Arguments) != len(call.Parameters) {
