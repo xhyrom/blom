@@ -5,11 +5,9 @@ import (
 )
 
 type Environment[T any] struct {
-	Functions       map[string]*ast.FunctionDeclaration
-	Variables       map[string]T
-	CurrentFunction *ast.FunctionDeclaration // This is a pointer to the current function
-	TempCounter     int
-	Parent          *Environment[T]
+	Functions map[string]*ast.FunctionDeclaration
+	Variables map[string]T
+	Parent    *Environment[T]
 }
 
 func New[T any](environments ...Environment[T]) *Environment[T] {
@@ -66,20 +64,8 @@ func (env *Environment[T]) FindFunction(key string) *ast.FunctionDeclaration {
 	return nil
 }
 
-func (env *Environment[T]) FindCurrentFunction() *ast.FunctionDeclaration {
-	currentEnv := env
-	for currentEnv != nil {
-		if currentEnv.CurrentFunction != nil {
-			return currentEnv.CurrentFunction
-		}
-		currentEnv = currentEnv.Parent
-	}
-	return nil
-}
-
 func (env *Environment[T]) Collect() {
 	env.Variables = make(map[string]T)
 
 	env.Parent = nil
-	env.CurrentFunction = nil
 }

@@ -60,12 +60,12 @@ func Run(args []string) {
 	parser := parser.New(inputFile)
 	ast := parser.AST(inputFile, string(content))
 
+	analyzer := analyzer.New(inputFile, ast)
+	analyzer.Analyze()
+
 	if emitAst {
 		dump.Println(ast)
 	}
-
-	analyzer := analyzer.New(inputFile, ast)
-	analyzer.Analyze()
 
 	//os.Exit(1)
 

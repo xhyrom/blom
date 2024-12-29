@@ -3,7 +3,6 @@ package qbe
 import (
 	"blom/ast"
 	"blom/compiler"
-	"blom/debug"
 	"blom/env"
 	"fmt"
 	"strconv"
@@ -11,22 +10,27 @@ import (
 )
 
 type Compiler struct {
-	Source      string
+	source      string
 	data        []string
 	dataCounter int
-	GlobalScope *env.Environment[*Variable]
-	Environment *env.Environment[*Variable]
+	tempCounter int
+	globalScope *env.Environment[*Variable]
 }
 
-type Additional struct {
+type Variable struct {
+	Type compiler.Type
+	Id   int
+}
+
+type QbeIdentifier struct {
 	Name string
 	Id   int
-	Type compiler.Type
 	Raw  bool
+	Type compiler.Type
 }
 
-func (a *Additional) String() string {
-	return fmt.Sprintf("%s %s", a.Type, a.Name)
+func (qbeIdentifier *QbeIdentifier) String() string {
+	return fmt.Sprintf("%s %s", qbeIdentifier.Type, qbeIdentifier.Name)
 }
 
 func New(file string, functions map[string]*ast.FunctionDeclaration) Compiler {
@@ -37,9 +41,11 @@ func New(file string, functions map[string]*ast.FunctionDeclaration) Compiler {
 	}
 
 	return Compiler{
-		Source:      file,
-		GlobalScope: globalScope,
-		Environment: env.New[*Variable](),
+		source:      file,
+		data:        make([]string, 0),
+		dataCounter: 0,
+		tempCounter: 0,
+		globalScope: globalScope,
 	}
 }
 
@@ -49,7 +55,7 @@ func (c *Compiler) Compile(program *ast.Program) (string, error) {
 	block, _ := c.CompileBlock(ast.BlockStatement{
 		Body: program.Body,
 		Loc:  program.Loc,
-	}, false)
+	}, c.globalScope, false)
 
 	for _, data := range c.data {
 		result += data + "\n"
@@ -62,13 +68,15 @@ func (c *Compiler) Compile(program *ast.Program) (string, error) {
 	return result, nil
 }
 
-func (c *Compiler) CompileBlock(block ast.BlockStatement, labels bool) ([]string, *Additional) {
+func (c *Compiler) CompileBlock(block ast.BlockStatement, scope *env.Environment[*Variable], labels bool) ([]string, *QbeIdentifier) {
 	result := make([]string, 0)
 
-	id := c.Environment.TempCounter
+	id := c.tempCounter
 	if labels {
 		result = append(result, fmt.Sprintf("@block.start.%d", id))
 	}
+
+	newScope := env.New[*Variable](*scope)
 
 	for _, stmt := range block.Body {
 		indentation := strings.Repeat("    ", 1)
@@ -77,7 +85,7 @@ func (c *Compiler) CompileBlock(block ast.BlockStatement, labels bool) ([]string
 			indentation = ""
 		}
 
-		compiled, _ := c.CompileStatement(stmt, nil)
+		compiled, _ := c.CompileStatement(stmt, newScope)
 		for _, compiled := range compiled {
 			if strings.HasPrefix(compiled, "@") {
 				result = append(result, strings.TrimSpace(compiled)+"\n")
@@ -90,70 +98,71 @@ func (c *Compiler) CompileBlock(block ast.BlockStatement, labels bool) ([]string
 	if labels {
 		result = append(result, fmt.Sprintf("@block.end.%d", id))
 
-		c.Environment.TempCounter += 1
+		c.tempCounter += 1
 	}
 
-	return result, &Additional{
+	return result, &QbeIdentifier{
 		Id: id,
 	}
 }
 
-func (c *Compiler) CompileStatement(stmt ast.Statement, expectedType *compiler.Type) ([]string, *Additional) {
-	c.Environment.TempCounter += 1
+func (c *Compiler) CompileStatement(stmt ast.Statement, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
+	c.tempCounter += 1
 
 	switch stmt := stmt.(type) {
 	case *ast.IntLiteralStatement:
 		val := strconv.FormatInt(int64(stmt.Value), 10)
-		return []string{}, &Additional{
+		return []string{}, &QbeIdentifier{
 			Name: val,
-			Type: compiler.Word,
 			Raw:  true,
+			Type: stmt.Type,
 		}
 	case *ast.FloatLiteralStatement:
-		return c.CompileFloatLiteralStatement(stmt, expectedType)
+		return c.CompileFloatLiteralStatement(stmt)
 	case *ast.BooleanLiteralStatement:
-		return c.CompileBooleanLiteralStatement(stmt, expectedType)
+		return c.CompileBooleanLiteralStatement(stmt, scope)
 	case *ast.StringLiteralStatement:
 		id := c.dataCounter
 
-		c.data = append(c.data, fmt.Sprintf("data $%s.%d = { b \"%s\", b 0 }", c.Environment.CurrentFunction.Name, id, stmt.Value))
+		c.data = append(c.data, fmt.Sprintf("data $.%d = { b \"%s\", b 0 }", id, stmt.Value))
 		c.dataCounter += 1
 
-		return []string{}, &Additional{
-			Name: fmt.Sprintf("$%s.%d", c.Environment.CurrentFunction.Name, id),
+		return []string{}, &QbeIdentifier{
+			Name: fmt.Sprintf("$.%d", id),
 			Type: compiler.String,
-		} //fmt.Sprintf("l $%s.%d", c.Environment.CurrentFunction.Name, id)
+		}
 	case *ast.VariableDeclarationStatement:
-		return c.CompileDeclarationStatement(stmt)
+		return c.CompileVariableDeclarationStatement(stmt, scope, c.tempCounter)
+	case *ast.AssignmentStatement:
+		return c.CompileAssignmentStatement(stmt, scope)
 	case *ast.IdentifierLiteralStatement:
-		variable := c.Environment.Get(stmt.Value)
-		if variable == nil {
-			dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
-			dbg.ThrowError(fmt.Sprintf("Variable '%s' is not defined", stmt.Value), true)
+		variable, exists := scope.FindVariable(stmt.Value)
+		if !exists {
+			panic("VARIABLE NOT FOUND IN COMPILER, SHOULD HAPPEN IN ANALYZER")
 		}
 
-		return []string{}, &Additional{
+		return []string{}, &QbeIdentifier{
 			Name: fmt.Sprintf("%%%s.%d", stmt.Value, variable.Id),
 			Type: variable.Type,
 		}
 	case *ast.FunctionCall:
-		return c.CompileFunctionCall(stmt, expectedType)
+		return c.CompileFunctionCall(stmt, scope)
 	case *ast.FunctionDeclaration:
-		return c.CompileFunctionDeclaration(stmt), nil
+		return c.CompileFunctionDeclaration(stmt, scope), nil
 	case *ast.ReturnStatement:
-		return c.CompileReturnStatement(stmt, expectedType)
+		return c.CompileReturnStatement(stmt, scope)
 	case *ast.BlockStatement:
-		return c.CompileBlock(*stmt, true)
+		return c.CompileBlock(*stmt, scope, true)
 	case *ast.BinaryExpression:
-		return c.CompileBinaryExpression(stmt, expectedType)
+		return c.CompileBinaryExpression(stmt, scope)
 	case *ast.UnaryExpression:
-		return c.CompileUnaryExpression(stmt, expectedType)
+		return c.CompileUnaryExpression(stmt, scope)
 	case *ast.IfStatement:
-		return c.CompileIfStatement(stmt)
+		return c.CompileIfStatement(stmt, scope)
 	case *ast.WhileLoopStatement:
-		return c.CompileWhileLoopStatement(stmt)
+		return c.CompileWhileLoopStatement(stmt, scope)
 	case *ast.CompileTimeFunctionCall:
-		return c.CompileCompileTimeFunctionCall(stmt)
+		return c.CompileCompileTimeFunctionCall(stmt, scope)
 	}
 
 	panic(fmt.Sprintf("Unknown statement: %T\n", stmt))

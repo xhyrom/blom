@@ -1,9 +1,13 @@
 package ast
 
-import "blom/tokens"
+import (
+	"blom/compiler"
+	"blom/tokens"
+)
 
 type IdentifierLiteralStatement struct {
 	Value string
+	Type  compiler.Type
 	Loc   tokens.Location
 }
 
@@ -22,6 +26,7 @@ func (l IdentifierLiteralStatement) SetLocation(row uint64, column uint64) {
 
 type CharLiteralStatement struct {
 	Value rune
+	Type  compiler.Type
 	Loc   tokens.Location
 }
 
@@ -40,6 +45,7 @@ func (l CharLiteralStatement) SetLocation(row uint64, column uint64) {
 
 type StringLiteralStatement struct {
 	Value string
+	Type  compiler.Type
 	Loc   tokens.Location
 }
 
@@ -58,6 +64,7 @@ func (l StringLiteralStatement) SetLocation(row uint64, column uint64) {
 
 type IntLiteralStatement struct {
 	Value int64
+	Type  compiler.Type
 	Loc   tokens.Location
 }
 
@@ -76,6 +83,7 @@ func (l IntLiteralStatement) SetLocation(row uint64, column uint64) {
 
 type FloatLiteralStatement struct {
 	Value float64
+	Type  compiler.Type
 	Loc   tokens.Location
 }
 
@@ -94,6 +102,7 @@ func (l FloatLiteralStatement) SetLocation(row uint64, column uint64) {
 
 type BooleanLiteralStatement struct {
 	Value bool
+	Type  compiler.Type
 	Loc   tokens.Location
 }
 

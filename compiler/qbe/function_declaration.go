@@ -2,15 +2,16 @@ package qbe
 
 import (
 	"blom/ast"
+	"blom/env"
 	"fmt"
 )
 
-func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration) []string {
+func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration, scope *env.Environment[*Variable]) []string {
 	if stmt.IsNative() {
 		return []string{}
 	}
 
-	c.Environment.CurrentFunction = stmt
+	functionScope := env.New[*Variable]()
 
 	result := ""
 
@@ -27,7 +28,7 @@ func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration) []s
 
 		result += fmt.Sprintf("%s %%%s.%d", param.Type, param.Name, i)
 
-		c.Environment.Set(param.Name, &Variable{
+		functionScope.Set(param.Name, &Variable{
 			Type: param.Type,
 			Id:   i,
 		})
@@ -36,7 +37,7 @@ func (c *Compiler) CompileFunctionDeclaration(stmt *ast.FunctionDeclaration) []s
 	result += ") {\n"
 	result += "@start\n"
 
-	block, _ := c.CompileBlock(*stmt.Body, false)
+	block, _ := c.CompileBlock(*stmt.Body, functionScope, false)
 	for _, b := range block {
 		result += b
 	}

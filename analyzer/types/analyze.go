@@ -38,58 +38,73 @@ func (a *TypeAnalyzer) Analyze() {
 	}
 }
 
-func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Environment[*Variable]) {
+func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Environment[*Variable]) (compiler.Type, bool) {
 	switch statement := statement.(type) {
 	case *ast.FunctionDeclaration:
-		a.analyzeFunctionDeclaration(statement, scope)
+		a.analyzeFunctionDeclaration(statement)
 	case *ast.VariableDeclarationStatement:
 		a.analyzeVariableDeclarationStatement(statement, scope)
 	case *ast.AssignmentStatement:
 		a.analyzeAssignmentStatement(statement, scope)
-	case *ast.IfStatement:
-		a.analyzeIfExpression(statement, scope)
 	case *ast.WhileLoopStatement:
 		a.analyzeWhileLoopStatement(statement, scope)
 	case *ast.FunctionCall:
 		a.analyzeFunctionCall(statement, scope)
-	case *ast.BlockStatement:
-		newScope := env.New[*Variable](*scope)
-
-		for _, statement := range statement.Body {
-			a.analyzeStatement(statement, newScope)
-		}
 	default:
-		dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
-		dbg.ThrowWarning(
-			fmt.Sprintf(
-				"The statement '%s' has no effect on the program's behavior.",
-				statement.Kind(),
-			),
-			true,
-			debug.NewHint(
-				"Consider removing this statement as it does not affect the program's behavior.",
-				"",
-			),
-		)
+		if statement.Kind() != ast.IfNode {
+			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
+			dbg.ThrowWarning(
+				fmt.Sprintf(
+					"The statement '%s' has no effect on the program's behavior.",
+					statement.Kind(),
+				),
+				true,
+				debug.NewHint(
+					"Consider removing this statement as it does not affect the program's behavior.",
+					"",
+				),
+			)
+		}
 
-		a.analyzeExpression(statement, scope)
+		return a.analyzeExpression(statement, scope), true
 	}
+
+	return compiler.Void, false
 }
 
 func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.Environment[*Variable]) compiler.Type {
 	switch expression.(type) {
 	case *ast.IntLiteralStatement:
+		intLiteral := expression.(*ast.IntLiteralStatement)
+		intLiteral.Type = compiler.Word
+
 		return compiler.Word
 	case *ast.FloatLiteralStatement:
+		floatLiteral := expression.(*ast.FloatLiteralStatement)
+		floatLiteral.Type = compiler.Double
+
 		return compiler.Double
 	case *ast.StringLiteralStatement:
+		stringLiteral := expression.(*ast.StringLiteralStatement)
+		stringLiteral.Type = compiler.String
+
 		return compiler.String
 	case *ast.CharLiteralStatement:
+		charLiteral := expression.(*ast.CharLiteralStatement)
+		charLiteral.Type = compiler.Char
+
 		return compiler.Char
 	case *ast.IdentifierLiteralStatement:
 		identifier := expression.(*ast.IdentifierLiteralStatement)
-		return a.analyzeIdentifier(identifier, scope)
+		typ := a.analyzeIdentifier(identifier, scope)
+
+		identifier.Type = typ
+
+		return typ
 	case *ast.BooleanLiteralStatement:
+		booleanLiteral := expression.(*ast.BooleanLiteralStatement)
+		booleanLiteral.Type = compiler.Boolean
+
 		return compiler.Boolean
 	case *ast.BinaryExpression:
 		binaryExpression := expression.(*ast.BinaryExpression)
@@ -103,6 +118,9 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.E
 	case *ast.FunctionCall:
 		functionCall := expression.(*ast.FunctionCall)
 		return a.analyzeFunctionCall(functionCall, scope)
+	case *ast.BlockStatement:
+		blockStatement := expression.(*ast.BlockStatement)
+		return a.analyzeBlock(blockStatement, scope)
 	}
 
 	return compiler.Void

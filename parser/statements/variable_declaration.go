@@ -45,10 +45,9 @@ func ParseVariableDeclaration(p Parser) *ast.VariableDeclarationStatement {
 	}
 
 	return &ast.VariableDeclarationStatement{
-		Name:          name.Value,
-		Value:         value,
-		Redeclaration: false,
-		Type:          valueType,
-		Loc:           right.Location,
+		Name:  name.Value,
+		Value: value,
+		Type:  valueType,
+		Loc:   right.Location,
 	}
 }

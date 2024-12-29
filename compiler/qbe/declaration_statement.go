@@ -3,47 +3,17 @@ package qbe
 import (
 	"blom/ast"
 	"blom/compiler"
+	"blom/env"
 	"fmt"
 	"strings"
 )
 
-type Variable struct {
-	Type compiler.Type
-	Id   int
-}
-
-func (c *Compiler) CompileDeclarationStatement(stmt *ast.VariableDeclarationStatement) ([]string, *Additional) {
-	env := c.Environment
-
+func (c *Compiler) CompileVariableDeclarationStatement(stmt *ast.VariableDeclarationStatement, scope *env.Environment[*Variable], id int) ([]string, *QbeIdentifier) {
 	result := make([]string, 0)
 
-	id := env.TempCounter
+	result = append(result, fmt.Sprintf("%%%s.addr.%d =l alloc8 %d", stmt.Name, id, c.AllocSize(stmt.Type)))
 
-	var stmtType compiler.Type
-	if stmt.Redeclaration {
-		original := env.Get(stmt.Name)
-		stmtType = original.Type
-	} else {
-		stmtType = stmt.Type
-	}
-
-	result = append(result, fmt.Sprintf("%%%s.addr.%d =l alloc8 %d", stmt.Name, id, c.AllocSize(stmtType)))
-
-	stat, statIdentifier := c.CompileStatement(stmt.Value, &stmt.Type)
-
-	if stmt.Redeclaration {
-		original := env.Get(stmt.Name)
-
-		//if original.Type != statIdentifier.Type {
-		//	dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
-		//	dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", original.Type.Inspect(), statIdentifier.Type.Inspect()), true)
-		//}
-
-		id = original.Id // reuse the same id
-	} else if stmt.Value.Kind() != ast.IfNode && stmtType != statIdentifier.Type {
-		//dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
-		//dbg.ThrowError(fmt.Sprintf("Type mismatch in declaration %s != %s", stmtType.Inspect(), statIdentifier.Type.Inspect()), true)
-	}
+	stat, statIdentifier := c.CompileStatement(stmt.Value, scope)
 
 	if stmt.Value.Kind() == ast.IfNode {
 		for _, stat := range stat {
@@ -51,7 +21,7 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.VariableDeclarationStat
 
 			if strings.HasPrefix(stat, "ret") {
 				returnValue := strings.Split(stat, " ")[1]
-				stat = fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmtType), returnValue, stmt.Name, id)
+				stat = fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmt.Type), returnValue, stmt.Name, id)
 			}
 
 			result = append(result, stat)
@@ -65,26 +35,44 @@ func (c *Compiler) CompileDeclarationStatement(stmt *ast.VariableDeclarationStat
 			result = append(result, stat)
 		}
 
-		result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmtType), c.StoreVal(statIdentifier), stmt.Name, id))
+		result = append(result, fmt.Sprintf("store%s %s, %%%s.addr.%d", c.StoreType(stmt.Type), c.StoreVal(statIdentifier), stmt.Name, id))
 	}
 
 	name := fmt.Sprintf("%%%s.%d", stmt.Name, id)
-	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmtType), stmtType, stmt.Name, id))
+	result = append(result, fmt.Sprintf("%s =%s load%s %%%s.addr.%d", name, c.StoreType(stmt.Type), stmt.Type, stmt.Name, id))
 
-	env.Set(stmt.Name, &Variable{
-		Type: stmtType,
+	scope.Set(stmt.Name, &Variable{
+		Type: stmt.Type,
 		Id:   id,
 	})
 
 	result = append(result, "# ^ declaration statement\n")
 
-	return result, &Additional{
+	return result, &QbeIdentifier{
 		Name: name,
-		Type: stmtType,
+		Type: stmt.Type,
 	}
 }
 
-func (c *Compiler) StoreVal(additional *Additional) string {
+func (c *Compiler) CompileAssignmentStatement(stmt *ast.AssignmentStatement, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
+	original, exists := scope.FindVariable(stmt.Name)
+	if !exists {
+		panic("VARIABLE NOT FOUND IN COMPILER IN ASSIGNMENT STATEMENT, SHOULD HAPPEN IN ANALYZER")
+	}
+
+	return c.CompileVariableDeclarationStatement(
+		&ast.VariableDeclarationStatement{
+			Name:  stmt.Name,
+			Type:  original.Type,
+			Value: stmt.Value,
+			Loc:   stmt.Loc,
+		},
+		scope,
+		original.Id,
+	)
+}
+
+func (c *Compiler) StoreVal(additional *QbeIdentifier) string {
 	if additional.Raw {
 		switch additional.Type {
 		case compiler.Double, compiler.Single:

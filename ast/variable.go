@@ -6,11 +6,10 @@ import (
 )
 
 type VariableDeclarationStatement struct {
-	Name          string
-	Type          compiler.Type
-	Value         Expression
-	Redeclaration bool
-	Loc           tokens.Location
+	Name  string
+	Type  compiler.Type
+	Value Expression
+	Loc   tokens.Location
 }
 
 func (d VariableDeclarationStatement) Kind() NodeKind {

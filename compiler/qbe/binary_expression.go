@@ -2,20 +2,20 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"blom/debug"
+	"blom/env"
 	"blom/tokens"
 	"fmt"
 )
 
-func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, expectedType *compiler.Type) ([]string, *Additional) {
-	name := fmt.Sprintf("%%tmp.%d", c.Environment.TempCounter)
+func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
+	name := fmt.Sprintf("%%tmp.%d", c.tempCounter)
 
-	left, leftVar := c.CompileStatement(stmt.Left, expectedType)
-	right, rightVar := c.CompileStatement(stmt.Right, expectedType)
+	left, leftVar := c.CompileStatement(stmt.Left, scope)
+	right, rightVar := c.CompileStatement(stmt.Right, scope)
 
 	if leftVar.Type != rightVar.Type {
-		dbg := debug.NewSourceLocation(c.Source, stmt.OperatorLoc.Row, stmt.OperatorLoc.Column)
+		dbg := debug.NewSourceLocation(c.source, stmt.OperatorLoc.Row, stmt.OperatorLoc.Column)
 		dbg.ThrowError(fmt.Sprintf("Cannot perform binary operation on two different types \"%s\" and \"%s\"!", leftVar.Type.Inspect(), rightVar.Type.Inspect()), true)
 	}
 
@@ -70,8 +70,8 @@ func (c *Compiler) CompileBinaryExpression(stmt *ast.BinaryExpression, expectedT
 
 	result = append(result, "# ^ binary expression\n")
 
-	return result, &Additional{
+	return result, &QbeIdentifier{
 		Name: name,
 		Type: leftVar.Type,
-	} //fmt.Sprintf("l %s", name)
+	}
 }

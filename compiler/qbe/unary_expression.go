@@ -2,15 +2,15 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/compiler"
+	"blom/env"
 	"blom/tokens"
 	"fmt"
 )
 
-func (c *Compiler) CompileUnaryExpression(stmt *ast.UnaryExpression, expectedType *compiler.Type) ([]string, *Additional) {
-	name := fmt.Sprintf("%%tmp.%d", c.Environment.TempCounter)
+func (c *Compiler) CompileUnaryExpression(stmt *ast.UnaryExpression, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
+	name := fmt.Sprintf("%%tmp.%d", c.tempCounter)
 
-	operand, operandVar := c.CompileStatement(stmt.Operand, expectedType)
+	operand, operandVar := c.CompileStatement(stmt.Operand, scope)
 	result := make([]string, 0)
 
 	for _, r := range operand {
@@ -39,7 +39,7 @@ func (c *Compiler) CompileUnaryExpression(stmt *ast.UnaryExpression, expectedTyp
 
 	result = append(result, "# ^ unary expression\n")
 
-	return result, &Additional{
+	return result, &QbeIdentifier{
 		Name: name,
 		Type: operandVar.Type,
 	}

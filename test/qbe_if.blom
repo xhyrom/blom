@@ -5,7 +5,7 @@ fun fib(n: i32) -> i32 {
         return n;
     }
 
-    return 0;
+    return fib(n - 1) + fib(n - 2);
 }
 
 fun main() -> i32 {

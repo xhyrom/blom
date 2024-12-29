@@ -2,20 +2,14 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/compiler"
 	"fmt"
 	"math"
 	"strconv"
 	"strings"
 )
 
-func (c *Compiler) CompileFloatLiteralStatement(stmt *ast.FloatLiteralStatement, expectedType *compiler.Type) ([]string, *Additional) {
-	if expectedType == nil {
-		double := compiler.Double
-		expectedType = &double
-	}
-
-	name := fmt.Sprintf("%%tmp.%d", c.Environment.TempCounter)
+func (c *Compiler) CompileFloatLiteralStatement(stmt *ast.FloatLiteralStatement) ([]string, *QbeIdentifier) {
+	name := fmt.Sprintf("%%tmp.%d", c.tempCounter)
 
 	floatStr := strconv.FormatFloat(stmt.Value, 'f', -1, 64)
 	parts := strings.Split(floatStr, ".")
@@ -26,10 +20,10 @@ func (c *Compiler) CompileFloatLiteralStatement(stmt *ast.FloatLiteralStatement,
 
 	wholeNumber := int(stmt.Value * math.Pow(10, float64(fracDigits)))
 
-	result := fmt.Sprintf("%s =%s div %s_%d, %s_%d", name, expectedType, expectedType, wholeNumber, expectedType, int(math.Pow(10, float64(fracDigits))))
+	result := fmt.Sprintf("%s =%s div %s_%d, %s_%d", name, stmt.Type, stmt.Type, wholeNumber, stmt.Type, int(math.Pow(10, float64(fracDigits))))
 
-	return []string{result, "# ^ float literal statement\n"}, &Additional{
+	return []string{result, "# ^ float literal statement\n"}, &QbeIdentifier{
 		Name: name,
-		Type: *expectedType,
+		Type: stmt.Type,
 	}
 }

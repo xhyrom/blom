@@ -8,8 +8,8 @@ import (
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclaration, scope *env.Environment[*Variable]) {
-	functionScope := env.New[*Variable](*scope)
+func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclaration) {
+	functionScope := env.New[*Variable]()
 
 	for _, arg := range function.Arguments {
 		functionScope.Set(arg.Name, &Variable{Type: arg.Type})
@@ -43,7 +43,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 }
 
 func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.Environment[*Variable]) compiler.Type {
-	function := scope.FindFunction(call.Name)
+	function := a.GlobalScope.GetFunction(call.Name)
 	if function == nil {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
@@ -55,11 +55,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.En
 		)
 	}
 
-	if function.IsNative() {
-		return function.ReturnType
-	}
-
-	if len(function.Arguments) != len(call.Parameters) {
+	if !function.IsNative() && len(function.Arguments) != len(call.Parameters) {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
 			fmt.Sprintf(
@@ -75,7 +71,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.En
 	for i, param := range call.Parameters {
 		paramType := a.analyzeExpression(param, scope)
 
-		if paramType != function.Arguments[i].Type {
+		if !function.IsNative() && paramType != function.Arguments[i].Type {
 			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)
 			dbg.ThrowError(
 				fmt.Sprintf(

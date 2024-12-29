@@ -1,11 +1,7 @@
+fun @native printf(format: string, ...) -> i32;
+
 fun main() -> i32 {
-    i32 c = lol(7);
+    printf("x %f\n", 9.5)
 
-    return lol(lol(lol(lol(lol(lol(lol(lol(c))))))));
+    return 0;
 }
-
-fun lol(g: i32) {
-    return g;
-}
-
-i32 c = 5;

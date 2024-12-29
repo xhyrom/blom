@@ -2,26 +2,19 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/compiler"
-	"blom/debug"
+	"blom/env"
 	"fmt"
 )
 
-func (c *Compiler) CompileReturnStatement(stmt *ast.ReturnStatement, expectedType *compiler.Type) ([]string, *Additional) {
+func (c *Compiler) CompileReturnStatement(stmt *ast.ReturnStatement, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
 	result := make([]string, 0)
 
-	s, identifier := c.CompileStatement(stmt.Value, expectedType)
+	s, identifier := c.CompileStatement(stmt.Value, scope)
 	for _, s := range s {
 		result = append(result, s)
 	}
 
-	if c.Environment.CurrentFunction != nil && c.Environment.CurrentFunction.ReturnType != identifier.Type {
-		dbg := debug.NewSourceLocation(c.Source, stmt.Loc.Row, stmt.Loc.Column)
-		dbg.ThrowError(fmt.Sprintf("Return type mismatch: expected \"%s\", got \"%s\"", c.Environment.CurrentFunction.ReturnType.Inspect(), identifier.Type.Inspect()), true)
-	}
-
 	result = append(result, fmt.Sprintf("ret %s", identifier.Name))
-
 	result = append(result, "# ^ return statement")
 
 	return result, nil

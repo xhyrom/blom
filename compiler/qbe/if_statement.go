@@ -2,20 +2,20 @@ package qbe
 
 import (
 	"blom/ast"
+	"blom/env"
 	"fmt"
 )
 
-func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) ([]string, *Additional) {
+func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
 	result := make([]string, 0)
 
-	condition, conditionIdentifier := c.CompileStatement(stmt.Condition, nil)
+	condition, conditionIdentifier := c.CompileStatement(stmt.Condition, scope)
 
 	for _, data := range condition {
 		result = append(result, data)
 	}
 
-	id := c.Environment.TempCounter
-	c.Environment.TempCounter += 1
+	id := c.tempCounter
 
 	if stmt.HasElse() {
 		result = append(result, fmt.Sprintf("jnz %s, @if.%d, @else.%d", conditionIdentifier.Name, id, id))
@@ -26,7 +26,7 @@ func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) ([]string, *Additio
 	// if block
 	result = append(result, fmt.Sprintf("@if.%d", id))
 
-	thenBlock, _ := c.CompileBlock(*stmt.Then, false)
+	thenBlock, _ := c.CompileBlock(*stmt.Then, scope, false)
 	for _, data := range thenBlock {
 		result = append(result, data)
 	}
@@ -47,7 +47,7 @@ func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) ([]string, *Additio
 	if stmt.HasElse() {
 		result = append(result, fmt.Sprintf("@else.%d", id))
 
-		elseBlock, _ := c.CompileBlock(*stmt.Else, false)
+		elseBlock, _ := c.CompileBlock(*stmt.Else, scope, false)
 		for _, data := range elseBlock {
 			result = append(result, data)
 		}
@@ -70,7 +70,7 @@ func (c *Compiler) CompileIfStatement(stmt *ast.IfStatement) ([]string, *Additio
 
 	result = append(result, "# ^ if statement")
 
-	return result, &Additional{
+	return result, &QbeIdentifier{
 		Id: id,
 	}
 }

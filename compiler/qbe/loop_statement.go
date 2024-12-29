@@ -2,18 +2,18 @@ package qbe
 
 import (
 	"blom/ast"
+	"blom/env"
 	"fmt"
 )
 
-func (c *Compiler) CompileWhileLoopStatement(stmt *ast.WhileLoopStatement) ([]string, *Additional) {
+func (c *Compiler) CompileWhileLoopStatement(stmt *ast.WhileLoopStatement, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
 	result := make([]string, 0)
 
-	id := c.Environment.TempCounter
-	c.Environment.TempCounter += 1
+	id := c.tempCounter
 
 	result = append(result, fmt.Sprintf("@loop.cond.%d", id))
 
-	condition, conditionIdentifier := c.CompileStatement(stmt.Condition, nil)
+	condition, conditionIdentifier := c.CompileStatement(stmt.Condition, scope)
 
 	for _, data := range condition {
 		result = append(result, data)
@@ -24,7 +24,7 @@ func (c *Compiler) CompileWhileLoopStatement(stmt *ast.WhileLoopStatement) ([]st
 	// loop body
 	result = append(result, fmt.Sprintf("@loop.body.%d", id))
 
-	body, _ := c.CompileBlock(*stmt.Body, false)
+	body, _ := c.CompileBlock(*stmt.Body, scope, false)
 
 	for _, data := range body {
 		result = append(result, data)
@@ -35,7 +35,7 @@ func (c *Compiler) CompileWhileLoopStatement(stmt *ast.WhileLoopStatement) ([]st
 	// loop end
 	result = append(result, fmt.Sprintf("@loop.end.%d", id))
 
-	return result, &Additional{
+	return result, &QbeIdentifier{
 		Id: id,
 	}
 }

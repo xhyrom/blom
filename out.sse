@@ -1,38 +1,72 @@
+data $.0 = { b "i: %d\n", b 0 }
 export function w $main() {
 @start
-    %c.addr.2 =l alloc8 4
-    %tmp.3 =w call $lol(w 7)
-    # ^ function call
-    storew %tmp.3, %c.addr.2
-    %c.2 =w loadw %c.addr.2
+    %i.addr.3 =l alloc8 4
+    storew 0, %i.addr.3
+    %i.3 =w loadw %i.addr.3
     # ^ declaration statement
-    %tmp.13 =w call $lol(w %c.2)
+    %a.addr.5 =l alloc8 4
+    storew 5, %a.addr.5
+    %a.5 =w loadw %a.addr.5
+    # ^ declaration statement
+@loop.cond.7
+    %tmp.8 =w csltw %a.5, 10
+    # ^ binary expression
+    jnz %tmp.8, @loop.body.7, @loop.end.7
+@loop.body.7
+    %i.addr.3 =l alloc8 4
+    %tmp.12 =w add %i.3, %a.5
+    # ^ binary expression
+    storew %tmp.12, %i.addr.3
+    %i.3 =w loadw %i.addr.3
+    # ^ declaration statement
+    %a.addr.5 =l alloc8 4
+    %tmp.16 =w add %a.5, 1
+    # ^ binary expression
+    storew %tmp.16, %a.addr.5
+    %a.5 =w loadw %a.addr.5
+    # ^ declaration statement
+    jmp @loop.cond.7
+@loop.end.7
+    %g.addr.19 =l alloc8 4
+    storew 0, %g.addr.19
+    %g.19 =w loadw %g.addr.19
+    # ^ declaration statement
+@loop.cond.21
+    %tmp.22 =w csltw %g.19, 10
+    # ^ binary expression
+    jnz %tmp.22, @loop.body.21, @loop.end.21
+@loop.body.21
+    %i.addr.3 =l alloc8 4
+    %tmp.26 =w add %i.3, %g.19
+    # ^ binary expression
+    storew %tmp.26, %i.addr.3
+    %i.3 =w loadw %i.addr.3
+    # ^ declaration statement
+    %g.addr.19 =l alloc8 4
+    %tmp.30 =w add %g.19, 1
+    # ^ binary expression
+    storew %tmp.30, %g.addr.19
+    %g.19 =w loadw %g.addr.19
+    # ^ declaration statement
+    jmp @loop.cond.21
+@loop.end.21
+@loop.cond.33
+    %tmp.34 =w csltw %i.3, 10
+    # ^ binary expression
+    jnz %tmp.34, @loop.body.33, @loop.end.33
+@loop.body.33
+    %i.addr.3 =l alloc8 4
+    %tmp.38 =w add %i.3, 1
+    # ^ binary expression
+    storew %tmp.38, %i.addr.3
+    %i.3 =w loadw %i.addr.3
+    # ^ declaration statement
+    jmp @loop.cond.33
+@loop.end.33
+    %tmp.41 =w call $printf(l $.0, ..., w %i.3)
     # ^ function call
-    %tmp.12 =w call $lol(w %tmp.13)
-    # ^ function call
-    %tmp.11 =w call $lol(w %tmp.12)
-    # ^ function call
-    %tmp.10 =w call $lol(w %tmp.11)
-    # ^ function call
-    %tmp.9 =w call $lol(w %tmp.10)
-    # ^ function call
-    %tmp.8 =w call $lol(w %tmp.9)
-    # ^ function call
-    %tmp.7 =w call $lol(w %tmp.8)
-    # ^ function call
-    %tmp.6 =w call $lol(w %tmp.7)
-    # ^ function call
-    ret %tmp.6
+    ret %i.3
     # ^ return statement
 }
 # ^ function declaration
-function w $lol(w %g.0) {
-@start
-    ret %g.0
-    # ^ return statement
-}
-# ^ function declaration
-    %c.addr.18 =l alloc8 4
-    storew 5, %c.addr.18
-    %c.18 =w loadw %c.addr.18
-    # ^ declaration statement
