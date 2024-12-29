@@ -81,9 +81,8 @@ func Run(args []string) {
 
 	if emitSse {
 		fmt.Println(sse)
+		fmt.Println()
 	}
-
-	fmt.Println()
 
 	err = os.WriteFile("out.sse", []byte(sse), 0644)
 	if err != nil {
