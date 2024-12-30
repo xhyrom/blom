@@ -1,4 +1,16 @@
+fun fib(n: i32) -> i32 {
+    if n <= 1 {
+        return n;
+    }
+
+    return fib(n - 1) + fib(n - 2);
+}
+
 fun main() -> i32 {
     i32 a = ~2 + 9;
-    return -a | 99;
+    if a > 99 {
+        return 9;
+    }
+
+    return fib(13);
 }

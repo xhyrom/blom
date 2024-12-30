@@ -21,7 +21,7 @@ func ParseIf(p Parser) *ast.IfStatement {
 	}
 
 	thenBlock := ParseBlock(p)
-	var elseBlock *ast.BlockStatement = nil
+	var elseBlock *ast.BlockStatement = &ast.BlockStatement{Body: []ast.Statement{}}
 
 	loc := thenBlock.Loc
 

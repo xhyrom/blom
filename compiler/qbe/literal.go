@@ -48,11 +48,16 @@ func compileIdentifierLiteral(c *Compiler, literal *ast.IdentifierLiteral, funct
 func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
 	prefix := ""
 
-	if isReturn {
-		vtype = &function.ReturnType
+	var t qbe.Type = qbe.Word
+	if vtype != nil {
+		t = *vtype
 	}
 
-	switch *vtype {
+	if isReturn {
+		t = function.ReturnType
+	}
+
+	switch t {
 	case qbe.Double:
 		prefix = "d_"
 	case qbe.Single:
@@ -64,7 +69,7 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 			Value:  literal.Value,
 			Prefix: prefix,
 		},
-		Type: *vtype,
+		Type: t,
 	}
 }
 

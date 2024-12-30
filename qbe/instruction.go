@@ -314,6 +314,14 @@ type JumpNonZeroInstruction struct {
 	IfZero    string
 }
 
+func NewJumpNonZeroInstruction(value Value, ifNonZero string, ifZero string) JumpNonZeroInstruction {
+	return JumpNonZeroInstruction{
+		Value:     value,
+		IfNonZero: ifNonZero,
+		IfZero:    ifZero,
+	}
+}
+
 func (i JumpNonZeroInstruction) InstructionType() InstructionType {
 	return JumpNonZero
 }
@@ -325,6 +333,12 @@ func (i JumpNonZeroInstruction) String() string {
 // JumpInstruction represents a jump instruction. (jmp {label})
 type JumpInstruction struct {
 	Label string
+}
+
+func NewJumpInstruction(label string) JumpInstruction {
+	return JumpInstruction{
+		Label: label,
+	}
 }
 
 func (i JumpInstruction) InstructionType() InstructionType {

@@ -1,11 +1,29 @@
+export function w $fib(w %n.1) {
+@start
+	%tmp.2 =w cslew %n.1, 1
+	jnz %tmp.2, @ift.3, @iend.3
+@ift.3
+	ret %n.1
+@iend.3
+	%tmp.4 =w sub %n.1, 1
+	%tmp.5 =w call $fib(w %tmp.4)
+	%tmp.6 =w sub %n.1, 2
+	%tmp.7 =w call $fib(w %tmp.6)
+	%tmp.8 =w add %tmp.5, %tmp.7
+	ret %tmp.8
+}
 export function w $main() {
 @start
-	%tmp.1 =w xor 2, -1
-	%tmp.2 =w add %tmp.1, 9
-	%a.addr.4 =l alloc8 4
-	storew %tmp.2, %a.addr.4
-	%a.3 =w loadw %a.addr.4
-	%tmp.5 =w mul %a.3, -1
-	%tmp.6 =w or %tmp.5, 99
-	ret %tmp.6
+	%tmp.9 =w xor 2, -1
+	%tmp.10 =w add %tmp.9, 9
+	%a.addr.12 =l alloc8 4
+	storew %tmp.10, %a.addr.12
+	%a.11 =w loadw %a.addr.12
+	%tmp.13 =w csgtw %a.11, 99
+	jnz %tmp.13, @ift.14, @iend.14
+@ift.14
+	ret 9
+@iend.14
+	%tmp.15 =w call $fib(w 13)
+	ret %tmp.15
 }
