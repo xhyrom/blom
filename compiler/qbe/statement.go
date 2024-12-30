@@ -14,7 +14,7 @@ func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Funct
 	case *ast.IdentifierLiteral, *ast.IntLiteral, *ast.FloatLiteral, *ast.CharLiteral, *ast.StringLiteral, *ast.BooleanLiteral:
 		return c.compileLiteral(statement, function, vtype, isReturn)
 	case *ast.FunctionCall:
-		return c.compileFunctionCall(statement, function)
+		return c.compileFunctionCall(statement, function, vtype)
 	case *ast.IfStatement:
 		return c.compileCondition(statement, function, vtype, isReturn)
 	case *ast.WhileLoopStatement:

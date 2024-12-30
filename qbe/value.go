@@ -8,6 +8,7 @@ const (
 	TemporaryValueType ValueType = iota
 	GlobalValueType
 	ConstantValueType
+	LiteralValueType
 )
 
 type Value interface {
@@ -89,4 +90,26 @@ func (v ConstantValue) Type() ValueType {
 
 func (v ConstantValue) String() string {
 	return fmt.Sprintf("%s%d", v.Prefix, v.Value)
+}
+
+// LiteralValue represents a literal value. (prefix value)
+type LiteralValue struct {
+	Prefix string
+	Value  string
+}
+
+func NewLiteralValue(value string) LiteralValue {
+	return LiteralValue{Value: value}
+}
+
+func NewLiteralValueWithPrefix(prefix string, value string) LiteralValue {
+	return LiteralValue{Prefix: prefix, Value: value}
+}
+
+func (v LiteralValue) Type() ValueType {
+	return LiteralValueType
+}
+
+func (v LiteralValue) String() string {
+	return fmt.Sprintf("%s%s", v.Prefix, v.Value)
 }

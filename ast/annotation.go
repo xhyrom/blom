@@ -22,11 +22,13 @@ type AnnotationType int
 
 const (
 	Native AnnotationType = iota
+	Public
 	Unknown
 )
 
 var annotations = []string{
 	Native: "native",
+	Public: "public",
 }
 
 func (a AnnotationType) String() string {

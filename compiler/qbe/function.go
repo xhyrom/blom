@@ -17,13 +17,21 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) qbe.Fun
 		arguments[i] = qbe.NewTypedValue(t, temp)
 	}
 
+	var linkage qbe.Linkage
+	if declaration.HasAnnotation(ast.Public) {
+		linkage = qbe.NewLinkage(true)
+	} else {
+		linkage = qbe.NewLinkage(false)
+	}
+
 	returnType := qbe.RemapAstType(declaration.ReturnType)
 	function := qbe.Function{
-		Linkage:    qbe.NewLinkage(true), // TODO: Implement linkage
+		Linkage:    linkage,
 		Name:       declaration.Name,
 		Arguments:  arguments,
 		ReturnType: returnType,
 		Variadic:   declaration.Variadic,
+		External:   declaration.IsNative(),
 		Blocks:     make([]qbe.Block, 0),
 	}
 
@@ -43,7 +51,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) qbe.Fun
 	return function
 }
 
-func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function) *qbe.TypedValue {
+func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
 	var function *qbe.Function
 	if call.Name == currentFunction.Name {
 		function = currentFunction
@@ -51,9 +59,23 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 		function = c.Module.GetFunctionByName(call.Name)
 	}
 
-	parameters := make([]qbe.TypedValue, len(call.Parameters))
+	parameters := make([]qbe.TypedValue, 0)
 	for i, parameter := range call.Parameters {
-		parameters[i] = *c.compileStatement(parameter, currentFunction, &function.Arguments[i].Type, false)
+		var argType *qbe.Type
+		if i < len(function.Arguments) {
+			argType = &function.Arguments[i].Type
+		} else {
+			argType = vtype
+		}
+
+		if len(function.Arguments) == i && function.Variadic {
+			parameters = append(parameters, qbe.TypedValue{
+				Value: qbe.NewLiteralValue("..."),
+				Type:  qbe.Null,
+			})
+		}
+
+		parameters = append(parameters, *c.compileStatement(parameter, currentFunction, argType, false))
 	}
 
 	tempValue := c.getTemporaryValue(nil)

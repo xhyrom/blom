@@ -43,6 +43,7 @@ type Function struct {
 	Arguments  []TypedValue
 	ReturnType Type
 	Variadic   bool
+	External   bool
 	Blocks     []Block
 }
 

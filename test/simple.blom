@@ -1,3 +1,6 @@
+fun @native printf(format: string, ...) -> i32;
+fun @native foo(x: i32, y: i32, ...) -> i32;
+
 fun fib(n: i32) -> i32 {
     if n <= 1 {
         return n;
@@ -6,7 +9,7 @@ fun fib(n: i32) -> i32 {
     return fib(n - 1) + fib(n - 2);
 }
 
-fun main() -> i32 {
+fun @public main() -> i32 {
     i32 a = ~2 + 9;
     if a > 99 {
         return 9;
@@ -26,6 +29,8 @@ fun main() -> i32 {
     while i < 10 {
         i = i + 1;
     }
+
+    printf("Hello, World! %d | %d\n", fib(40), 99);
 
     return i;
 }

@@ -51,7 +51,9 @@ func (m Module) String() string {
 	}
 
 	for _, function := range m.Functions {
-		parts = append(parts, function.String())
+		if !function.External {
+			parts = append(parts, function.String())
+		}
 	}
 
 	return strings.Join(parts, "\n")
