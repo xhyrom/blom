@@ -1,12 +1,10 @@
-export function w $hoh() {
+export function w $hoh(w %a.1) {
 @start
-	%a.addr.2 =l alloc8 4
-	storew 5, %a.addr.2
-	%a.1 =w loadw %a.addr.2
-	ret %a.1
+	%tmp.2 =w call $hoh(w %a.1)
+	ret %tmp.2
 }
 export function w $main() {
 @start
-	%tmp.3 =w call $hoh()
+	%tmp.3 =w call $hoh(w 5)
 	ret %tmp.3
 }

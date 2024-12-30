@@ -10,7 +10,12 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) qbe.Fun
 	c.Scopes = append(c.Scopes, env.New[*qbe.TypedValue]())
 
 	arguments := make([]qbe.TypedValue, len(declaration.Arguments))
-	// TODO add arguments to scope
+	for i, argument := range declaration.Arguments {
+		t := qbe.RemapAstType(argument.Type)
+
+		temp := c.createVariable(t, argument.Name)
+		arguments[i] = qbe.NewTypedValue(t, temp)
+	}
 
 	returnType := qbe.RemapAstType(declaration.ReturnType)
 	function := qbe.Function{
@@ -46,12 +51,17 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 		function = c.Module.GetFunctionByName(call.Name)
 	}
 
-	tempValue := c.newTemporaryValue(nil)
+	parameters := make([]qbe.TypedValue, len(call.Parameters))
+	for i, parameter := range call.Parameters {
+		parameters[i] = *c.compileStatement(parameter, currentFunction, &function.Arguments[i].Type, false)
+	}
+
+	tempValue := c.getTemporaryValue(nil)
 
 	currentFunction.LastBlock().AddAssign(
 		tempValue,
 		function.ReturnType,
-		qbe.NewCallInstruction(qbe.NewGlobalValue(function.Name)),
+		qbe.NewCallInstruction(qbe.NewGlobalValue(function.Name), parameters...),
 	)
 
 	return &qbe.TypedValue{

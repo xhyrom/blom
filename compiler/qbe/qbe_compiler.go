@@ -49,7 +49,7 @@ func (c *Compiler) assignNameToValueWithPrefix(prefix string) string {
 	return fmt.Sprintf("%s.%d", prefix, c.TempCounter)
 }
 
-func (c *Compiler) newTemporaryValue(name *string) *qbe.TemporaryValue {
+func (c *Compiler) getTemporaryValue(name *string) *qbe.TemporaryValue {
 	var prefix string
 	if name != nil {
 		prefix = *name
@@ -63,7 +63,7 @@ func (c *Compiler) newTemporaryValue(name *string) *qbe.TemporaryValue {
 }
 
 func (c *Compiler) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
-	tmp := c.newTemporaryValue(&name)
+	tmp := c.getTemporaryValue(&name)
 
 	c.Scopes[len(c.Scopes)-1].Set(name, &qbe.TypedValue{
 		Type:  t,

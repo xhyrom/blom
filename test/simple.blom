@@ -1,8 +1,7 @@
-fun hoh() -> i32 {
-    i32 a = 5;
-    return a;
+fun hoh(a: i32) -> i32 {
+    return hoh(a);
 }
 
 fun main() -> i32 {
-    return hoh();
+    return hoh(5);
 }

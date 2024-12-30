@@ -62,6 +62,7 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 			Value:  literal.Value,
 			Prefix: prefix,
 		},
+		Type: *vtype,
 	}
 }
 
