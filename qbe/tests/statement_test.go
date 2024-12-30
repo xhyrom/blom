@@ -6,10 +6,10 @@ import (
 )
 
 func TestAssignStatement(t *testing.T) {
-	name := qbe.TemporaryValue{Name: "name", Value: "value1"}
+	name := qbe.TemporaryValue{Name: "name"}
 	instr := qbe.AddInstruction{
-		Left:  qbe.TemporaryValue{Name: "left", Value: "value2"},
-		Right: qbe.TemporaryValue{Name: "right", Value: "value3"},
+		Left:  qbe.TemporaryValue{Name: "left"},
+		Right: qbe.TemporaryValue{Name: "right"},
 	}
 	stmt := qbe.AssignStatement{Name: name, Type: qbe.Word, Instruction: instr}
 
@@ -25,10 +25,10 @@ func TestAssignStatement(t *testing.T) {
 
 func TestVolatileStatement(t *testing.T) {
 	instr := qbe.CallInstruction{
-		Function: "func",
+		Name: qbe.NewGlobalValue("func"),
 		Parameters: []qbe.TypedValue{
-			{Value: qbe.TemporaryValue{Name: "param1", Value: "value1"}, Type: qbe.Word},
-			{Value: qbe.TemporaryValue{Name: "param2", Value: "value2"}, Type: qbe.Byte},
+			{Value: qbe.TemporaryValue{Name: "param1"}, Type: qbe.Word},
+			{Value: qbe.TemporaryValue{Name: "param2"}, Type: qbe.Byte},
 		},
 	}
 	stmt := qbe.VolatileStatement{Instruction: instr}
@@ -37,7 +37,7 @@ func TestVolatileStatement(t *testing.T) {
 		t.Errorf("Expected VolatileStatementType, got %v", stmt.StatementType())
 	}
 
-	expected := "call func(w %param1, w %param2)"
+	expected := "call $func(w %param1, w %param2)"
 	if stmt.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, stmt.String())
 	}
@@ -45,19 +45,19 @@ func TestVolatileStatement(t *testing.T) {
 
 func TestBlock(t *testing.T) {
 	assignStmt := qbe.AssignStatement{
-		Name: qbe.TemporaryValue{Name: "name", Value: "value1"},
+		Name: qbe.TemporaryValue{Name: "name"},
 		Type: qbe.Word,
 		Instruction: qbe.AddInstruction{
-			Left:  qbe.TemporaryValue{Name: "left", Value: "value2"},
-			Right: qbe.TemporaryValue{Name: "right", Value: "value3"},
+			Left:  qbe.TemporaryValue{Name: "left"},
+			Right: qbe.TemporaryValue{Name: "right"},
 		},
 	}
 	volatileStmt := qbe.VolatileStatement{
 		Instruction: qbe.CallInstruction{
-			Function: "func",
+			Name: qbe.NewGlobalValue("func"),
 			Parameters: []qbe.TypedValue{
-				{Value: qbe.TemporaryValue{Name: "param1", Value: "value1"}, Type: qbe.Word},
-				{Value: qbe.TemporaryValue{Name: "param2", Value: "value2"}, Type: qbe.Byte},
+				{Value: qbe.TemporaryValue{Name: "param1"}, Type: qbe.Word},
+				{Value: qbe.TemporaryValue{Name: "param2"}, Type: qbe.Byte},
 			},
 		},
 	}
@@ -66,7 +66,7 @@ func TestBlock(t *testing.T) {
 		Statements: []qbe.Statement{assignStmt, volatileStmt},
 	}
 
-	expected := "@block_label\n\t%name =w add %left, %right\n\tcall func(w %param1, w %param2)"
+	expected := "@block_label\n\t%name =w add %left, %right\n\tcall $func(w %param1, w %param2)"
 	result := block.String()
 	if result != expected {
 		t.Errorf("Expected %s, got %s", expected, result)

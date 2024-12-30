@@ -7,6 +7,18 @@ type Block struct {
 	Statements []Statement
 }
 
+func (b *Block) AddInstruction(instruction Instruction) {
+	b.AddStatement(VolatileStatement{Instruction: instruction})
+}
+
+func (b *Block) AddAssign(name Value, t Type, instruction Instruction) {
+	b.AddStatement(AssignStatement{Name: name, Type: t, Instruction: instruction})
+}
+
+func (b *Block) AddStatement(statement Statement) {
+	b.Statements = append(b.Statements, statement)
+}
+
 func (b Block) String() string {
 	result := fmt.Sprintf("@%s\n", b.Label)
 

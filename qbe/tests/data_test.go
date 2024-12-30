@@ -33,7 +33,7 @@ func TestDataString(t *testing.T) {
 		},
 	}
 
-	expected := "exported data myData = align 8 { l \"hello\", l 42 }"
+	expected := "export data $myData = align 8 { l \"hello\", l 42 }"
 	if data.String() != expected {
 		t.Errorf("expected %s, got %s", expected, data.String())
 	}
@@ -50,7 +50,7 @@ func TestDataStringNoAlign(t *testing.T) {
 		},
 	}
 
-	expected := "exported data myData = { l \"hello\", l 42 }"
+	expected := "export data $myData = { l \"hello\", l 42 }"
 	if data.String() != expected {
 		t.Errorf("expected %s, got %s", expected, data.String())
 	}
@@ -67,7 +67,7 @@ func TestDataStringNoLinkage(t *testing.T) {
 		},
 	}
 
-	expected := "data myData = { l \"hello\", l 42 }"
+	expected := "data $myData = { l \"hello\", l 42 }"
 	if data.String() != expected {
 		t.Errorf("expected %s, got %s", expected, data.String())
 	}

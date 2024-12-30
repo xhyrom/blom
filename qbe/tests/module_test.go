@@ -8,7 +8,7 @@ import (
 func TestModuleString(t *testing.T) {
 	align := uint64(8)
 	returnType := qbe.Word
-	parameters := []qbe.TypedValue{
+	arguments := []qbe.TypedValue{
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "a"}},
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "b"}},
 	}
@@ -27,7 +27,7 @@ func TestModuleString(t *testing.T) {
 		{
 			Linkage:    qbe.NewLinkage(true),
 			Name:       "foo",
-			Parameters: parameters,
+			Arguments:  arguments,
 			ReturnType: &returnType,
 			Variadic:   false,
 			Blocks:     blocks,
@@ -67,7 +67,7 @@ func TestModuleString(t *testing.T) {
 				Types:     types,
 				Data:      data,
 			},
-			"type :myType = { w, w }\nexported data myData = align 8 { l \"hello\", l 42 }\nexported function w foo(w %a, w %b) {\n@start\n\t%t1 =w add %a, %b\n\tret %t1\n}",
+			"type :myType = { w, w }\nexport data $myData = align 8 { l \"hello\", l 42 }\nexport function w $foo(w %a, w %b) {\n@start\n\t%t1 =w add %a, %b\n\tret %t1\n}",
 		},
 		{
 			qbe.Module{

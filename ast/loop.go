@@ -4,7 +4,7 @@ import "blom/tokens"
 
 type WhileLoopStatement struct {
 	Condition Expression
-	Body      *BlockStatement
+	Body      []Statement
 	Loc       tokens.Location
 }
 

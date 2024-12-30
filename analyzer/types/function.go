@@ -18,7 +18,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 		return
 	}
 
-	for _, statement := range function.Body.Body {
+	for _, statement := range function.Body {
 		if statement.Kind() == ast.ReturnNode {
 			ret := statement.(*ast.ReturnStatement)
 			returnType := a.analyzeExpression(ret.Value, functionScope)

@@ -13,7 +13,7 @@ type Data struct {
 }
 
 func (d Data) String() string {
-	result := fmt.Sprintf("%sdata %s = ", d.Linkage, d.Name)
+	result := fmt.Sprintf("%sdata $%s = ", d.Linkage, d.Name)
 
 	if d.Align != nil {
 		result += fmt.Sprintf("align %d ", *d.Align)
@@ -47,6 +47,10 @@ type StringDataItem struct {
 	Value string
 }
 
+func NewStringDataItem(value string) StringDataItem {
+	return StringDataItem{Value: value}
+}
+
 func (i StringDataItem) DataType() DataItemType {
 	return StringDataItemType
 }
@@ -58,6 +62,10 @@ func (i StringDataItem) String() string {
 // ConstantDataItem represents a constant data item. (value)
 type ConstantDataItem struct {
 	Value int64
+}
+
+func NewConstantDataItem(value int64) ConstantDataItem {
+	return ConstantDataItem{Value: value}
 }
 
 func (i ConstantDataItem) DataType() DataItemType {
@@ -72,4 +80,8 @@ func (i ConstantDataItem) String() string {
 type TypedDataItem struct {
 	Item DataItem
 	Type Type
+}
+
+func NewTypedDataItem(typ Type, item DataItem) TypedDataItem {
+	return TypedDataItem{Item: item, Type: typ}
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func TestTemporaryValue(t *testing.T) {
-	v := qbe.TemporaryValue{Name: "name", Value: "value"}
+	v := qbe.TemporaryValue{Name: "name"}
 
 	if v.Type() != qbe.TemporaryValueType {
 		t.Errorf("Expected TemporaryValueType, got %v", v.Type())
@@ -18,7 +18,7 @@ func TestTemporaryValue(t *testing.T) {
 }
 
 func TestGlobalValue(t *testing.T) {
-	v := qbe.GlobalValue{Name: "name", Value: "value"}
+	v := qbe.GlobalValue{Name: "name"}
 
 	if v.Type() != qbe.GlobalValueType {
 		t.Errorf("Expected GlobalValueType, got %v", v.Type())
@@ -31,7 +31,7 @@ func TestGlobalValue(t *testing.T) {
 
 func TestTypedValue(t *testing.T) {
 	v := qbe.TypedValue{
-		Value: qbe.TemporaryValue{Name: "name", Value: "value"},
+		Value: qbe.TemporaryValue{Name: "name"},
 		Type:  qbe.Word,
 	}
 
@@ -46,7 +46,7 @@ func TestTypedValue(t *testing.T) {
 
 func TestTypedValueDifferentAbi(t *testing.T) {
 	v := qbe.TypedValue{
-		Value: qbe.TemporaryValue{Name: "name", Value: "value"},
+		Value: qbe.TemporaryValue{Name: "name"},
 		Type:  qbe.Byte,
 	}
 

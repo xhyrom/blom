@@ -150,7 +150,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 		})
 	}
 
-	fn.Body = block
+	fn.Body = block.Body
 	return &fn
 }
 

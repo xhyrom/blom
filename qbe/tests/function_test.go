@@ -7,7 +7,7 @@ import (
 
 func TestFunctionString(t *testing.T) {
 	returnType := qbe.Word
-	parameters := []qbe.TypedValue{
+	arguments := []qbe.TypedValue{
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "a"}},
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "b"}},
 	}
@@ -31,23 +31,23 @@ func TestFunctionString(t *testing.T) {
 			qbe.Function{
 				Linkage:    qbe.NewLinkage(true),
 				Name:       "foo",
-				Parameters: parameters,
+				Arguments:  arguments,
 				ReturnType: &returnType,
 				Variadic:   false,
 				Blocks:     blocks,
 			},
-			"exported function w foo(w %a, w %b) {\n@start\n\t%t1 =w add %a, %b\n\tret %t1\n}",
+			"export function w $foo(w %a, w %b) {\n@start\n\t%t1 =w add %a, %b\n\tret %t1\n}",
 		},
 		{
 			qbe.Function{
 				Linkage:    qbe.NewLinkage(false),
 				Name:       "bar",
-				Parameters: parameters,
+				Arguments:  arguments,
 				ReturnType: &returnType,
 				Variadic:   true,
 				Blocks:     blocks,
 			},
-			"function w bar(w %a, w %b, ...) {\n@start\n\t%t1 =w add %a, %b\n\tret %t1\n}",
+			"function w $bar(w %a, w %b, ...) {\n@start\n\t%t1 =w add %a, %b\n\tret %t1\n}",
 		},
 	}
 
@@ -59,16 +59,16 @@ func TestFunctionString(t *testing.T) {
 }
 
 func TestFunctionStringNoReturnType(t *testing.T) {
-	parameters := []qbe.TypedValue{
+	arguments := []qbe.TypedValue{
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "a"}},
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "b"}},
 	}
 
 	function := qbe.Function{
-		Linkage:    qbe.NewLinkage(true),
-		Name:       "foo",
-		Parameters: parameters,
-		Variadic:   false,
+		Linkage:   qbe.NewLinkage(true),
+		Name:      "foo",
+		Arguments: arguments,
+		Variadic:  false,
 		Blocks: []qbe.Block{
 			{Label: "start", Statements: []qbe.Statement{
 				qbe.AssignStatement{Name: qbe.TemporaryValue{Name: "t1"}, Type: qbe.Word, Instruction: qbe.AddInstruction{
@@ -79,7 +79,7 @@ func TestFunctionStringNoReturnType(t *testing.T) {
 		},
 	}
 
-	expected := "exported function foo(w %a, w %b) {\n@start\n\t%t1 =w add %a, %b\n}"
+	expected := "export function $foo(w %a, w %b) {\n@start\n\t%t1 =w add %a, %b\n}"
 	if function.String() != expected {
 		t.Errorf("expected %s, got %s", expected, function.String())
 	}

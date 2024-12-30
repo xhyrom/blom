@@ -4,8 +4,8 @@ import "blom/tokens"
 
 type IfStatement struct {
 	Condition Expression
-	Then      *BlockStatement
-	Else      *BlockStatement
+	Then      []Statement
+	Else      []Statement
 	Loc       tokens.Location
 }
 

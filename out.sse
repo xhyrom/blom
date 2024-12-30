@@ -1,77 +1,9 @@
-data $.0 = { b "e: %f\n", b 0 }
-function l $fact(l %n.0) {
+export function w $hoho() {
 @start
-    %tmp.4 =l cslel %n.0, 1
-    # ^ binary expression
-    jnz %tmp.4, @if.7, @end.7
-@if.7
-    ret 1
-    # ^ return statement
-@end.7
-    # ^ if statement
-    %tmp.15 =l sub %n.0, 1
-    # ^ binary expression
-    %tmp.14 =l call $fact(l %tmp.15)
-    # ^ function call
-    %tmp.12 =l mul %n.0, %tmp.14
-    # ^ binary expression
-    ret %tmp.12
-    # ^ return statement
+	ret 5
 }
-# ^ function declaration
-function d $eulersnumber() {
-@start
-    %res.addr.20 =l alloc8 8
-    %tmp.22 =d div d_0, d_1
-    # ^ float literal statement
-    stored %tmp.22, %res.addr.20
-    %res.20 =d loadd %res.addr.20
-    # ^ declaration statement
-    %i.addr.23 =l alloc8 8
-    storel 0, %i.addr.23
-    %i.23 =l loadl %i.addr.23
-    # ^ declaration statement
-@loop.cond.26
-    %tmp.27 =l csltl %i.23, 50
-    # ^ binary expression
-    jnz %tmp.27, @loop.body.26, @loop.end.26
-@loop.body.26
-    %g.addr.31 =l alloc8 8
-    %tmp.32 =l call $fact(l %i.23)
-    # ^ function call
-    storel %tmp.32, %g.addr.31
-    %g.31 =l loadl %g.addr.31
-    # ^ declaration statement
-    %res.addr.20 =l alloc8 8
-    %tmp.39 =d div d_1, d_1
-    # ^ float literal statement
-    %conv.41 =d sltof %g.31
-    %tmp.37 =d div %tmp.39, %conv.41
-    # ^ binary expression
-    %tmp.35 =d add %res.20, %tmp.37
-    # ^ binary expression
-    stored %tmp.35, %res.addr.20
-    %res.20 =d loadd %res.addr.20
-    # ^ declaration statement
-    %i.addr.23 =l alloc8 8
-    %tmp.43 =l add %i.23, 1
-    # ^ binary expression
-    storel %tmp.43, %i.addr.23
-    %i.23 =l loadl %i.addr.23
-    # ^ declaration statement
-    jmp @loop.cond.26
-@loop.end.26
-    ret %res.20
-    # ^ return statement
-}
-# ^ function declaration
 export function w $main() {
 @start
-    %tmp.52 =d call $eulersnumber()
-    # ^ function call
-    %tmp.50 =w call $printf(l $.0, ..., d %tmp.52)
-    # ^ function call
-    ret 0
-    # ^ return statement
+	%tmp.1 =w call $hoho()
+	ret %tmp.1
 }
-# ^ function declaration

@@ -30,7 +30,9 @@ func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment
 		env.Set(function.Arguments[i].Name, obj)
 	}
 
-	return interpreter.InterpretBlock(function.Body, env)
+	return interpreter.InterpretBlock(&ast.BlockStatement{
+		Body: function.Body,
+	}, env)
 }
 
 func nativeInterpretFunctionCall(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.FunctionCall) objects.Object {

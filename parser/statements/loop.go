@@ -64,7 +64,7 @@ func ParseForLoop(p Parser) (*ast.VariableDeclarationStatement, *ast.WhileLoopSt
 
 	return declaration, &ast.WhileLoopStatement{
 		Condition: condition,
-		Body:      body,
+		Body:      body.Body,
 		Loc:       condition.Location(),
 	}
 }
@@ -87,7 +87,7 @@ func ParseWhileLoop(p Parser) *ast.WhileLoopStatement {
 
 	return &ast.WhileLoopStatement{
 		Condition: condition,
-		Body:      body,
+		Body:      body.Body,
 		Loc:       condition.Location(),
 	}
 }

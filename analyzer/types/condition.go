@@ -20,10 +20,16 @@ func (a *TypeAnalyzer) analyzeIfStatement(expression *ast.IfStatement, scope *en
 		)
 	}
 
-	a.analyzeBlock(expression.Then, scope)
+	a.analyzeBlock(&ast.BlockStatement{
+		Body: expression.Then,
+		Loc:  expression.Loc,
+	}, scope)
 
 	if expression.HasElse() {
-		a.analyzeBlock(expression.Else, scope)
+		a.analyzeBlock(&ast.BlockStatement{
+			Body: expression.Else,
+			Loc:  expression.Loc,
+		}, scope)
 	}
 }
 
@@ -40,10 +46,16 @@ func (a *TypeAnalyzer) analyzeIfExpression(expression *ast.IfStatement, scope *e
 		)
 	}
 
-	returnType := a.analyzeBlock(expression.Then, scope)
+	returnType := a.analyzeBlock(&ast.BlockStatement{
+		Body: expression.Then,
+		Loc:  expression.Loc,
+	}, scope)
 
 	if expression.HasElse() {
-		elseReturnType := a.analyzeBlock(expression.Else, scope)
+		elseReturnType := a.analyzeBlock(&ast.BlockStatement{
+			Body: expression.Else,
+			Loc:  expression.Loc,
+		}, scope)
 
 		if returnType != elseReturnType {
 			dbg := debug.NewSourceLocation(a.Source, expression.Location().Row, expression.Location().Column)

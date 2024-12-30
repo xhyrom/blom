@@ -12,7 +12,7 @@ type FunctionDeclaration struct {
 	Arguments   []FunctionArgument
 	Annotations []Annotation
 	ReturnType  Type
-	Body        *BlockStatement
+	Body        []Statement
 	Variadic    bool
 	Loc         tokens.Location
 }

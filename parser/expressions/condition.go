@@ -42,8 +42,8 @@ func ParseIf(p Parser) *ast.IfStatement {
 
 	return &ast.IfStatement{
 		Condition: condition,
-		Then:      thenBlock,
-		Else:      elseBlock,
+		Then:      thenBlock.Body,
+		Else:      elseBlock.Body,
 		Loc:       loc,
 	}
 }

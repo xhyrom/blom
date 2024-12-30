@@ -258,10 +258,17 @@ func (i JumpInstruction) String() string {
 	return fmt.Sprintf("jmp @%s", i.Label)
 }
 
-// CallInstruction represents a call instruction. (call {function})
+// CallInstruction represents a call instruction. (call {name}({parameters}))
 type CallInstruction struct {
-	Function   string
+	Name       Value
 	Parameters []TypedValue
+}
+
+func NewCallInstruction(name Value, parameters ...TypedValue) CallInstruction {
+	return CallInstruction{
+		Name:       name,
+		Parameters: parameters,
+	}
 }
 
 func (i CallInstruction) InstructionType() InstructionType {
@@ -278,7 +285,7 @@ func (i CallInstruction) String() string {
 		}
 	}
 
-	return fmt.Sprintf("call %s(%s)", i.Function, params)
+	return fmt.Sprintf("call %s(%s)", i.Name, params)
 }
 
 // VAArgInstruction represents a va_arg instruction. (vaarg {value})

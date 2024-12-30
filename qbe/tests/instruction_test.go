@@ -6,8 +6,8 @@ import (
 )
 
 func TestAddInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.AddInstruction{Left: left, Right: right}
 
 	if instr.InstructionType() != qbe.Add {
@@ -21,8 +21,8 @@ func TestAddInstruction(t *testing.T) {
 }
 
 func TestSubtractInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.SubtractInstruction{Left: left, Right: right}
 
 	if instr.InstructionType() != qbe.Subtract {
@@ -36,8 +36,8 @@ func TestSubtractInstruction(t *testing.T) {
 }
 
 func TestMultiplyInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.MultiplyInstruction{Left: left, Right: right}
 
 	if instr.InstructionType() != qbe.Multiply {
@@ -51,8 +51,8 @@ func TestMultiplyInstruction(t *testing.T) {
 }
 
 func TestDivideInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.DivideInstruction{Left: left, Right: right}
 
 	if instr.InstructionType() != qbe.Divide {
@@ -66,8 +66,8 @@ func TestDivideInstruction(t *testing.T) {
 }
 
 func TestModulusInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.ModulusInstruction{Left: left, Right: right}
 
 	if instr.InstructionType() != qbe.Modulus {
@@ -81,8 +81,8 @@ func TestModulusInstruction(t *testing.T) {
 }
 
 func TestBitwiseAndInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.BitwiseAndInstruction{Left: left, Right: right}
 
 	if instr.InstructionType() != qbe.BitwiseAnd {
@@ -96,8 +96,8 @@ func TestBitwiseAndInstruction(t *testing.T) {
 }
 
 func TestBitwiseOrInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.BitwiseOrInstruction{Left: left, Right: right}
 
 	if instr.InstructionType() != qbe.BitwiseOr {
@@ -111,8 +111,8 @@ func TestBitwiseOrInstruction(t *testing.T) {
 }
 
 func TestBitwiseXorInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.BitwiseXorInstruction{Left: left, Right: right}
 
 	if instr.InstructionType() != qbe.BitwiseXor {
@@ -126,7 +126,7 @@ func TestBitwiseXorInstruction(t *testing.T) {
 }
 
 func TestBitwiseNotInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.BitwiseNotInstruction{Value: value}
 
 	if instr.InstructionType() != qbe.BitwiseNot {
@@ -140,7 +140,7 @@ func TestBitwiseNotInstruction(t *testing.T) {
 }
 
 func TestNegateInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.NegateInstruction{Value: value}
 
 	if instr.InstructionType() != qbe.Negate {
@@ -154,8 +154,8 @@ func TestNegateInstruction(t *testing.T) {
 }
 
 func TestCompareInstruction(t *testing.T) {
-	left := qbe.TemporaryValue{Name: "left", Value: "value1"}
-	right := qbe.TemporaryValue{Name: "right", Value: "value2"}
+	left := qbe.TemporaryValue{Name: "left"}
+	right := qbe.TemporaryValue{Name: "right"}
 	instr := qbe.CompareInstruction{
 		Type:       qbe.Word,
 		Comparison: qbe.Equal,
@@ -174,7 +174,7 @@ func TestCompareInstruction(t *testing.T) {
 }
 
 func TestCopyInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.CopyInstruction{Value: value}
 
 	if instr.InstructionType() != qbe.Copy {
@@ -188,7 +188,7 @@ func TestCopyInstruction(t *testing.T) {
 }
 
 func TestReturnInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ReturnInstruction{Value: &value}
 
 	if instr.InstructionType() != qbe.Return {
@@ -208,7 +208,7 @@ func TestReturnInstruction(t *testing.T) {
 }
 
 func TestJumpNonZeroInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.JumpNonZeroInstruction{
 		Value:     value,
 		IfNonZero: "nonzero",
@@ -240,23 +240,23 @@ func TestJumpInstruction(t *testing.T) {
 
 func TestCallInstruction(t *testing.T) {
 	params := []qbe.TypedValue{
-		{Value: qbe.TemporaryValue{Name: "param1", Value: "value1"}, Type: qbe.Word},
-		{Value: qbe.TemporaryValue{Name: "param2", Value: "value2"}, Type: qbe.Byte},
+		{Value: qbe.TemporaryValue{Name: "param1"}, Type: qbe.Word},
+		{Value: qbe.TemporaryValue{Name: "param2"}, Type: qbe.Byte},
 	}
-	instr := qbe.CallInstruction{Function: "func", Parameters: params}
+	instr := qbe.CallInstruction{Name: qbe.NewGlobalValue("func"), Parameters: params}
 
 	if instr.InstructionType() != qbe.Call {
 		t.Errorf("Expected Call, got %v", instr.InstructionType())
 	}
 
-	expected := "call func(w %param1, w %param2)"
+	expected := "call $func(w %param1, w %param2)"
 	if instr.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, instr.String())
 	}
 }
 
 func TestVAArgInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.VAArgInstruction{Value: value}
 
 	if instr.InstructionType() != qbe.VAArg {
@@ -270,7 +270,7 @@ func TestVAArgInstruction(t *testing.T) {
 }
 
 func TestVAStartInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.VAStartInstruction{Value: value}
 
 	if instr.InstructionType() != qbe.VAStart {
@@ -284,7 +284,7 @@ func TestVAStartInstruction(t *testing.T) {
 }
 
 func TestAlloc8Instruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.Alloc8Instruction{Value: value}
 
 	if instr.InstructionType() != qbe.Alloc8 {
@@ -298,8 +298,8 @@ func TestAlloc8Instruction(t *testing.T) {
 }
 
 func TestStoreInstruction(t *testing.T) {
-	dest := qbe.TemporaryValue{Name: "dest", Value: "value1"}
-	value := qbe.TemporaryValue{Name: "value", Value: "value2"}
+	dest := qbe.TemporaryValue{Name: "dest"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.StoreInstruction{Type: qbe.Word, Destination: dest, Value: value}
 
 	if instr.InstructionType() != qbe.Store {
@@ -313,7 +313,7 @@ func TestStoreInstruction(t *testing.T) {
 }
 
 func TestLoadInstruction(t *testing.T) {
-	source := qbe.TemporaryValue{Name: "source", Value: "value1"}
+	source := qbe.TemporaryValue{Name: "source"}
 	instr := qbe.LoadInstruction{Type: qbe.Word, Source: source}
 
 	if instr.InstructionType() != qbe.Load {
@@ -327,7 +327,7 @@ func TestLoadInstruction(t *testing.T) {
 }
 
 func TestConversionInstructionSingleToSignedInteger(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.Single, To: qbe.Word, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -341,7 +341,7 @@ func TestConversionInstructionSingleToSignedInteger(t *testing.T) {
 }
 
 func TestConversionInstructionSingleToUnsignedInteger(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.Single, To: qbe.UnsignedWord, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -355,7 +355,7 @@ func TestConversionInstructionSingleToUnsignedInteger(t *testing.T) {
 }
 
 func TestConversionInstructionDoubleToUnsignedInteger(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.Double, To: qbe.UnsignedWord, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -369,7 +369,7 @@ func TestConversionInstructionDoubleToUnsignedInteger(t *testing.T) {
 }
 
 func TestConversionInstructionSignedWordToSingle(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.Word, To: qbe.Single, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -383,7 +383,7 @@ func TestConversionInstructionSignedWordToSingle(t *testing.T) {
 }
 
 func TestConversionInstructionSignedWordToDouble(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.Word, To: qbe.Double, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -397,7 +397,7 @@ func TestConversionInstructionSignedWordToDouble(t *testing.T) {
 }
 
 func TestConversionInstructionUnsignedWordToSingle(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.UnsignedWord, To: qbe.Single, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -411,7 +411,7 @@ func TestConversionInstructionUnsignedWordToSingle(t *testing.T) {
 }
 
 func TestConversionInstructionUnsignedWordToDouble(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.UnsignedWord, To: qbe.Double, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -425,7 +425,7 @@ func TestConversionInstructionUnsignedWordToDouble(t *testing.T) {
 }
 
 func TestConversionInstructionSignedLongToSingle(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.Long, To: qbe.Single, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -439,7 +439,7 @@ func TestConversionInstructionSignedLongToSingle(t *testing.T) {
 }
 
 func TestConversionInstructionSignedLongToDouble(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.Long, To: qbe.Double, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -453,7 +453,7 @@ func TestConversionInstructionSignedLongToDouble(t *testing.T) {
 }
 
 func TestConversionInstructionUnsignedLongToSingle(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.UnsignedLong, To: qbe.Single, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -467,7 +467,7 @@ func TestConversionInstructionUnsignedLongToSingle(t *testing.T) {
 }
 
 func TestConversionInstructionUnsignedLongToDouble(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ConversionInstruction{From: qbe.UnsignedLong, To: qbe.Double, Value: value}
 
 	if instr.InstructionType() != qbe.Conversion {
@@ -481,7 +481,7 @@ func TestConversionInstructionUnsignedLongToDouble(t *testing.T) {
 }
 
 func TestExtensionInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.ExtensionInstruction{Type: qbe.Word, Value: value}
 
 	if instr.InstructionType() != qbe.Extension {
@@ -495,7 +495,7 @@ func TestExtensionInstruction(t *testing.T) {
 }
 
 func TestTruncateInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
+	value := qbe.TemporaryValue{Name: "value"}
 	instr := qbe.TruncateInstruction{Value: value}
 
 	if instr.InstructionType() != qbe.Truncate {
@@ -509,8 +509,8 @@ func TestTruncateInstruction(t *testing.T) {
 }
 
 func TestShiftLeftInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
-	shift := qbe.TemporaryValue{Name: "shift", Value: "value2"}
+	value := qbe.TemporaryValue{Name: "value"}
+	shift := qbe.TemporaryValue{Name: "shift"}
 	instr := qbe.ShiftLeftInstruction{Value: value, Shift: shift}
 
 	if instr.InstructionType() != qbe.ShiftLeft {
@@ -524,8 +524,8 @@ func TestShiftLeftInstruction(t *testing.T) {
 }
 
 func TestArithmeticShiftRightInstruction(t *testing.T) {
-	value := qbe.TemporaryValue{Name: "value", Value: "value1"}
-	shift := qbe.TemporaryValue{Name: "shift", Value: "value2"}
+	value := qbe.TemporaryValue{Name: "value"}
+	shift := qbe.TemporaryValue{Name: "shift"}
 	instr := qbe.ArithmeticShiftRightInstruction{Value: value, Shift: shift}
 
 	if instr.InstructionType() != qbe.ArithmeticShiftRight {
