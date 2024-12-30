@@ -48,7 +48,5 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.CompileTimeFunctionCall)
 		)
 	}
 
-	a.setExpressionType(literal, castType)
-
 	return castType
 }

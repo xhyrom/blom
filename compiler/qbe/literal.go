@@ -94,7 +94,6 @@ func boolToInt(value bool) int64 {
 func compileBooleanLiteral(literal *ast.BooleanLiteral, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
 	return compileIntLiteral(&ast.IntLiteral{
 		Value: boolToInt(literal.Value),
-		Type:  literal.Type,
 		Loc:   literal.Loc,
 	}, function, vtype, isReturn)
 }
