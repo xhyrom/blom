@@ -19,57 +19,56 @@ export function w $main() {
 	%a.addr.12 =l alloc8 4
 	storew %tmp.10, %a.addr.12
 	%a.11 =w loadw %a.addr.12
-	%tmp.14 =w mul 99, -1
-	%tmp.15 =w csgtw %a.11, %tmp.14
-	jnz %tmp.15, @ift.13, @iend.13
+	%tmp.14 =w csgtw %a.11, 99
+	jnz %tmp.14, @ift.13, @iend.13
 @ift.13
 	ret 9
 @iend.13
-	%i.addr.17 =l alloc8 4
-	storew 0, %i.addr.17
-	%a.addr.19 =l alloc8 4
-	storew 5, %a.addr.19
-@loopc.20
-	%a.18 =w loadw %a.addr.19
-	%tmp.21 =w csltw %a.18, 10
-	jnz %tmp.21, @loop.20, @end.20
-@loop.20
-	%i.16 =w loadw %i.addr.17
-	%a.18 =w loadw %a.addr.19
-	%tmp.22 =w add %i.16, %a.18
-	storew %tmp.22, %i.addr.17
-	%a.18 =w loadw %a.addr.19
-	%tmp.23 =w add %a.18, 1
-	storew %tmp.23, %a.addr.19
-	jmp @loopc.20
-@end.20
-	%g.addr.25 =l alloc8 4
-	storew 0, %g.addr.25
-@loopc.26
-	%g.24 =w loadw %g.addr.25
-	%tmp.27 =w csltw %g.24, 10
-	jnz %tmp.27, @loop.26, @end.26
-@loop.26
-	%i.16 =w loadw %i.addr.17
-	%g.24 =w loadw %g.addr.25
-	%tmp.28 =w add %i.16, %g.24
-	storew %tmp.28, %i.addr.17
-	%g.24 =w loadw %g.addr.25
-	%tmp.29 =w add %g.24, 1
-	storew %tmp.29, %g.addr.25
-	jmp @loopc.26
-@end.26
+	%i.addr.16 =l alloc8 4
+	storew 0, %i.addr.16
+	%a.addr.18 =l alloc8 4
+	storew 5, %a.addr.18
+@loopc.19
+	%a.17 =w loadw %a.addr.18
+	%tmp.20 =w csltw %a.17, 10
+	jnz %tmp.20, @loop.19, @end.19
+@loop.19
+	%i.15 =w loadw %i.addr.16
+	%a.17 =w loadw %a.addr.18
+	%tmp.21 =w add %i.15, %a.17
+	storew %tmp.21, %i.addr.16
+	%a.17 =w loadw %a.addr.18
+	%tmp.22 =w add %a.17, 1
+	storew %tmp.22, %a.addr.18
+	jmp @loopc.19
+@end.19
+	%g.addr.24 =l alloc8 4
+	storew 0, %g.addr.24
+@loopc.25
+	%g.23 =w loadw %g.addr.24
+	%tmp.26 =w csltw %g.23, 10
+	jnz %tmp.26, @loop.25, @end.25
+@loop.25
+	%i.15 =w loadw %i.addr.16
+	%g.23 =w loadw %g.addr.24
+	%tmp.27 =w add %i.15, %g.23
+	storew %tmp.27, %i.addr.16
+	%g.23 =w loadw %g.addr.24
+	%tmp.28 =w add %g.23, 1
+	storew %tmp.28, %g.addr.24
+	jmp @loopc.25
+@end.25
 
-@loopc.30
-	%i.16 =w loadw %i.addr.17
-	%tmp.31 =w csltw %i.16, 10
-	jnz %tmp.31, @loop.30, @end.30
-@loop.30
-	%i.16 =w loadw %i.addr.17
-	%tmp.32 =w add %i.16, 1
-	storew %tmp.32, %i.addr.17
-	jmp @loopc.30
-@end.30
-	%i.16 =w loadw %i.addr.17
-	ret %i.16
+@loopc.29
+	%i.15 =w loadw %i.addr.16
+	%tmp.30 =w csltw %i.15, 10
+	jnz %tmp.30, @loop.29, @end.29
+@loop.29
+	%i.15 =w loadw %i.addr.16
+	%tmp.31 =w add %i.15, 1
+	storew %tmp.31, %i.addr.16
+	jmp @loopc.29
+@end.29
+	%i.15 =w loadw %i.addr.16
+	ret %i.15
 }
