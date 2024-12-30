@@ -21,5 +21,8 @@ func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStateme
 		)
 	}
 
-	a.analyzeStatement(statement.Body, scope)
+	a.analyzeStatement(&ast.BlockStatement{
+		Body: statement.Body,
+		Loc:  statement.Loc,
+	}, scope)
 }

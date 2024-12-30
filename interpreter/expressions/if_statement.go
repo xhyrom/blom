@@ -14,11 +14,15 @@ func InterpretIfStatement(interpreter Interpreter, environment *env.Environment[
 	}
 
 	if condition.(*objects.BooleanObject).Value {
-		return interpreter.InterpretStatement(statement.Then, environment)
+		return interpreter.InterpretStatement(&ast.BlockStatement{
+			Body: statement.Then,
+		}, environment)
 	}
 
 	if statement.HasElse() {
-		return interpreter.InterpretStatement(statement.Else, environment)
+		return interpreter.InterpretStatement(&ast.BlockStatement{
+			Body: statement.Else,
+		}, environment)
 	}
 
 	return nil

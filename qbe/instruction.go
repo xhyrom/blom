@@ -46,6 +46,13 @@ type AddInstruction struct {
 	Right Value
 }
 
+func NewAddInstruction(left Value, right Value) AddInstruction {
+	return AddInstruction{
+		Left:  left,
+		Right: right,
+	}
+}
+
 func (i AddInstruction) InstructionType() InstructionType {
 	return Add
 }
@@ -58,6 +65,13 @@ func (i AddInstruction) String() string {
 type SubtractInstruction struct {
 	Left  Value
 	Right Value
+}
+
+func NewSubtractInstruction(left Value, right Value) SubtractInstruction {
+	return SubtractInstruction{
+		Left:  left,
+		Right: right,
+	}
 }
 
 func (i SubtractInstruction) InstructionType() InstructionType {
@@ -74,6 +88,13 @@ type MultiplyInstruction struct {
 	Right Value
 }
 
+func NewMultiplyInstruction(left Value, right Value) MultiplyInstruction {
+	return MultiplyInstruction{
+		Left:  left,
+		Right: right,
+	}
+}
+
 func (i MultiplyInstruction) InstructionType() InstructionType {
 	return Multiply
 }
@@ -86,6 +107,13 @@ func (i MultiplyInstruction) String() string {
 type DivideInstruction struct {
 	Left  Value
 	Right Value
+}
+
+func NewDivideInstruction(left Value, right Value) DivideInstruction {
+	return DivideInstruction{
+		Left:  left,
+		Right: right,
+	}
 }
 
 func (i DivideInstruction) InstructionType() InstructionType {
@@ -102,6 +130,13 @@ type ModulusInstruction struct {
 	Right Value
 }
 
+func NewModulusInstruction(left Value, right Value) ModulusInstruction {
+	return ModulusInstruction{
+		Left:  left,
+		Right: right,
+	}
+}
+
 func (i ModulusInstruction) InstructionType() InstructionType {
 	return Modulus
 }
@@ -114,6 +149,13 @@ func (i ModulusInstruction) String() string {
 type BitwiseAndInstruction struct {
 	Left  Value
 	Right Value
+}
+
+func NewBitwiseAndInstruction(left Value, right Value) BitwiseAndInstruction {
+	return BitwiseAndInstruction{
+		Left:  left,
+		Right: right,
+	}
 }
 
 func (i BitwiseAndInstruction) InstructionType() InstructionType {
@@ -130,6 +172,13 @@ type BitwiseOrInstruction struct {
 	Right Value
 }
 
+func NewBitwiseOrInstruction(left Value, right Value) BitwiseOrInstruction {
+	return BitwiseOrInstruction{
+		Left:  left,
+		Right: right,
+	}
+}
+
 func (i BitwiseOrInstruction) InstructionType() InstructionType {
 	return BitwiseOr
 }
@@ -142,6 +191,13 @@ func (i BitwiseOrInstruction) String() string {
 type BitwiseXorInstruction struct {
 	Left  Value
 	Right Value
+}
+
+func NewBitwiseXorInstruction(left Value, right Value) BitwiseXorInstruction {
+	return BitwiseXorInstruction{
+		Left:  left,
+		Right: right,
+	}
 }
 
 func (i BitwiseXorInstruction) InstructionType() InstructionType {
@@ -157,6 +213,12 @@ type BitwiseNotInstruction struct {
 	Value Value
 }
 
+func NewBitwiseNotInstruction(value Value) BitwiseNotInstruction {
+	return BitwiseNotInstruction{
+		Value: value,
+	}
+}
+
 func (i BitwiseNotInstruction) InstructionType() InstructionType {
 	return BitwiseNot
 }
@@ -168,6 +230,12 @@ func (i BitwiseNotInstruction) String() string {
 // NegateInstruction represents a negate instruction. (neg {value})
 type NegateInstruction struct {
 	Value Value
+}
+
+func NewNegateInstruction(value Value) NegateInstruction {
+	return NegateInstruction{
+		Value: value,
+	}
 }
 
 func (i NegateInstruction) InstructionType() InstructionType {
@@ -184,6 +252,15 @@ type CompareInstruction struct {
 	Comparison ComparisonType
 	Left       Value
 	Right      Value
+}
+
+func NewCompareInstruction(t Type, comp ComparisonType, left Value, right Value) CompareInstruction {
+	return CompareInstruction{
+		Type:       t,
+		Comparison: comp,
+		Left:       left,
+		Right:      right,
+	}
 }
 
 func (i CompareInstruction) InstructionType() InstructionType {
@@ -237,6 +314,14 @@ type JumpNonZeroInstruction struct {
 	IfZero    string
 }
 
+func NewJumpNonZeroInstruction(value Value, ifNonZero string, ifZero string) JumpNonZeroInstruction {
+	return JumpNonZeroInstruction{
+		Value:     value,
+		IfNonZero: ifNonZero,
+		IfZero:    ifZero,
+	}
+}
+
 func (i JumpNonZeroInstruction) InstructionType() InstructionType {
 	return JumpNonZero
 }
@@ -250,6 +335,12 @@ type JumpInstruction struct {
 	Label string
 }
 
+func NewJumpInstruction(label string) JumpInstruction {
+	return JumpInstruction{
+		Label: label,
+	}
+}
+
 func (i JumpInstruction) InstructionType() InstructionType {
 	return Jump
 }
@@ -258,10 +349,17 @@ func (i JumpInstruction) String() string {
 	return fmt.Sprintf("jmp @%s", i.Label)
 }
 
-// CallInstruction represents a call instruction. (call {function})
+// CallInstruction represents a call instruction. (call {name}({parameters}))
 type CallInstruction struct {
-	Function   string
+	Name       Value
 	Parameters []TypedValue
+}
+
+func NewCallInstruction(name Value, parameters ...TypedValue) CallInstruction {
+	return CallInstruction{
+		Name:       name,
+		Parameters: parameters,
+	}
 }
 
 func (i CallInstruction) InstructionType() InstructionType {
@@ -278,7 +376,7 @@ func (i CallInstruction) String() string {
 		}
 	}
 
-	return fmt.Sprintf("call %s(%s)", i.Function, params)
+	return fmt.Sprintf("call %s(%s)", i.Name, params)
 }
 
 // VAArgInstruction represents a va_arg instruction. (vaarg {value})
@@ -320,11 +418,19 @@ func (i Alloc8Instruction) String() string {
 	return fmt.Sprintf("alloc8 %s", i.Value)
 }
 
-// StoreInstruction represents a store instruction. (store{type} {destination}, {value})
+// StoreInstruction represents a store instruction. (store{type} {value}, {destination})
 type StoreInstruction struct {
 	Type        Type
-	Destination Value
 	Value       Value
+	Destination Value
+}
+
+func NewStoreInstruction(t Type, value Value, destination Value) StoreInstruction {
+	return StoreInstruction{
+		Type:        t,
+		Value:       value,
+		Destination: destination,
+	}
 }
 
 func (i StoreInstruction) InstructionType() InstructionType {
@@ -332,13 +438,20 @@ func (i StoreInstruction) InstructionType() InstructionType {
 }
 
 func (i StoreInstruction) String() string {
-	return fmt.Sprintf("store%s %s, %s", i.Type, i.Destination, i.Value)
+	return fmt.Sprintf("store%s %s, %s", i.Type, i.Value, i.Destination)
 }
 
 // LoadInstruction represents a load instruction. (load{type} {source})
 type LoadInstruction struct {
 	Type   Type
 	Source Value
+}
+
+func NewLoadInstruction(t Type, s Value) LoadInstruction {
+	return LoadInstruction{
+		Type:   t,
+		Source: s,
+	}
 }
 
 func (i LoadInstruction) InstructionType() InstructionType {
@@ -430,6 +543,13 @@ type ShiftLeftInstruction struct {
 	Shift Value
 }
 
+func NewShiftLeftInstruction(value Value, shift Value) ShiftLeftInstruction {
+	return ShiftLeftInstruction{
+		Value: value,
+		Shift: shift,
+	}
+}
+
 func (i ShiftLeftInstruction) InstructionType() InstructionType {
 	return ShiftLeft
 }
@@ -442,6 +562,13 @@ func (i ShiftLeftInstruction) String() string {
 type ArithmeticShiftRightInstruction struct {
 	Value Value
 	Shift Value
+}
+
+func NewArithmeticShiftRightInstruction(value Value, shift Value) ArithmeticShiftRightInstruction {
+	return ArithmeticShiftRightInstruction{
+		Value: value,
+		Shift: shift,
+	}
 }
 
 func (i ArithmeticShiftRightInstruction) InstructionType() InstructionType {

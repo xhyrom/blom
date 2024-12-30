@@ -28,12 +28,12 @@ func TestDataString(t *testing.T) {
 		Name:    "myData",
 		Align:   &align,
 		Items: []qbe.TypedDataItem{
-			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.String},
+			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.NewPointer(qbe.Char)},
 			{Item: qbe.ConstantDataItem{Value: 42}, Type: qbe.Long},
 		},
 	}
 
-	expected := "exported data myData = align 8 { l \"hello\", l 42 }"
+	expected := "export data $myData = align 8 { l \"hello\", l 42 }"
 	if data.String() != expected {
 		t.Errorf("expected %s, got %s", expected, data.String())
 	}
@@ -45,12 +45,12 @@ func TestDataStringNoAlign(t *testing.T) {
 		Name:    "myData",
 		Align:   nil,
 		Items: []qbe.TypedDataItem{
-			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.String},
+			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.NewPointer(qbe.Char)},
 			{Item: qbe.ConstantDataItem{Value: 42}, Type: qbe.Long},
 		},
 	}
 
-	expected := "exported data myData = { l \"hello\", l 42 }"
+	expected := "export data $myData = { l \"hello\", l 42 }"
 	if data.String() != expected {
 		t.Errorf("expected %s, got %s", expected, data.String())
 	}
@@ -62,12 +62,12 @@ func TestDataStringNoLinkage(t *testing.T) {
 		Name:    "myData",
 		Align:   nil,
 		Items: []qbe.TypedDataItem{
-			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.String},
+			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.NewPointer(qbe.Char)},
 			{Item: qbe.ConstantDataItem{Value: 42}, Type: qbe.Long},
 		},
 	}
 
-	expected := "data myData = { l \"hello\", l 42 }"
+	expected := "data $myData = { l \"hello\", l 42 }"
 	if data.String() != expected {
 		t.Errorf("expected %s, got %s", expected, data.String())
 	}

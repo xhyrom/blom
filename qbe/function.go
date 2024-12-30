@@ -21,7 +21,7 @@ func (l Linkage) String() string {
 	result := ""
 
 	if l.Exported {
-		result += "exported "
+		result += "export "
 	}
 
 	if l.Section != nil {
@@ -40,22 +40,33 @@ func (l Linkage) String() string {
 type Function struct {
 	Linkage    Linkage
 	Name       string
-	Parameters []TypedValue
-	ReturnType *Type
+	Arguments  []TypedValue
+	ReturnType Type
 	Variadic   bool
 	Blocks     []Block
+}
+
+func (f *Function) AddBlock(label string) {
+	f.Blocks = append(f.Blocks, Block{
+		Label:      label,
+		Statements: make([]Statement, 0),
+	})
+}
+
+func (f *Function) LastBlock() *Block {
+	return &f.Blocks[len(f.Blocks)-1]
 }
 
 func (f Function) String() string {
 	signature := fmt.Sprintf("%sfunction", f.Linkage)
 
 	if f.ReturnType != nil {
-		signature += fmt.Sprintf(" %s", (*f.ReturnType).IntoAbi())
+		signature += fmt.Sprintf(" %s", f.ReturnType.IntoAbi())
 	}
 
-	parameters := make([]string, len(f.Parameters))
+	parameters := make([]string, len(f.Arguments))
 
-	for i, p := range f.Parameters {
+	for i, p := range f.Arguments {
 		parameters[i] = fmt.Sprintf("%s %s", p.Type, p.Value)
 	}
 
@@ -63,7 +74,7 @@ func (f Function) String() string {
 		parameters = append(parameters, "...")
 	}
 
-	signature += fmt.Sprintf(" %s(%s)", f.Name, strings.Join(parameters, ", "))
+	signature += fmt.Sprintf(" $%s(%s)", f.Name, strings.Join(parameters, ", "))
 
 	blocks := make([]string, len(f.Blocks))
 

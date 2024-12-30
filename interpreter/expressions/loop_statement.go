@@ -17,7 +17,9 @@ func InterpretWhileLoopStatement(interpreter Interpreter, environment *env.Envir
 		}
 
 		if conditionValue.(*objects.BooleanObject).Value {
-			interpreter.InterpretBlock(body, environment)
+			interpreter.InterpretBlock(&ast.BlockStatement{
+				Body: body,
+			}, environment)
 		} else {
 			break
 		}

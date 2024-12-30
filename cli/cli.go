@@ -2,7 +2,7 @@ package cli
 
 import (
 	"blom/analyzer"
-	"blom/compiler/qbe"
+	"blom/compiler"
 	"blom/interpreter"
 	"blom/lexer"
 	"blom/parser"
@@ -71,12 +71,12 @@ func Run(args []string) {
 
 	//os.Exit(1)
 
-	inp := interpreter.New(inputFile)
+	_ = interpreter.New(inputFile)
 
 	fmt.Printf("Interpreting %s\n", inputFile)
 
 	startTime := time.Now()
-	inp.Interpret(ast, int64(len(os.Args)-1))
+	//inp.Interpret(ast, int64(len(os.Args)-1))
 	endTime := time.Since(startTime)
 
 	fmt.Printf("Interpreted %s ran for %s\n", inputFile, endTime)
@@ -84,8 +84,8 @@ func Run(args []string) {
 	fmt.Println()
 
 	fmt.Printf("Compiling %s\n", inputFile)
-	compiler := qbe.New(inputFile, analyzer.Functions)
-	sse, err := compiler.Compile(ast)
+	compiler := compiler.New(compiler.QBE)
+	sse := compiler.Compile(ast)
 
 	if emitSse {
 		fmt.Println(sse)

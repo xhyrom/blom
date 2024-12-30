@@ -1,77 +1,74 @@
-data $.0 = { b "e: %f\n", b 0 }
-function l $fact(l %n.0) {
+export function w $fib(w %n.1) {
 @start
-    %tmp.4 =l cslel %n.0, 1
-    # ^ binary expression
-    jnz %tmp.4, @if.7, @end.7
-@if.7
-    ret 1
-    # ^ return statement
-@end.7
-    # ^ if statement
-    %tmp.15 =l sub %n.0, 1
-    # ^ binary expression
-    %tmp.14 =l call $fact(l %tmp.15)
-    # ^ function call
-    %tmp.12 =l mul %n.0, %tmp.14
-    # ^ binary expression
-    ret %tmp.12
-    # ^ return statement
+	%tmp.3 =w cslew %n.1, 1
+	jnz %tmp.3, @ift.2, @iend.2
+@ift.2
+	ret %n.1
+@iend.2
+	%tmp.4 =w sub %n.1, 1
+	%tmp.5 =w call $fib(w %tmp.4)
+	%tmp.6 =w sub %n.1, 2
+	%tmp.7 =w call $fib(w %tmp.6)
+	%tmp.8 =w add %tmp.5, %tmp.7
+	ret %tmp.8
 }
-# ^ function declaration
-function d $eulersnumber() {
-@start
-    %res.addr.20 =l alloc8 8
-    %tmp.22 =d div d_0, d_1
-    # ^ float literal statement
-    stored %tmp.22, %res.addr.20
-    %res.20 =d loadd %res.addr.20
-    # ^ declaration statement
-    %i.addr.23 =l alloc8 8
-    storel 0, %i.addr.23
-    %i.23 =l loadl %i.addr.23
-    # ^ declaration statement
-@loop.cond.26
-    %tmp.27 =l csltl %i.23, 50
-    # ^ binary expression
-    jnz %tmp.27, @loop.body.26, @loop.end.26
-@loop.body.26
-    %g.addr.31 =l alloc8 8
-    %tmp.32 =l call $fact(l %i.23)
-    # ^ function call
-    storel %tmp.32, %g.addr.31
-    %g.31 =l loadl %g.addr.31
-    # ^ declaration statement
-    %res.addr.20 =l alloc8 8
-    %tmp.39 =d div d_1, d_1
-    # ^ float literal statement
-    %conv.41 =d sltof %g.31
-    %tmp.37 =d div %tmp.39, %conv.41
-    # ^ binary expression
-    %tmp.35 =d add %res.20, %tmp.37
-    # ^ binary expression
-    stored %tmp.35, %res.addr.20
-    %res.20 =d loadd %res.addr.20
-    # ^ declaration statement
-    %i.addr.23 =l alloc8 8
-    %tmp.43 =l add %i.23, 1
-    # ^ binary expression
-    storel %tmp.43, %i.addr.23
-    %i.23 =l loadl %i.addr.23
-    # ^ declaration statement
-    jmp @loop.cond.26
-@loop.end.26
-    ret %res.20
-    # ^ return statement
-}
-# ^ function declaration
 export function w $main() {
 @start
-    %tmp.52 =d call $eulersnumber()
-    # ^ function call
-    %tmp.50 =w call $printf(l $.0, ..., d %tmp.52)
-    # ^ function call
-    ret 0
-    # ^ return statement
+	%tmp.9 =w xor 2, -1
+	%tmp.10 =w add %tmp.9, 9
+	%a.addr.12 =l alloc8 4
+	storew %tmp.10, %a.addr.12
+	%a.11 =w loadw %a.addr.12
+	%tmp.14 =w csgtw %a.11, 99
+	jnz %tmp.14, @ift.13, @iend.13
+@ift.13
+	ret 9
+@iend.13
+	%i.addr.16 =l alloc8 4
+	storew 0, %i.addr.16
+	%a.addr.18 =l alloc8 4
+	storew 5, %a.addr.18
+@loopc.19
+	%a.17 =w loadw %a.addr.18
+	%tmp.20 =w csltw %a.17, 10
+	jnz %tmp.20, @loop.19, @end.19
+@loop.19
+	%i.15 =w loadw %i.addr.16
+	%a.17 =w loadw %a.addr.18
+	%tmp.21 =w add %i.15, %a.17
+	storew %tmp.21, %i.addr.16
+	%a.17 =w loadw %a.addr.18
+	%tmp.22 =w add %a.17, 1
+	storew %tmp.22, %a.addr.18
+	jmp @loopc.19
+@end.19
+	%g.addr.24 =l alloc8 4
+	storew 0, %g.addr.24
+@loopc.25
+	%g.23 =w loadw %g.addr.24
+	%tmp.26 =w csltw %g.23, 10
+	jnz %tmp.26, @loop.25, @end.25
+@loop.25
+	%i.15 =w loadw %i.addr.16
+	%g.23 =w loadw %g.addr.24
+	%tmp.27 =w add %i.15, %g.23
+	storew %tmp.27, %i.addr.16
+	%g.23 =w loadw %g.addr.24
+	%tmp.28 =w add %g.23, 1
+	storew %tmp.28, %g.addr.24
+	jmp @loopc.25
+@end.25
+
+@loopc.29
+	%i.15 =w loadw %i.addr.16
+	%tmp.30 =w csltw %i.15, 10
+	jnz %tmp.30, @loop.29, @end.29
+@loop.29
+	%i.15 =w loadw %i.addr.16
+	%tmp.31 =w add %i.15, 1
+	storew %tmp.31, %i.addr.16
+	jmp @loopc.29
+@end.29
+	%i.15 =w loadw %i.addr.16
+	ret %i.15
 }
-# ^ function declaration

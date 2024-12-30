@@ -74,36 +74,18 @@ func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Envi
 func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.Environment[*Variable]) ast.Type {
 	switch expression.(type) {
 	case *ast.IntLiteral:
-		intLiteral := expression.(*ast.IntLiteral)
-		intLiteral.Type = ast.Int32
-
 		return ast.Int32
 	case *ast.FloatLiteral:
-		floatLiteral := expression.(*ast.FloatLiteral)
-		floatLiteral.Type = ast.Float32
-
 		return ast.Float32
 	case *ast.StringLiteral:
-		stringLiteral := expression.(*ast.StringLiteral)
-		stringLiteral.Type = ast.String
-
 		return ast.String
 	case *ast.CharLiteral:
-		charLiteral := expression.(*ast.CharLiteral)
-		charLiteral.Type = ast.Char
-
 		return ast.Char
 	case *ast.IdentifierLiteral:
 		identifier := expression.(*ast.IdentifierLiteral)
-		typ := a.analyzeIdentifier(identifier, scope)
 
-		identifier.Type = typ
-
-		return typ
+		return a.analyzeIdentifier(identifier, scope)
 	case *ast.BooleanLiteral:
-		booleanLiteral := expression.(*ast.BooleanLiteral)
-		booleanLiteral.Type = ast.Boolean
-
 		return ast.Boolean
 	case *ast.BinaryExpression:
 		binaryExpression := expression.(*ast.BinaryExpression)
@@ -126,36 +108,4 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.E
 	}
 
 	return ast.Void
-}
-
-func (a *TypeAnalyzer) setExpressionType(expression ast.Expression, newType ast.Type) ast.Type {
-	switch expression.(type) {
-	case *ast.IntLiteral:
-		intLiteral := expression.(*ast.IntLiteral)
-		intLiteral.Type = newType
-
-		return newType
-	case *ast.FloatLiteral:
-		floatLiteral := expression.(*ast.FloatLiteral)
-		floatLiteral.Type = newType
-
-		return newType
-	case *ast.StringLiteral:
-		stringLiteral := expression.(*ast.StringLiteral)
-		stringLiteral.Type = newType
-
-		return newType
-	case *ast.CharLiteral:
-		charLiteral := expression.(*ast.CharLiteral)
-		charLiteral.Type = newType
-
-		return newType
-	case *ast.IdentifierLiteral:
-		identifier := expression.(*ast.IdentifierLiteral)
-		identifier.Type = newType
-
-		return newType
-	}
-
-	panic("unreachable")
 }

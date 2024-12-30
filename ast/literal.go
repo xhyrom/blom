@@ -6,7 +6,6 @@ import (
 
 type IdentifierLiteral struct {
 	Value string
-	Type  Type
 	Loc   tokens.Location
 }
 
@@ -25,7 +24,6 @@ func (l IdentifierLiteral) SetLocation(row uint64, column uint64) {
 
 type CharLiteral struct {
 	Value rune
-	Type  Type
 	Loc   tokens.Location
 }
 
@@ -44,7 +42,6 @@ func (l CharLiteral) SetLocation(row uint64, column uint64) {
 
 type StringLiteral struct {
 	Value string
-	Type  Type
 	Loc   tokens.Location
 }
 
@@ -63,7 +60,6 @@ func (l StringLiteral) SetLocation(row uint64, column uint64) {
 
 type IntLiteral struct {
 	Value int64
-	Type  Type
 	Loc   tokens.Location
 }
 
@@ -82,7 +78,6 @@ func (l IntLiteral) SetLocation(row uint64, column uint64) {
 
 type FloatLiteral struct {
 	Value float64
-	Type  Type
 	Loc   tokens.Location
 }
 
@@ -101,7 +96,6 @@ func (l FloatLiteral) SetLocation(row uint64, column uint64) {
 
 type BooleanLiteral struct {
 	Value bool
-	Type  Type
 	Loc   tokens.Location
 }
 

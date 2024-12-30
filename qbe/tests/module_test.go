@@ -7,8 +7,7 @@ import (
 
 func TestModuleString(t *testing.T) {
 	align := uint64(8)
-	returnType := qbe.Word
-	parameters := []qbe.TypedValue{
+	arguments := []qbe.TypedValue{
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "a"}},
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "b"}},
 	}
@@ -27,8 +26,8 @@ func TestModuleString(t *testing.T) {
 		{
 			Linkage:    qbe.NewLinkage(true),
 			Name:       "foo",
-			Parameters: parameters,
-			ReturnType: &returnType,
+			Arguments:  arguments,
+			ReturnType: qbe.Word,
 			Variadic:   false,
 			Blocks:     blocks,
 		},
@@ -51,7 +50,7 @@ func TestModuleString(t *testing.T) {
 			Name:    "myData",
 			Align:   &align,
 			Items: []qbe.TypedDataItem{
-				{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.String},
+				{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.NewPointer(qbe.Char)},
 				{Item: qbe.ConstantDataItem{Value: 42}, Type: qbe.Long},
 			},
 		},
@@ -67,7 +66,7 @@ func TestModuleString(t *testing.T) {
 				Types:     types,
 				Data:      data,
 			},
-			"type :myType = { w, w }\nexported data myData = align 8 { l \"hello\", l 42 }\nexported function w foo(w %a, w %b) {\n@start\n\t%t1 =w add %a, %b\n\tret %t1\n}",
+			"type :myType = { w, w }\nexport data $myData = align 8 { l \"hello\", l 42 }\nexport function w $foo(w %a, w %b) {\n@start\n\t%t1 =w add %a, %b\n\tret %t1\n}",
 		},
 		{
 			qbe.Module{
