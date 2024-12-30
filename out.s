@@ -1,24 +1,9 @@
 .text
-.globl hoh
-hoh:
-	pushq %rbp
-	movq %rsp, %rbp
-	movl %edi, %eax
-	leave
-	ret
-.type hoh, @function
-.size hoh, .-hoh
-/* end function hoh */
-
-.text
 .globl main
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	movl $5, %edi
-	callq hoh
-	movl $7, %edi
-	callq hoh
+	movl $4294967291, %eax
 	leave
 	ret
 .type main, @function

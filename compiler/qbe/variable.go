@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclarationStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclarationStatement, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	t := qbe.RemapAstType(statement.Type)
 
 	value := c.compileStatement(statement.Value, function, &t, isReturn)
@@ -29,7 +29,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	return value
 }
 
-func (c *Compiler) compileAssignmentStatement(statement *ast.AssignmentStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileAssignmentStatement(statement *ast.AssignmentStatement, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	variable := c.getVariable(statement.Name)
 	if variable == nil {
 		panic("missing variable")

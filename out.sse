@@ -1,15 +1,11 @@
-export function w $hoh(w %a.1) {
-@start
-	ret %a.1
-}
 export function w $main() {
 @start
-	%a.addr.3 =l alloc8 4
-	storew 5, %a.addr.3
-	%a.2 =w loadw %a.addr.3
-	%tmp.4 =w call $hoh(w %a.2)
-	storew 7, %a.addr.3
-	%a.2 =w loadw %a.addr.3
-	%tmp.5 =w call $hoh(w %a.2)
-	ret %tmp.5
+	%tmp.1 =w xor 2, -1
+	%tmp.2 =w add %tmp.1, 9
+	%a.addr.4 =l alloc8 4
+	storew %tmp.2, %a.addr.4
+	%a.3 =w loadw %a.addr.4
+	%tmp.5 =w mul %a.3, -1
+	%tmp.6 =w or %tmp.5, 99
+	ret %tmp.6
 }

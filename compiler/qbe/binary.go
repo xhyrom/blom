@@ -1,0 +1,87 @@
+package qbe
+
+import (
+	"blom/ast"
+	"blom/qbe"
+	"blom/tokens"
+)
+
+func (c *Compiler) compileBinaryExpression(expression *ast.BinaryExpression, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+	typedLeft := c.compileStatement(expression.Left, function, vtype, isReturn)
+	typedRight := c.compileStatement(expression.Right, function, vtype, isReturn)
+
+	left := typedLeft.Value
+	right := typedRight.Value
+
+	var instruction qbe.Instruction
+	switch expression.Operator {
+	case tokens.Plus:
+		instruction = qbe.NewAddInstruction(left, right)
+	case tokens.Minus:
+		instruction = qbe.NewSubtractInstruction(left, right)
+	case tokens.Asterisk:
+		instruction = qbe.NewMultiplyInstruction(left, right)
+	case tokens.Slash:
+		instruction = qbe.NewDivideInstruction(left, right)
+	case tokens.PercentSign:
+		instruction = qbe.NewModulusInstruction(left, right)
+	case tokens.LessThan:
+		instruction = qbe.NewCompareInstruction(
+			typedLeft.Type,
+			qbe.LessThan,
+			left,
+			right,
+		)
+	case tokens.LessThanOrEqual:
+		instruction = qbe.NewCompareInstruction(
+			typedLeft.Type,
+			qbe.LessThanOrEqual,
+			left,
+			right,
+		)
+	case tokens.GreaterThan:
+		instruction = qbe.NewCompareInstruction(
+			typedLeft.Type,
+			qbe.GreaterThan,
+			left,
+			right,
+		)
+	case tokens.GreaterThanOrEqual:
+		instruction = qbe.NewCompareInstruction(
+			typedLeft.Type,
+			qbe.GreaterThanOrEqual,
+			left,
+			right,
+		)
+	case tokens.Equals:
+		instruction = qbe.NewCompareInstruction(
+			typedLeft.Type,
+			qbe.Equal,
+			left,
+			right,
+		)
+	case tokens.Ampersand:
+		instruction = qbe.NewBitwiseAndInstruction(left, right)
+	case tokens.VerticalLine:
+		instruction = qbe.NewBitwiseOrInstruction(left, right)
+	case tokens.CircumflexAccent:
+		instruction = qbe.NewBitwiseXorInstruction(left, right)
+	case tokens.DoubleLessThan:
+		instruction = qbe.NewShiftLeftInstruction(left, right)
+	case tokens.DoubleGreaterThan:
+		instruction = qbe.NewArithmeticShiftRightInstruction(left, right)
+	}
+
+	tempValue := c.getTemporaryValue(nil)
+
+	function.LastBlock().AddAssign(
+		tempValue,
+		typedLeft.Type,
+		instruction,
+	)
+
+	return &qbe.TypedValue{
+		Type:  typedLeft.Type,
+		Value: tempValue,
+	}
+}
