@@ -14,6 +14,8 @@ func (c *Compiler) compileLiteral(literal ast.Statement, function *qbe.Function,
 		return compileIntLiteral(literal, function, vtype, isReturn)
 	case *ast.FloatLiteral:
 		//return c.compileFloatLiteral(literal)
+	case *ast.CharLiteral:
+		return compileCharLiteral(c, function, literal)
 	case *ast.StringLiteral:
 		return compileStringLiteral(c, function, literal)
 	case *ast.BooleanLiteral:
@@ -63,6 +65,15 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 			Prefix: prefix,
 		},
 		Type: *vtype,
+	}
+}
+
+func compileCharLiteral(c *Compiler, function *qbe.Function, literal *ast.CharLiteral) *qbe.TypedValue {
+	return &qbe.TypedValue{
+		Value: qbe.ConstantValue{
+			Value: int64(literal.Value),
+		},
+		Type: qbe.Char,
 	}
 }
 

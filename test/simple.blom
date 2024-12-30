@@ -1,5 +1,6 @@
 fun hoh(a: i32) -> i32 {
-    return hoh(a);
+    char a = 'b';
+    //return hoh(a);
 }
 
 fun main() -> i32 {

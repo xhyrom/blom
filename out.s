@@ -3,7 +3,7 @@
 hoh:
 	pushq %rbp
 	movq %rsp, %rbp
-	callq hoh
+	movl $0, %eax
 	leave
 	ret
 .type hoh, @function
