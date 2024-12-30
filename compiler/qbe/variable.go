@@ -28,3 +28,23 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 
 	return value
 }
+
+func (c *Compiler) compileAssignmentStatement(statement *ast.AssignmentStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+	variable := c.getVariable(statement.Name)
+	if variable == nil {
+		panic("missing variable")
+	}
+
+	value := c.compileStatement(statement.Value, function, &variable.Type, isReturn)
+
+	address := c.getVariable(fmt.Sprintf("%s.addr", statement.Name))
+	if address == nil {
+		panic("missing address")
+	}
+
+	function.LastBlock().AddInstruction(
+		qbe.NewStoreInstruction(variable.Type, value.Value, address.Value),
+	)
+
+	return value
+}

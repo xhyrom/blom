@@ -9,6 +9,8 @@ func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Funct
 	switch statement := statement.(type) {
 	case *ast.VariableDeclarationStatement:
 		return c.compileVariableDeclaration(statement, function, vtype, isReturn)
+	case *ast.AssignmentStatement:
+		return c.compileAssignmentStatement(statement, function, vtype, isReturn)
 	case *ast.IdentifierLiteral, *ast.IntLiteral, *ast.FloatLiteral, *ast.CharLiteral, *ast.StringLiteral, *ast.BooleanLiteral:
 		return c.compileLiteral(statement, function, vtype, isReturn)
 	case *ast.FunctionCall:
