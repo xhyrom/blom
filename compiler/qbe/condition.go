@@ -10,8 +10,6 @@ import (
 func (c *Compiler) compileCondition(conditionStatement *ast.IfStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
 	c.Scopes = append(c.Scopes, env.New[*qbe.TypedValue]())
 
-	condition := c.compileStatement(conditionStatement.Condition, function, vtype, isReturn)
-
 	c.TempCounter += 1
 
 	thenLabel := fmt.Sprintf("ift.%d", c.TempCounter)
@@ -25,6 +23,9 @@ func (c *Compiler) compileCondition(conditionStatement *ast.IfStatement, functio
 		ifZero = endLabel
 	}
 
+	// If condition
+	condition := c.compileStatement(conditionStatement.Condition, function, vtype, isReturn)
+
 	function.LastBlock().AddInstruction(
 		qbe.NewJumpNonZeroInstruction(
 			condition.Value,
@@ -33,12 +34,14 @@ func (c *Compiler) compileCondition(conditionStatement *ast.IfStatement, functio
 		),
 	)
 
+	// Then block
 	function.AddBlock(thenLabel)
 
 	for _, statement := range conditionStatement.Then {
 		c.compileStatement(statement, function, nil, isReturn)
 	}
 
+	// Else block
 	if conditionStatement.Else != nil && len(conditionStatement.Else) > 0 {
 		if !function.LastBlock().IsLastStatement(qbe.Jump) &&
 			!function.LastBlock().IsLastStatement(qbe.Return) &&
@@ -55,6 +58,7 @@ func (c *Compiler) compileCondition(conditionStatement *ast.IfStatement, functio
 		}
 	}
 
+	// End of if
 	function.AddBlock(endLabel)
 
 	c.Scopes = c.Scopes[:len(c.Scopes)-1]

@@ -17,6 +17,8 @@ func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Funct
 		return c.compileFunctionCall(statement, function)
 	case *ast.IfStatement:
 		return c.compileCondition(statement, function, vtype, isReturn)
+	case *ast.WhileLoopStatement:
+		return c.compileLoop(statement, function, vtype, isReturn)
 	case *ast.ReturnStatement:
 		return c.compileReturnStatement(statement, function, vtype)
 	case *ast.BinaryExpression:

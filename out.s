@@ -32,8 +32,7 @@ fib:
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	movl $13, %edi
-	callq fib
+	movl $9, %eax
 	leave
 	ret
 .type main, @function
