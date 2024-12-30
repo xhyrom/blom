@@ -9,7 +9,7 @@ type Data struct {
 	Linkage Linkage
 	Name    string
 	Align   *uint64
-	items   []TypedDataItem
+	Items   []TypedDataItem
 }
 
 func (d Data) String() string {
@@ -20,11 +20,11 @@ func (d Data) String() string {
 	}
 
 	var parts []string
-	for _, item := range d.items {
+	for _, item := range d.Items {
 		parts = append(parts, fmt.Sprintf("%s %s", item.Type, item.Item))
 	}
 
-	result += fmt.Sprintf("{ %s }\n", strings.Join(parts, ", "))
+	result += fmt.Sprintf("{ %s }", strings.Join(parts, ", "))
 
 	return result
 }

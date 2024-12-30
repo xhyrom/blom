@@ -1,5 +1,7 @@
 package qbe
 
+import "strings"
+
 // A complete QBE module
 type Module struct {
 	Functions []Function
@@ -8,19 +10,19 @@ type Module struct {
 }
 
 func (m Module) String() string {
-	result := ""
-
-	for _, function := range m.Functions {
-		result += function.String()
-	}
+	var parts []string
 
 	for _, typ := range m.Types {
-		result += typ.String()
+		parts = append(parts, typ.String())
 	}
 
 	for _, data := range m.Data {
-		result += data.String()
+		parts = append(parts, data.String())
 	}
 
-	return result
+	for _, function := range m.Functions {
+		parts = append(parts, function.String())
+	}
+
+	return strings.Join(parts, "\n")
 }

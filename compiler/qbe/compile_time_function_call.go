@@ -9,7 +9,7 @@ import (
 
 func (c *Compiler) CompileCompileTimeFunctionCall(call *ast.CompileTimeFunctionCall, scope *env.Environment[*Variable]) ([]string, *QbeIdentifier) {
 	exp := call.Parameters[0]
-	castType, _ := compiler.ParseType(call.Parameters[1].(*ast.IdentifierLiteral).Value)
+	castType, _ := ast.ParseType(call.Parameters[1].(*ast.IdentifierLiteral).Value)
 
 	stmt, stmtAdd := c.CompileStatement(exp, scope)
 

@@ -1,6 +1,8 @@
 package qbe
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type InstructionType int
 
@@ -213,7 +215,7 @@ func (i CopyInstruction) String() string {
 
 // ReturnInstruction represents a return instruction. (ret {value})
 type ReturnInstruction struct {
-	Value *Value
+	Value Value
 }
 
 func (i ReturnInstruction) InstructionType() InstructionType {
@@ -222,7 +224,7 @@ func (i ReturnInstruction) InstructionType() InstructionType {
 
 func (i ReturnInstruction) String() string {
 	if i.Value != nil {
-		return fmt.Sprintf("ret %s", *i.Value)
+		return fmt.Sprintf("ret %s", i.Value)
 	}
 
 	return "ret"
@@ -363,14 +365,26 @@ func (i ConversionInstruction) String() string {
 	if i.From.IsFloatingPoint() {
 		from = i.From.String()
 	} else {
-		from = "s" + i.From.IntoAbi().String()
+		if i.From.IsSigned() {
+			from = "s"
+		} else if i.From.IntoAbi().IsSigned() {
+			from = "u"
+		}
+
+		from += i.From.IntoAbi().String()
 	}
 
 	to := ""
 	if i.To.IsFloatingPoint() {
 		to = "f"
 	} else {
-		to = "si"
+		if i.To.IsSigned() {
+			to = "s"
+		} else {
+			to = "u"
+		}
+
+		to += "i"
 	}
 
 	return fmt.Sprintf("%sto%s %s", from, to, i.Value)
@@ -445,4 +459,8 @@ type CommentInstruction struct {
 
 func (i CommentInstruction) InstructionType() InstructionType {
 	return Comment
+}
+
+func (i CommentInstruction) String() string {
+	return fmt.Sprintf("# %s", i.Comment)
 }

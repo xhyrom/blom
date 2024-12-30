@@ -7,6 +7,20 @@ type Block struct {
 	Statements []Statement
 }
 
+func (b Block) String() string {
+	result := fmt.Sprintf("@%s\n", b.Label)
+
+	for i, stmt := range b.Statements {
+		if i == len(b.Statements)-1 {
+			result += fmt.Sprintf("\t%s", stmt)
+		} else {
+			result += fmt.Sprintf("\t%s\n", stmt)
+		}
+	}
+
+	return result
+}
+
 type StatementType int
 
 const (
