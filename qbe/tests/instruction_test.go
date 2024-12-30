@@ -306,7 +306,7 @@ func TestStoreInstruction(t *testing.T) {
 		t.Errorf("Expected Store, got %v", instr.InstructionType())
 	}
 
-	expected := "storew %dest, %value"
+	expected := "storew %value, %dest"
 	if instr.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, instr.String())
 	}

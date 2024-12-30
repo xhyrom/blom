@@ -28,7 +28,7 @@ func TestDataString(t *testing.T) {
 		Name:    "myData",
 		Align:   &align,
 		Items: []qbe.TypedDataItem{
-			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.String},
+			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.NewPointer(qbe.Char)},
 			{Item: qbe.ConstantDataItem{Value: 42}, Type: qbe.Long},
 		},
 	}
@@ -45,7 +45,7 @@ func TestDataStringNoAlign(t *testing.T) {
 		Name:    "myData",
 		Align:   nil,
 		Items: []qbe.TypedDataItem{
-			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.String},
+			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.NewPointer(qbe.Char)},
 			{Item: qbe.ConstantDataItem{Value: 42}, Type: qbe.Long},
 		},
 	}
@@ -62,7 +62,7 @@ func TestDataStringNoLinkage(t *testing.T) {
 		Name:    "myData",
 		Align:   nil,
 		Items: []qbe.TypedDataItem{
-			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.String},
+			{Item: qbe.StringDataItem{Value: "hello"}, Type: qbe.NewPointer(qbe.Char)},
 			{Item: qbe.ConstantDataItem{Value: 42}, Type: qbe.Long},
 		},
 	}

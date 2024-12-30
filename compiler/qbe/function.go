@@ -17,7 +17,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) qbe.Fun
 		Linkage:    qbe.NewLinkage(true), // TODO: Implement linkage
 		Name:       declaration.Name,
 		Arguments:  arguments,
-		ReturnType: &returnType,
+		ReturnType: returnType,
 		Variadic:   declaration.Variadic,
 		Blocks:     make([]qbe.Block, 0),
 	}
@@ -50,12 +50,12 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 
 	currentFunction.LastBlock().AddAssign(
 		tempValue,
-		*function.ReturnType,
+		function.ReturnType,
 		qbe.NewCallInstruction(qbe.NewGlobalValue(function.Name)),
 	)
 
 	return &qbe.TypedValue{
-		Type:  *function.ReturnType,
+		Type:  function.ReturnType,
 		Value: tempValue,
 	}
 }

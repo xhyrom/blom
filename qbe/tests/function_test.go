@@ -6,7 +6,6 @@ import (
 )
 
 func TestFunctionString(t *testing.T) {
-	returnType := qbe.Word
 	arguments := []qbe.TypedValue{
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "a"}},
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "b"}},
@@ -32,7 +31,7 @@ func TestFunctionString(t *testing.T) {
 				Linkage:    qbe.NewLinkage(true),
 				Name:       "foo",
 				Arguments:  arguments,
-				ReturnType: &returnType,
+				ReturnType: qbe.Word,
 				Variadic:   false,
 				Blocks:     blocks,
 			},
@@ -43,7 +42,7 @@ func TestFunctionString(t *testing.T) {
 				Linkage:    qbe.NewLinkage(false),
 				Name:       "bar",
 				Arguments:  arguments,
-				ReturnType: &returnType,
+				ReturnType: qbe.Word,
 				Variadic:   true,
 				Blocks:     blocks,
 			},

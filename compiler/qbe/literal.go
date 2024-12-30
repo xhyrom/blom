@@ -9,7 +9,7 @@ import (
 func (c *Compiler) compileLiteral(literal ast.Statement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
 	switch literal := literal.(type) {
 	case *ast.IdentifierLiteral:
-		//return c.compileIdentifierLiteral(literal)
+		return compileIdentifierLiteral(c, literal, function)
 	case *ast.IntLiteral:
 		return compileIntLiteral(literal, function, vtype, isReturn)
 	case *ast.FloatLiteral:
@@ -23,11 +23,31 @@ func (c *Compiler) compileLiteral(literal ast.Statement, function *qbe.Function,
 	panic(fmt.Sprintf("'%T' is not a valid literal", literal))
 }
 
+func compileIdentifierLiteral(c *Compiler, literal *ast.IdentifierLiteral, function *qbe.Function) *qbe.TypedValue {
+	variable := c.getVariable(literal.Value)
+	if variable == nil {
+		panic("missing variable")
+	}
+
+	address := c.getVariable(fmt.Sprintf("%s.addr", literal.Value))
+	if address == nil {
+		return variable
+	}
+
+	function.LastBlock().AddAssign(
+		variable.Value,
+		variable.Type,
+		qbe.NewLoadInstruction(variable.Type, address.Value),
+	)
+
+	return variable
+}
+
 func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
 	prefix := ""
 
 	if isReturn {
-		vtype = function.ReturnType
+		vtype = &function.ReturnType
 	}
 
 	switch *vtype {
@@ -59,7 +79,7 @@ func compileStringLiteral(c *Compiler, function *qbe.Function, literal *ast.Stri
 
 	return &qbe.TypedValue{
 		Value: qbe.NewGlobalValue(name),
-		Type:  qbe.String,
+		Type:  qbe.NewPointer(qbe.Char),
 	}
 }
 

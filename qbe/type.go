@@ -4,12 +4,24 @@ import (
 	"blom/ast"
 	"fmt"
 	"strings"
+	"unsafe"
 )
 
-type Type int
+type Type interface {
+	String() string
+	IsNumeric() bool
+	IsInteger() bool
+	IsFloatingPoint() bool
+	IsSigned() bool
+	IsUnsigned() bool
+	Size() uint64
+	IntoAbi() Type
+}
+
+type TypeId int
 
 const (
-	Byte Type = iota
+	Byte TypeId = iota
 	UnsignedByte
 	Halfword
 	UnsignedHalfword
@@ -20,9 +32,9 @@ const (
 	Single
 	Double
 	// Custom
+	Pointer
 	Char
 	Boolean
-	String
 	Void
 	Null
 )
@@ -40,8 +52,8 @@ var types = []string{
 	Single:           "s",
 	Double:           "d",
 	// Custom
+	Pointer: "l",
 	Boolean: "w",
-	String:  "l",
 	Void:    "w",
 	Null:    "",
 }
@@ -73,7 +85,7 @@ func RemapAstType(t ast.Type) Type {
 	case ast.Char:
 		return Char
 	case ast.String:
-		return String
+		return PointerBox{Inner: Char}
 	case ast.Void:
 		return Void
 	case ast.Null:
@@ -83,32 +95,51 @@ func RemapAstType(t ast.Type) Type {
 	panic(fmt.Sprintf("Unknown type '%s'", t))
 }
 
-func (t Type) String() string {
+func (t TypeId) String() string {
 	return types[t]
 }
 
-func (t Type) IsNumeric() bool {
+func (t TypeId) IsNumeric() bool {
 	return t.IsInteger() || t.IsFloatingPoint()
 }
 
-func (t Type) IsInteger() bool {
+func (t TypeId) IsInteger() bool {
 	return t == UnsignedByte || t == UnsignedHalfword || t == UnsignedWord || t == UnsignedLong || t == Byte || t == Halfword || t == Word || t == Long
 }
 
-func (t Type) IsFloatingPoint() bool {
+func (t TypeId) IsFloatingPoint() bool {
 	return t == Single || t == Double
 }
 
-func (t Type) IsSigned() bool {
+func (t TypeId) IsSigned() bool {
 	return t == Byte || t == Halfword || t == Word || t == Long
 }
 
-func (t Type) IsUnsigned() bool {
+func (t TypeId) IsUnsigned() bool {
 	return t == UnsignedByte || t == UnsignedHalfword || t == UnsignedWord || t == UnsignedLong
 }
 
+// Return the size of a type in bytes
+func (t TypeId) Size() uint64 {
+	switch t {
+	case UnsignedByte, Byte, Char:
+		return 1
+	case UnsignedHalfword, Halfword:
+		return 2
+	case Boolean, UnsignedWord, Word, Single, Void:
+		return 4
+	case Double:
+		return 8
+	// Returns 8 on 64-bit systems and 4 on 32-bit systems
+	case UnsignedLong, Long, Pointer:
+		return uint64(unsafe.Sizeof(uintptr(0)))
+	default:
+		panic(fmt.Sprintf("Unknown type '%s'", t))
+	}
+}
+
 // Return a C ABI type
-func (t Type) IntoAbi() Type {
+func (t TypeId) IntoAbi() Type {
 	switch t {
 	case Byte, Char, UnsignedByte, Halfword, UnsignedHalfword, UnsignedWord:
 		return Word
@@ -117,6 +148,7 @@ func (t Type) IntoAbi() Type {
 	return t
 }
 
+// QBE aggregate
 type TypedTypeDefinitionItem struct {
 	Count uint
 	Type  Type

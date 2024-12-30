@@ -1,21 +1,21 @@
 .text
-.globl hoho
-hoho:
+.globl hoh
+hoh:
 	pushq %rbp
 	movq %rsp, %rbp
 	movl $5, %eax
 	leave
 	ret
-.type hoho, @function
-.size hoho, .-hoho
-/* end function hoho */
+.type hoh, @function
+.size hoh, .-hoh
+/* end function hoh */
 
 .text
 .globl main
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	callq hoho
+	callq hoh
 	leave
 	ret
 .type main, @function

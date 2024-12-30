@@ -327,11 +327,19 @@ func (i Alloc8Instruction) String() string {
 	return fmt.Sprintf("alloc8 %s", i.Value)
 }
 
-// StoreInstruction represents a store instruction. (store{type} {destination}, {value})
+// StoreInstruction represents a store instruction. (store{type} {value}, {destination})
 type StoreInstruction struct {
 	Type        Type
-	Destination Value
 	Value       Value
+	Destination Value
+}
+
+func NewStoreInstruction(t Type, value Value, destination Value) StoreInstruction {
+	return StoreInstruction{
+		Type:        t,
+		Value:       value,
+		Destination: destination,
+	}
 }
 
 func (i StoreInstruction) InstructionType() InstructionType {
@@ -339,13 +347,20 @@ func (i StoreInstruction) InstructionType() InstructionType {
 }
 
 func (i StoreInstruction) String() string {
-	return fmt.Sprintf("store%s %s, %s", i.Type, i.Destination, i.Value)
+	return fmt.Sprintf("store%s %s, %s", i.Type, i.Value, i.Destination)
 }
 
 // LoadInstruction represents a load instruction. (load{type} {source})
 type LoadInstruction struct {
 	Type   Type
 	Source Value
+}
+
+func NewLoadInstruction(t Type, s Value) LoadInstruction {
+	return LoadInstruction{
+		Type:   t,
+		Source: s,
+	}
 }
 
 func (i LoadInstruction) InstructionType() InstructionType {

@@ -41,7 +41,7 @@ type Function struct {
 	Linkage    Linkage
 	Name       string
 	Arguments  []TypedValue
-	ReturnType *Type
+	ReturnType Type
 	Variadic   bool
 	Blocks     []Block
 }
@@ -61,7 +61,7 @@ func (f Function) String() string {
 	signature := fmt.Sprintf("%sfunction", f.Linkage)
 
 	if f.ReturnType != nil {
-		signature += fmt.Sprintf(" %s", (*f.ReturnType).IntoAbi())
+		signature += fmt.Sprintf(" %s", f.ReturnType.IntoAbi())
 	}
 
 	parameters := make([]string, len(f.Arguments))

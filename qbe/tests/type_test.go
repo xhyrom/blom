@@ -22,7 +22,7 @@ func TestTypeToString(t *testing.T) {
 		{qbe.Double, "d"},
 		{qbe.Char, "b"},
 		{qbe.Boolean, "w"},
-		{qbe.String, "l"},
+		{qbe.Pointer, "l"},
 		{qbe.Void, "w"},
 		{qbe.Null, ""},
 	}
@@ -51,7 +51,7 @@ func TestTypeIsNumeric(t *testing.T) {
 		{qbe.Double, true},
 		{qbe.Char, false},
 		{qbe.Boolean, false},
-		{qbe.String, false},
+		{qbe.Pointer, false},
 		{qbe.Void, false},
 		{qbe.Null, false},
 	}
@@ -80,7 +80,7 @@ func TestTypeIsInteger(t *testing.T) {
 		{qbe.Double, false},
 		{qbe.Char, false},
 		{qbe.Boolean, false},
-		{qbe.String, false},
+		{qbe.Pointer, false},
 		{qbe.Void, false},
 		{qbe.Null, false},
 	}
@@ -109,7 +109,7 @@ func TestTypeIsFloatingPoint(t *testing.T) {
 		{qbe.Double, true},
 		{qbe.Char, false},
 		{qbe.Boolean, false},
-		{qbe.String, false},
+		{qbe.Pointer, false},
 		{qbe.Void, false},
 		{qbe.Null, false},
 	}
@@ -138,7 +138,7 @@ func TestTypeIsSigned(t *testing.T) {
 		{qbe.Double, false},
 		{qbe.Char, false},
 		{qbe.Boolean, false},
-		{qbe.String, false},
+		{qbe.Pointer, false},
 		{qbe.Void, false},
 		{qbe.Null, false},
 	}
@@ -167,7 +167,7 @@ func TestTypeIsUnsigned(t *testing.T) {
 		{qbe.Double, false},
 		{qbe.Char, false},
 		{qbe.Boolean, false},
-		{qbe.String, false},
+		{qbe.Pointer, false},
 		{qbe.Void, false},
 		{qbe.Null, false},
 	}
@@ -196,7 +196,7 @@ func TestTypeIntoAbi(t *testing.T) {
 		{qbe.Single, qbe.Single},
 		{qbe.Double, qbe.Double},
 		{qbe.Boolean, qbe.Boolean},
-		{qbe.String, qbe.String},
+		{qbe.Pointer, qbe.Pointer},
 		{qbe.Void, qbe.Void},
 		{qbe.Null, qbe.Null},
 	}

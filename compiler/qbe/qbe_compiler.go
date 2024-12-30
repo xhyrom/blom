@@ -62,6 +62,17 @@ func (c *Compiler) newTemporaryValue(name *string) *qbe.TemporaryValue {
 	}
 }
 
+func (c *Compiler) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
+	tmp := c.newTemporaryValue(&name)
+
+	c.Scopes[len(c.Scopes)-1].Set(name, &qbe.TypedValue{
+		Type:  t,
+		Value: tmp,
+	})
+
+	return tmp
+}
+
 func (c *Compiler) getVariable(name string) *qbe.TypedValue {
 	for i := len(c.Scopes) - 1; i >= 0; i-- {
 		value := c.Scopes[i].Get(name)
