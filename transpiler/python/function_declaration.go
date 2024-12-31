@@ -5,7 +5,7 @@ import (
 	"blom/env"
 )
 
-func (t PythonTranspiler) TranspileFunctionDeclaration(declaration *ast.FunctionDeclaration, environment *env.Environment, indent int) string {
+func (t PythonTranspiler) TranspileFunctionDeclaration(declaration *ast.FunctionDeclaration, environment *env.Scope, indent int) string {
 	result := "def "
 
 	result += declaration.Name + "("

@@ -8,11 +8,11 @@ import (
 	"fmt"
 )
 
-func InterpretBinaryExpression(interpreter Interpreter, environment *env.Environment[objects.Object], expression *ast.BinaryExpression) objects.Object {
+func InterpretBinaryExpression(interpreter Interpreter, environment *env.Scope[objects.Object], expression *ast.BinaryExpression) objects.Object {
 	return evaluateBinaryExpression(interpreter, environment, expression)
 }
 
-func evaluateBinaryExpression(interpreter Interpreter, environment *env.Environment[objects.Object], expression *ast.BinaryExpression) objects.Object {
+func evaluateBinaryExpression(interpreter Interpreter, environment *env.Scope[objects.Object], expression *ast.BinaryExpression) objects.Object {
 	left := interpreter.InterpretStatement(expression.Left, environment)
 	right := interpreter.InterpretStatement(expression.Right, environment)
 

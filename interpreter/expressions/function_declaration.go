@@ -6,6 +6,6 @@ import (
 	"blom/env/objects"
 )
 
-func InterpretFunctionDeclaration(interpreter Interpreter, environment *env.Environment[objects.Object], declaration *ast.FunctionDeclaration) {
+func InterpretFunctionDeclaration(interpreter Interpreter, environment *env.Scope[objects.Object], declaration *ast.FunctionDeclaration) {
 	environment.SetFunction(declaration.Name, declaration)
 }

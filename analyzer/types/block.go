@@ -3,30 +3,32 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/env"
+	"blom/scope"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement, scope *env.Environment[*Variable]) ast.Type {
-	newScope := env.New(*scope)
+func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
+	a.Scopes = append(a.Scopes, scope.New[*Variable]())
 
 	lastReturnType := ast.Void
 
 	for _, statement := range block.Body {
 		if statement.Kind() == ast.ReturnNode {
 			ret := statement.(*ast.ReturnStatement)
-			returnType := a.analyzeExpression(ret.Value, newScope)
+			returnType := a.analyzeExpression(ret.Value)
 
 			handleInconsistentReturnTypes(a, ret, returnType, lastReturnType)
 			lastReturnType = returnType
 		} else {
-			returnType, hasReturnType := a.analyzeStatement(statement, newScope)
+			returnType, hasReturnType := a.analyzeStatement(statement)
 			if hasReturnType {
 				handleInconsistentReturnTypes(a, statement, returnType, lastReturnType)
 				lastReturnType = returnType
 			}
 		}
 	}
+
+	a.Scopes = a.Scopes[:len(a.Scopes)-1]
 
 	return lastReturnType
 }

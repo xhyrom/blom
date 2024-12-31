@@ -3,15 +3,15 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/env"
+	"blom/scope"
 	"fmt"
 )
 
 func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclaration) {
-	functionScope := env.New[*Variable]()
+	a.Scopes = append(a.Scopes, scope.New[*Variable]())
 
 	for _, arg := range function.Arguments {
-		functionScope.Set(arg.Name, &Variable{Type: arg.Type})
+		a.Scopes[len(a.Scopes)-1].Set(arg.Name, &Variable{Type: arg.Type})
 	}
 
 	if function.IsNative() {
@@ -21,7 +21,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 	for _, statement := range function.Body {
 		if statement.Kind() == ast.ReturnNode {
 			ret := statement.(*ast.ReturnStatement)
-			returnType := a.analyzeExpression(ret.Value, functionScope)
+			returnType := a.analyzeExpression(ret.Value)
 
 			if returnType != function.ReturnType {
 				dbg := debug.NewSourceLocationFromExpression(a.Source, ret)
@@ -36,14 +36,14 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 				)
 			}
 		} else {
-			a.analyzeStatement(statement, functionScope)
+			a.analyzeStatement(statement)
 		}
 	}
 }
 
-func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.Environment[*Variable]) ast.Type {
-	function := a.GlobalScope.GetFunction(call.Name)
-	if function == nil {
+func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
+	function, exists := a.Functions.Get(call.Name)
+	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
 			fmt.Sprintf(
@@ -68,7 +68,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall, scope *env.En
 	}
 
 	for i, param := range call.Parameters {
-		paramType := a.analyzeExpression(param, scope)
+		paramType := a.analyzeExpression(param)
 
 		if !function.IsNative() && paramType != function.Arguments[i].Type {
 			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)

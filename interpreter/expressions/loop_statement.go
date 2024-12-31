@@ -6,7 +6,7 @@ import (
 	"blom/env/objects"
 )
 
-func InterpretWhileLoopStatement(interpreter Interpreter, environment *env.Environment[objects.Object], statement *ast.WhileLoopStatement) {
+func InterpretWhileLoopStatement(interpreter Interpreter, environment *env.Scope[objects.Object], statement *ast.WhileLoopStatement) {
 	condition := statement.Condition
 	body := statement.Body
 

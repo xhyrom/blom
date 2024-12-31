@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (t PythonTranspiler) TranspileDeclarationStatement(declaration *ast.VariableDeclarationStatement, environment *env.Environment, indent int) string {
+func (t PythonTranspiler) TranspileDeclarationStatement(declaration *ast.VariableDeclarationStatement, environment *env.Scope, indent int) string {
 	skip := false
 
 	if environment.Parent != nil && environment.Parent.FindVariable(declaration.Name) != nil {

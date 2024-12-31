@@ -6,7 +6,7 @@ import (
 	"blom/env/objects"
 )
 
-func InterpretReturnStatement(interpreter Interpreter, environment *env.Environment[objects.Object], statement *ast.ReturnStatement) objects.Object {
+func InterpretReturnStatement(interpreter Interpreter, environment *env.Scope[objects.Object], statement *ast.ReturnStatement) objects.Object {
 	obj := interpreter.InterpretStatement(statement.Value, environment)
 
 	environment.Collect()

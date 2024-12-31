@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (t PythonTranspiler) TranspileBinaryExpression(expression *ast.BinaryExpression, environment *env.Environment, indent int) string {
+func (t PythonTranspiler) TranspileBinaryExpression(expression *ast.BinaryExpression, environment *env.Scope, indent int) string {
 	left := t.TranspileStatement(expression.Left, environment, indent)
 	right := t.TranspileStatement(expression.Right, environment, indent)
 

@@ -2,13 +2,13 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/env"
 	"blom/qbe"
+	"blom/scope"
 	"fmt"
 )
 
 func (c *Compiler) compileCondition(conditionStatement *ast.IfStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
-	c.Scopes = append(c.Scopes, env.New[*qbe.TypedValue]())
+	c.Scopes = append(c.Scopes, scope.New[*qbe.TypedValue]())
 
 	c.TempCounter += 1
 

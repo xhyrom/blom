@@ -5,7 +5,7 @@ import (
 	"blom/env"
 )
 
-func (t PythonTranspiler) TranspileFunctionCall(call *ast.FunctionCall, environment *env.Environment, indent int) string {
+func (t PythonTranspiler) TranspileFunctionCall(call *ast.FunctionCall, environment *env.Scope, indent int) string {
 	result := call.Name + "("
 
 	for i, arg := range call.Parameters {

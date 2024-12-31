@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.FunctionCall) objects.Object {
+func InterpretFunctionCall(interpreter Interpreter, environment *env.Scope[objects.Object], call *ast.FunctionCall) objects.Object {
 	function := environment.FindFunction(call.Name)
 
 	if function.IsNative() {
@@ -35,7 +35,7 @@ func InterpretFunctionCall(interpreter Interpreter, environment *env.Environment
 	}, env)
 }
 
-func nativeInterpretFunctionCall(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.FunctionCall) objects.Object {
+func nativeInterpretFunctionCall(interpreter Interpreter, environment *env.Scope[objects.Object], call *ast.FunctionCall) objects.Object {
 	switch call.Name {
 	case "printf":
 		return interpretPrintf(interpreter, environment, call)
@@ -44,7 +44,7 @@ func nativeInterpretFunctionCall(interpreter Interpreter, environment *env.Envir
 	}
 }
 
-func interpretPrintf(interpreter Interpreter, environment *env.Environment[objects.Object], call *ast.FunctionCall) objects.Object {
+func interpretPrintf(interpreter Interpreter, environment *env.Scope[objects.Object], call *ast.FunctionCall) objects.Object {
 	format := call.Parameters[0].(*ast.StringLiteral).Value
 
 	args := make([]interface{}, 0)

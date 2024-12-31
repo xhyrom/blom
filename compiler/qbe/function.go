@@ -2,12 +2,12 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/env"
 	"blom/qbe"
+	"blom/scope"
 )
 
 func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) qbe.Function {
-	c.Scopes = append(c.Scopes, env.New[*qbe.TypedValue]())
+	c.Scopes = append(c.Scopes, scope.New[*qbe.TypedValue]())
 
 	arguments := make([]qbe.TypedValue, len(declaration.Arguments))
 	for i, argument := range declaration.Arguments {

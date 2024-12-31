@@ -7,7 +7,7 @@ import (
 	"blom/tokens"
 )
 
-func InterpretUnaryExpression(interpreter Interpreter, environment *env.Environment[objects.Object], expression *ast.UnaryExpression) objects.Object {
+func InterpretUnaryExpression(interpreter Interpreter, environment *env.Scope[objects.Object], expression *ast.UnaryExpression) objects.Object {
 	switch expression.Operator {
 	case tokens.Plus:
 		return evaluatePlusExpression(interpreter, environment, expression)
@@ -19,11 +19,11 @@ func InterpretUnaryExpression(interpreter Interpreter, environment *env.Environm
 	return nil
 }
 
-func evaluatePlusExpression(interpreter Interpreter, environment *env.Environment[objects.Object], expression *ast.UnaryExpression) objects.Object {
+func evaluatePlusExpression(interpreter Interpreter, environment *env.Scope[objects.Object], expression *ast.UnaryExpression) objects.Object {
 	return interpreter.InterpretStatement(expression.Operand, environment)
 }
 
-func evaluateMinusExpression(interpreter Interpreter, environment *env.Environment[objects.Object], expression *ast.UnaryExpression) objects.Object {
+func evaluateMinusExpression(interpreter Interpreter, environment *env.Scope[objects.Object], expression *ast.UnaryExpression) objects.Object {
 	operand := interpreter.InterpretStatement(expression.Operand, environment)
 
 	switch operand := operand.(type) {
@@ -44,7 +44,7 @@ func evaluateMinusExpression(interpreter Interpreter, environment *env.Environme
 	return nil
 }
 
-func evaluateBitwiseNotExpression(interpreter Interpreter, environment *env.Environment[objects.Object], expression *ast.UnaryExpression) objects.Object {
+func evaluateBitwiseNotExpression(interpreter Interpreter, environment *env.Scope[objects.Object], expression *ast.UnaryExpression) objects.Object {
 	operand := interpreter.InterpretStatement(expression.Operand, environment)
 
 	switch operand := operand.(type) {

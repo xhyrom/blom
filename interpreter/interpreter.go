@@ -39,7 +39,7 @@ func (intrepreter *Interpreter) Interpret(prg *ast.Program, argc int64) objects.
 	}, env.New[objects.Object]())
 }
 
-func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environment *env.Environment[objects.Object]) objects.Object {
+func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environment *env.Scope[objects.Object]) objects.Object {
 	envi := env.New(*environment)
 
 	for _, stmt := range body.Body {
@@ -58,7 +58,7 @@ func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environ
 	return nil
 }
 
-func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environment *env.Environment[objects.Object]) objects.Object {
+func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environment *env.Scope[objects.Object]) objects.Object {
 	switch stmt := stmt.(type) {
 	case *ast.CharLiteral:
 		return &objects.CharacterObject{Value: stmt.Value}

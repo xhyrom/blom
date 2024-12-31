@@ -2,22 +2,22 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/env"
 	"blom/qbe"
+	"blom/scope"
 	"fmt"
 )
 
 type Compiler struct {
 	TempCounter int
 	Module      qbe.Module
-	Scopes      []*env.Environment[*qbe.TypedValue]
+	Scopes      []scope.Scope[*qbe.TypedValue]
 }
 
 func New() *Compiler {
 	return &Compiler{
 		TempCounter: 0,
 		Module:      qbe.NewModule(),
-		Scopes:      make([]*env.Environment[*qbe.TypedValue], 0),
+		Scopes:      make([]scope.Scope[*qbe.TypedValue], 0),
 	}
 }
 
@@ -75,8 +75,8 @@ func (c *Compiler) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
 
 func (c *Compiler) getVariable(name string) *qbe.TypedValue {
 	for i := len(c.Scopes) - 1; i >= 0; i-- {
-		value := c.Scopes[i].Get(name)
-		if value != nil {
+		value, exists := c.Scopes[i].Get(name)
+		if exists {
 			return value
 		}
 	}

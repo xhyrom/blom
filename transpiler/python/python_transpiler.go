@@ -27,7 +27,7 @@ func (t PythonTranspiler) Transpile(program *ast.Program) (string, error) {
 	}, env.New(), 0), nil
 }
 
-func (t PythonTranspiler) TranspileBlock(block ast.BlockStatement, environment *env.Environment, indent int) string {
+func (t PythonTranspiler) TranspileBlock(block ast.BlockStatement, environment *env.Scope, indent int) string {
 	indentation := strings.Repeat("    ", indent)
 
 	env := env.New(*environment)
@@ -46,7 +46,7 @@ func (t PythonTranspiler) TranspileBlock(block ast.BlockStatement, environment *
 	return result
 }
 
-func (t PythonTranspiler) TranspileStatement(stmt ast.Statement, environment *env.Environment, indent int) string {
+func (t PythonTranspiler) TranspileStatement(stmt ast.Statement, environment *env.Scope, indent int) string {
 	switch stmt := stmt.(type) {
 	case *ast.CharLiteral:
 		return "'" + string(stmt.Value) + "'"

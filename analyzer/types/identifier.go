@@ -3,14 +3,13 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/env"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeIdentifier(expression *ast.IdentifierLiteral, scope *env.Environment[*Variable]) ast.Type {
-	variable, exists := scope.FindVariable(expression.Value)
+func (a *TypeAnalyzer) analyzeIdentifier(expression *ast.IdentifierLiteral) ast.Type {
+	variable := a.getVariable(expression.Value)
 
-	if !exists {
+	if variable == nil {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, expression)
 		dbg.ThrowError(
 			fmt.Sprintf(

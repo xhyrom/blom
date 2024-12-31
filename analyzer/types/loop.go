@@ -3,12 +3,11 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/env"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStatement, scope *env.Environment[*Variable]) {
-	condition := a.analyzeExpression(statement.Condition, scope)
+func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStatement) {
+	condition := a.analyzeExpression(statement.Condition)
 
 	if condition != ast.Boolean {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, statement.Condition)
@@ -24,5 +23,5 @@ func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStateme
 	a.analyzeStatement(&ast.BlockStatement{
 		Body: statement.Body,
 		Loc:  statement.Loc,
-	}, scope)
+	})
 }

@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (t PythonTranspiler) TranspileUnaryExpression(expression *ast.UnaryExpression, environment *env.Environment, indent int) string {
+func (t PythonTranspiler) TranspileUnaryExpression(expression *ast.UnaryExpression, environment *env.Scope, indent int) string {
 	operator := ""
 
 	switch expression.Operator {

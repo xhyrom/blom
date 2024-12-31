@@ -8,6 +8,6 @@ import (
 
 type Interpreter interface {
 	Source() string
-	InterpretBlock(block *ast.BlockStatement, environment *env.Environment[objects.Object]) objects.Object
-	InterpretStatement(statement ast.Statement, environment *env.Environment[objects.Object]) objects.Object
+	InterpretBlock(block *ast.BlockStatement, environment *env.Scope[objects.Object]) objects.Object
+	InterpretStatement(statement ast.Statement, environment *env.Scope[objects.Object]) objects.Object
 }

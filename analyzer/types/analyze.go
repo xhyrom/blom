@@ -3,14 +3,15 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/env"
+	"blom/scope"
 	"fmt"
 )
 
 type TypeAnalyzer struct {
-	Source      string
-	Program     *ast.Program
-	GlobalScope *env.Environment[*Variable]
+	Source    string
+	Program   *ast.Program
+	Scopes    []scope.Scope[*Variable]
+	Functions scope.Scope[*ast.FunctionDeclaration]
 }
 
 type Variable struct {
@@ -18,37 +19,38 @@ type Variable struct {
 }
 
 func New(file string, program *ast.Program, functions map[string]*ast.FunctionDeclaration) *TypeAnalyzer {
-	globalScope := env.New[*Variable]()
+	funcs := scope.New[*ast.FunctionDeclaration]()
 
 	for _, function := range functions {
-		globalScope.SetFunction(function.Name, function)
+		funcs.Set(function.Name, function)
 	}
 
 	return &TypeAnalyzer{
-		Source:      file,
-		Program:     program,
-		GlobalScope: globalScope,
+		Source:    file,
+		Program:   program,
+		Scopes:    make([]scope.Scope[*Variable], 0),
+		Functions: funcs,
 	}
 }
 
 func (a *TypeAnalyzer) Analyze() {
 	for _, statement := range a.Program.Body {
-		a.analyzeStatement(statement, a.GlobalScope)
+		a.analyzeStatement(statement)
 	}
 }
 
-func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Environment[*Variable]) (ast.Type, bool) {
+func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement) (ast.Type, bool) {
 	switch statement := statement.(type) {
 	case *ast.FunctionDeclaration:
 		a.analyzeFunctionDeclaration(statement)
 	case *ast.VariableDeclarationStatement:
-		a.analyzeVariableDeclarationStatement(statement, scope)
+		a.analyzeVariableDeclarationStatement(statement)
 	case *ast.AssignmentStatement:
-		a.analyzeAssignmentStatement(statement, scope)
+		a.analyzeAssignmentStatement(statement)
 	case *ast.WhileLoopStatement:
-		a.analyzeWhileLoopStatement(statement, scope)
+		a.analyzeWhileLoopStatement(statement)
 	case *ast.FunctionCall:
-		a.analyzeFunctionCall(statement, scope)
+		a.analyzeFunctionCall(statement)
 	default:
 		if statement.Kind() != ast.IfNode {
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
@@ -65,13 +67,13 @@ func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement, scope *env.Envi
 			)
 		}
 
-		return a.analyzeExpression(statement, scope), true
+		return a.analyzeExpression(statement), true
 	}
 
 	return ast.Void, false
 }
 
-func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.Environment[*Variable]) ast.Type {
+func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 	switch expression.(type) {
 	case *ast.IntLiteral:
 		return ast.Int32
@@ -84,28 +86,43 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression, scope *env.E
 	case *ast.IdentifierLiteral:
 		identifier := expression.(*ast.IdentifierLiteral)
 
-		return a.analyzeIdentifier(identifier, scope)
+		return a.analyzeIdentifier(identifier)
 	case *ast.BooleanLiteral:
 		return ast.Boolean
 	case *ast.BinaryExpression:
 		binaryExpression := expression.(*ast.BinaryExpression)
-		return a.analyzeBinaryExpression(binaryExpression, scope)
+		return a.analyzeBinaryExpression(binaryExpression)
 	case *ast.UnaryExpression:
 		unaryExpression := expression.(*ast.UnaryExpression)
-		return a.analyzeUnaryExpression(unaryExpression, scope)
+		return a.analyzeUnaryExpression(unaryExpression)
 	case *ast.IfStatement: // if is statement but also an expression
 		ifExpression := expression.(*ast.IfStatement)
-		return a.analyzeIfExpression(ifExpression, scope)
+		return a.analyzeIfExpression(ifExpression)
 	case *ast.FunctionCall:
 		functionCall := expression.(*ast.FunctionCall)
-		return a.analyzeFunctionCall(functionCall, scope)
+		return a.analyzeFunctionCall(functionCall)
 	case *ast.CompileTimeFunctionCall:
 		compileTimeFunctionCall := expression.(*ast.CompileTimeFunctionCall)
 		return a.analyzeCompileTimeFunctionCall(compileTimeFunctionCall)
 	case *ast.BlockStatement:
 		blockStatement := expression.(*ast.BlockStatement)
-		return a.analyzeBlock(blockStatement, scope)
+		return a.analyzeBlock(blockStatement)
 	}
 
 	return ast.Void
+}
+
+func (a *TypeAnalyzer) createVariable(name string, variable *Variable) {
+	a.Scopes[len(a.Scopes)-1].Set(name, variable)
+}
+
+func (a *TypeAnalyzer) getVariable(name string) *Variable {
+	for i := len(a.Scopes) - 1; i >= 0; i-- {
+		value, exists := a.Scopes[i].Get(name)
+		if exists {
+			return value
+		}
+	}
+
+	return nil
 }

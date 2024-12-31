@@ -3,7 +3,6 @@ package cli
 import (
 	"blom/analyzer"
 	"blom/compiler"
-	"blom/interpreter"
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
@@ -71,7 +70,7 @@ func Run(args []string) {
 
 	//os.Exit(1)
 
-	_ = interpreter.New(inputFile)
+	//_ = interpreter.New(inputFile)
 
 	fmt.Printf("Interpreting %s\n", inputFile)
 

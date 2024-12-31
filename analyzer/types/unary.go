@@ -3,13 +3,12 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/env"
 	"blom/tokens"
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression, scope *env.Environment[*Variable]) ast.Type {
-	operand := a.analyzeExpression(expression.Operand, scope)
+func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression) ast.Type {
+	operand := a.analyzeExpression(expression.Operand)
 
 	if !operand.IsNumeric() {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Operand)
