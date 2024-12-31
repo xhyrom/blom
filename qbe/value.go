@@ -1,6 +1,10 @@
 package qbe
 
-import "fmt"
+import (
+	"fmt"
+
+	"golang.org/x/exp/constraints"
+)
 
 type ValueType int
 
@@ -71,25 +75,25 @@ func (v TypedValue) AbiString() string {
 // For example, an integer value would be represented as "42".
 // A 64-bit floating point value would be represented as "d_42".
 // A 32-bit floating point value would be represented as "s_42".
-type ConstantValue struct {
+type ConstantValue[T constraints.Integer | constraints.Float] struct {
 	Prefix string
-	Value  int64
+	Value  T
 }
 
-func NewConstantValue(value int64) ConstantValue {
-	return ConstantValue{Value: value}
+func NewConstantValue[T constraints.Integer | constraints.Float](value T) ConstantValue[T] {
+	return ConstantValue[T]{Value: value}
 }
 
-func NewConstantValueWithPrefix(prefix string, value int64) ConstantValue {
-	return ConstantValue{Prefix: prefix, Value: value}
+func NewConstantValueWithPrefix[T constraints.Integer | constraints.Float](prefix string, value T) ConstantValue[T] {
+	return ConstantValue[T]{Prefix: prefix, Value: value}
 }
 
-func (v ConstantValue) Type() ValueType {
+func (v ConstantValue[T]) Type() ValueType {
 	return ConstantValueType
 }
 
-func (v ConstantValue) String() string {
-	return fmt.Sprintf("%s%d", v.Prefix, v.Value)
+func (v ConstantValue[T]) String() string {
+	return fmt.Sprintf("%s%v", v.Prefix, v.Value)
 }
 
 // LiteralValue represents a literal value. (prefix value)

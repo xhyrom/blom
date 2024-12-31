@@ -1,0 +1,7 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun @public main() -> i32 {
+    f32 x = 4.5;
+    printf("%f\n", x);
+    return 0;
+}

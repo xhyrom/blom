@@ -13,7 +13,7 @@ func (c *Compiler) compileLiteral(literal ast.Statement, function *qbe.Function,
 	case *ast.IntLiteral:
 		return compileIntLiteral(literal, function, vtype, isReturn)
 	case *ast.FloatLiteral:
-		//return c.compileFloatLiteral(literal)
+		return compileFloatLiteral(literal, function, vtype, isReturn)
 	case *ast.CharLiteral:
 		return compileCharLiteral(literal)
 	case *ast.StringLiteral:
@@ -57,6 +57,27 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 		t = function.ReturnType
 	}
 
+	return &qbe.TypedValue{
+		Value: qbe.ConstantValue[int64]{
+			Value:  literal.Value,
+			Prefix: prefix,
+		},
+		Type: t,
+	}
+}
+
+func compileFloatLiteral(literal *ast.FloatLiteral, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+	prefix := ""
+
+	var t qbe.Type = qbe.Word
+	if vtype != nil {
+		t = *vtype
+	}
+
+	if isReturn {
+		t = function.ReturnType
+	}
+
 	switch t {
 	case qbe.Double:
 		prefix = "d_"
@@ -65,7 +86,7 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 	}
 
 	return &qbe.TypedValue{
-		Value: qbe.ConstantValue{
+		Value: qbe.ConstantValue[float64]{
 			Value:  literal.Value,
 			Prefix: prefix,
 		},
@@ -75,7 +96,7 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 
 func compileCharLiteral(literal *ast.CharLiteral) *qbe.TypedValue {
 	return &qbe.TypedValue{
-		Value: qbe.ConstantValue{
+		Value: qbe.ConstantValue[int64]{
 			Value: int64(literal.Value),
 		},
 		Type: qbe.Char,

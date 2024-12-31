@@ -1,77 +1,9 @@
-data $main.35 = { b "Hello, World! %d | %d\n", b 0 }
-function w $fib(w %n.4) {
-@start
-	%tmp.6 =w cslew %n.4, 1
-	jnz %tmp.6, @ift.5, @iend.5
-@ift.5
-	ret %n.4
-@iend.5
-	%tmp.7 =w sub %n.4, 1
-	%tmp.8 =w call $fib(w %tmp.7)
-	%tmp.9 =w sub %n.4, 2
-	%tmp.10 =w call $fib(w %tmp.9)
-	%tmp.11 =w add %tmp.8, %tmp.10
-	ret %tmp.11
-}
+data $main.4 = { b "%f\n", b 0 }
 export function w $main() {
 @start
-	%tmp.12 =w xor 2, -1
-	%tmp.13 =w add %tmp.12, 9
-	%a.addr.15 =l alloc8 4
-	storew %tmp.13, %a.addr.15
-	%a.14 =w loadw %a.addr.15
-	%tmp.17 =w csgtw %a.14, 99
-	jnz %tmp.17, @ift.16, @iend.16
-@ift.16
-	ret 9
-@iend.16
-	%i.addr.19 =l alloc8 4
-	storew 0, %i.addr.19
-	%a.addr.21 =l alloc8 4
-	storew 5, %a.addr.21
-@loopc.22
-	%a.20 =w loadw %a.addr.21
-	%tmp.23 =w csltw %a.20, 10
-	jnz %tmp.23, @loop.22, @end.22
-@loop.22
-	%i.18 =w loadw %i.addr.19
-	%a.20 =w loadw %a.addr.21
-	%tmp.24 =w add %i.18, %a.20
-	storew %tmp.24, %i.addr.19
-	%a.20 =w loadw %a.addr.21
-	%tmp.25 =w add %a.20, 1
-	storew %tmp.25, %a.addr.21
-	jmp @loopc.22
-@end.22
-	%g.addr.27 =l alloc8 4
-	storew 0, %g.addr.27
-@loopc.28
-	%g.26 =w loadw %g.addr.27
-	%tmp.29 =w csltw %g.26, 10
-	jnz %tmp.29, @loop.28, @end.28
-@loop.28
-	%i.18 =w loadw %i.addr.19
-	%g.26 =w loadw %g.addr.27
-	%tmp.30 =w add %i.18, %g.26
-	storew %tmp.30, %i.addr.19
-	%g.26 =w loadw %g.addr.27
-	%tmp.31 =w add %g.26, 1
-	storew %tmp.31, %g.addr.27
-	jmp @loopc.28
-@end.28
-
-@loopc.32
-	%i.18 =w loadw %i.addr.19
-	%tmp.33 =w csltw %i.18, 10
-	jnz %tmp.33, @loop.32, @end.32
-@loop.32
-	%i.18 =w loadw %i.addr.19
-	%tmp.34 =w add %i.18, 1
-	storew %tmp.34, %i.addr.19
-	jmp @loopc.32
-@end.32
-	%tmp.36 =w call $fib(w 40)
-	%tmp.37 =w call $printf(l $main.35,  ..., w %tmp.36, w 99)
-	%i.18 =w loadw %i.addr.19
-	ret %i.18
+	%x.addr.3 =l alloc8 4
+	stores s_4.5, %x.addr.3
+	%x.2 =s loads %x.addr.3
+	%tmp.5 =w call $printf(l $main.4,  ..., s %x.2)
+	ret 0
 }
