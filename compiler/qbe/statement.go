@@ -25,6 +25,8 @@ func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Funct
 		return c.compileBinaryExpression(statement, function, vtype, isReturn)
 	case *ast.UnaryExpression:
 		return c.compileUnaryExpression(statement, function, vtype, isReturn)
+	case *ast.BlockStatement:
+		return c.compileBlock(statement, function, vtype, isReturn)
 	}
 
 	return nil

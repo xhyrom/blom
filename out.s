@@ -1,7 +1,21 @@
 .data
 .balign 8
-main.6:
-	.ascii "%f\n"
+main.8:
+	.ascii "inner a: %d\n"
+	.byte 0
+/* end data */
+
+.data
+.balign 8
+main.10:
+	.ascii "outer a: %d\n"
+	.byte 0
+/* end data */
+
+.data
+.balign 8
+main.12:
+	.ascii "a: %d\n"
 	.byte 0
 /* end data */
 
@@ -10,21 +24,33 @@ main.6:
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	movss ".Lfp0"(%rip), %xmm0
-	leaq main.6(%rip), %rdi
-	movl $1, %eax
-	callq printf
+	subq $8, %rsp
+	pushq %rbx
+	subq $16, %rsp
+	movq %rsp, %rbx
+	movl $7, (%rbx)
+	movl $8, (%rbx)
+	movl $8, %esi
+	leaq main.8(%rip), %rdi
 	movl $0, %eax
+	callq printf
+	movl $8, %esi
+	leaq main.10(%rip), %rdi
+	movl $0, %eax
+	callq printf
+	movl $9, (%rbx)
+	movl $18, %esi
+	leaq main.12(%rip), %rdi
+	movl $0, %eax
+	callq printf
+	movl $18, %eax
+	movq %rbp, %rsp
+	subq $16, %rsp
+	popq %rbx
 	leave
 	ret
 .type main, @function
 .size main, .-main
 /* end function main */
-
-/* floating point constants */
-.section .rodata
-.p2align 2
-.Lfp0:
-	.int 1092091904 /* 9.500000 */
 
 .section .note.GNU-stack,"",@progbits

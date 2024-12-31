@@ -1,19 +1,21 @@
 fun @native printf(format: string, ...) -> i32;
 
-fun main() {
+fun @public main() {
     i32 a = 18;
 
     {
         i32 a = 7;
-        a = 9;
-
         {
             a = 8;
-            a = 10;
+
+            printf("inner a: %d\n", a);
         }
+
+        printf("outer a: %d\n", a);
+        a = 9;
     }
 
-    printf("%d\n", a);
+    printf("a: %d\n", a);
 
     return a;
 }
