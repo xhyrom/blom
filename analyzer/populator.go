@@ -27,6 +27,18 @@ func (a *Analyzer) populate() {
 				)
 			}
 
+			if statement.Name == "main" && !statement.HasAnnotation(ast.Public) {
+				dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column-4)
+				dbg.ThrowError(
+					"The 'main' function must be declared as public since it's the program's entry point.",
+					true,
+					debug.NewHint(
+						"Add the '@public' annotation to the function declaration.",
+						" @public",
+					),
+				)
+			}
+
 			a.Functions[statement.Name] = statement
 		default:
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
@@ -35,5 +47,17 @@ func (a *Analyzer) populate() {
 				true,
 			)
 		}
+	}
+
+	if a.Functions["main"] == nil {
+		dbg := debug.NewSourceLocation(a.Source, 1, 1)
+		dbg.ThrowError(
+			"A public 'main' function is required as the program's entry point.",
+			true,
+			debug.NewHint(
+				"Add a public function called 'main' to your program",
+				"fun @public main() {}\n",
+			),
+		)
 	}
 }

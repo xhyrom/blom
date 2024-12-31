@@ -1,21 +1,21 @@
 .data
 .balign 8
 main.8:
-	.ascii "inner a: %d\n"
+	.ascii "%d\n"
 	.byte 0
 /* end data */
 
 .data
 .balign 8
 main.10:
-	.ascii "outer a: %d\n"
+	.ascii "%d\n"
 	.byte 0
 /* end data */
 
 .data
 .balign 8
 main.12:
-	.ascii "a: %d\n"
+	.ascii "%d\n"
 	.byte 0
 /* end data */
 
@@ -24,29 +24,25 @@ main.12:
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $8, %rsp
-	pushq %rbx
 	subq $16, %rsp
-	movq %rsp, %rbx
-	movl $7, (%rbx)
-	movl $8, (%rbx)
-	movl $8, %esi
+	movq %rsp, %rax
+	movl $7, (%rax)
+	movl $9, (%rax)
+	movl $9, %esi
 	leaq main.8(%rip), %rdi
 	movl $0, %eax
 	callq printf
-	movl $8, %esi
+	movl $9, %esi
 	leaq main.10(%rip), %rdi
 	movl $0, %eax
 	callq printf
-	movl $9, (%rbx)
-	movl $18, %esi
+	movl $5, %esi
 	leaq main.12(%rip), %rdi
 	movl $0, %eax
 	callq printf
-	movl $18, %eax
+	movl $5, %eax
 	movq %rbp, %rsp
-	subq $16, %rsp
-	popq %rbx
+	subq $0, %rsp
 	leave
 	ret
 .type main, @function
