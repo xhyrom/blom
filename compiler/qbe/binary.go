@@ -12,6 +12,7 @@ func (c *Compiler) compileBinaryExpression(expression *ast.BinaryExpression, fun
 
 	left := typedLeft.Value
 	right := typedRight.Value
+	ty := typedLeft.Type
 
 	var instruction qbe.Instruction
 	switch expression.Operator {
@@ -27,35 +28,35 @@ func (c *Compiler) compileBinaryExpression(expression *ast.BinaryExpression, fun
 		instruction = qbe.NewModulusInstruction(left, right)
 	case tokens.LessThan:
 		instruction = qbe.NewCompareInstruction(
-			typedLeft.Type,
+			ty,
 			qbe.LessThan,
 			left,
 			right,
 		)
 	case tokens.LessThanOrEqual:
 		instruction = qbe.NewCompareInstruction(
-			typedLeft.Type,
+			ty,
 			qbe.LessThanOrEqual,
 			left,
 			right,
 		)
 	case tokens.GreaterThan:
 		instruction = qbe.NewCompareInstruction(
-			typedLeft.Type,
+			ty,
 			qbe.GreaterThan,
 			left,
 			right,
 		)
 	case tokens.GreaterThanOrEqual:
 		instruction = qbe.NewCompareInstruction(
-			typedLeft.Type,
+			ty,
 			qbe.GreaterThanOrEqual,
 			left,
 			right,
 		)
 	case tokens.Equals:
 		instruction = qbe.NewCompareInstruction(
-			typedLeft.Type,
+			ty,
 			qbe.Equal,
 			left,
 			right,
@@ -74,14 +75,31 @@ func (c *Compiler) compileBinaryExpression(expression *ast.BinaryExpression, fun
 
 	tempValue := c.getTemporaryValue(nil)
 
+	if isComparisonOperator(expression.Operator) {
+		ty = qbe.Boolean
+	}
+
 	function.LastBlock().AddAssign(
 		tempValue,
-		typedLeft.Type,
+		ty,
 		instruction,
 	)
 
 	return &qbe.TypedValue{
-		Type:  typedLeft.Type,
+		Type:  ty,
 		Value: tempValue,
 	}
+}
+
+func isComparisonOperator(operator tokens.TokenKind) bool {
+	switch operator {
+	case tokens.LessThan,
+		tokens.LessThanOrEqual,
+		tokens.GreaterThan,
+		tokens.GreaterThanOrEqual,
+		tokens.Equals:
+		return true
+	}
+
+	return false
 }

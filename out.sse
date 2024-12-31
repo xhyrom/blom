@@ -1,9 +1,18 @@
-data $main.4 = { b "%f\n", b 0 }
+data $main.6 = { b "%f\n", b 0 }
 export function w $main() {
 @start
 	%x.addr.3 =l alloc8 4
 	stores s_4.5, %x.addr.3
 	%x.2 =s loads %x.addr.3
-	%tmp.5 =w call $printf(l $main.4,  ..., s %x.2)
+	%tmp.5 =w cgts %x.2, 5
+	jnz %tmp.5, @ift.4, @iff.4
+@ift.4
+	stores s_9.5, %x.addr.3
+	jmp @iend.4
+@iff.4
+	stores s_3.5, %x.addr.3
+@iend.4
+	%x.2 =s loads %x.addr.3
+	%tmp.7 =w call $printf(l $main.6,  ..., s %x.2)
 	ret 0
 }

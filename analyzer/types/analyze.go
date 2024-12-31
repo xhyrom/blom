@@ -85,7 +85,6 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 		return ast.Char
 	case *ast.IdentifierLiteral:
 		identifier := expression.(*ast.IdentifierLiteral)
-
 		return a.analyzeIdentifier(identifier)
 	case *ast.BooleanLiteral:
 		return ast.Boolean
