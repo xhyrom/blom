@@ -282,6 +282,12 @@ type CopyInstruction struct {
 	Value Value
 }
 
+func NewCopyInstruction(value Value) CopyInstruction {
+	return CopyInstruction{
+		Value: value,
+	}
+}
+
 func (i CopyInstruction) InstructionType() InstructionType {
 	return Copy
 }
@@ -459,7 +465,15 @@ func (i LoadInstruction) InstructionType() InstructionType {
 }
 
 func (i LoadInstruction) String() string {
-	return fmt.Sprintf("load%s %s", i.Type, i.Source)
+	base := "load"
+
+	if !i.Type.IsUnsigned() && i.Type.IsMapToInt() {
+		base += fmt.Sprintf("s%s", i.Type)
+	} else {
+		base += i.Type.String()
+	}
+
+	return fmt.Sprintf("%s %s", base, i.Source)
 }
 
 // ConversionInstruction represents a conversion instruction. ({from}to{to} {value})
@@ -467,6 +481,14 @@ type ConversionInstruction struct {
 	From  Type
 	To    Type
 	Value Value
+}
+
+func NewConversionInstruction(from Type, to Type, value Value) ConversionInstruction {
+	return ConversionInstruction{
+		From:  from,
+		To:    to,
+		Value: value,
+	}
 }
 
 func (i ConversionInstruction) InstructionType() InstructionType {
@@ -509,6 +531,13 @@ type ExtensionInstruction struct {
 	Value Value
 }
 
+func NewExtensionInstruction(t Type, value Value) ExtensionInstruction {
+	return ExtensionInstruction{
+		Type:  t,
+		Value: value,
+	}
+}
+
 func (i ExtensionInstruction) InstructionType() InstructionType {
 	return Extension
 }
@@ -527,6 +556,12 @@ func (i ExtensionInstruction) String() string {
 // TruncateInstruction represents a truncate instruction. (truncd {value})
 type TruncateInstruction struct {
 	Value Value
+}
+
+func NewTruncateInstruction(value Value) TruncateInstruction {
+	return TruncateInstruction{
+		Value: value,
+	}
 }
 
 func (i TruncateInstruction) InstructionType() InstructionType {

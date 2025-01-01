@@ -9,7 +9,7 @@ import (
 func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.VariableDeclarationStatement) {
 	valueType := a.analyzeExpression(statement.Value)
 
-	if statement.Type != valueType && !a.canBeImplicitlyCast(statement.Type, valueType) {
+	if statement.Type != valueType && !a.canBeImplicitlyCast(valueType, statement.Type) {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, statement.Value)
 		dbg.ThrowError(
 			fmt.Sprintf(

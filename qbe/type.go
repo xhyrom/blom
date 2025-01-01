@@ -14,6 +14,9 @@ type Type interface {
 	IsFloatingPoint() bool
 	IsSigned() bool
 	IsUnsigned() bool
+	IsPointer() bool
+	IsMapToInt() bool
+	Weight() uint8
 	Size() uint64
 	IntoAbi() Type
 }
@@ -117,6 +120,38 @@ func (t TypeId) IsSigned() bool {
 
 func (t TypeId) IsUnsigned() bool {
 	return t == UnsignedByte || t == UnsignedHalfword || t == UnsignedWord || t == UnsignedLong
+}
+
+func (t TypeId) IsPointer() bool {
+	return t == Pointer
+}
+
+func (t TypeId) IsMapToInt() bool {
+	switch t {
+	case Byte, UnsignedByte, Halfword, UnsignedHalfword, UnsignedWord, Boolean, Char, Void:
+		return true
+	}
+
+	return false
+}
+
+func (t TypeId) Weight() uint8 {
+	switch t {
+	case Double:
+		return 4
+	case Single:
+		return 3
+	case Long, UnsignedLong, Pointer:
+		return 2
+	case Word:
+		return 1
+	default:
+		if t.IsMapToInt() {
+			return 1
+		}
+
+		return 0
+	}
 }
 
 // Return the size of a type in bytes

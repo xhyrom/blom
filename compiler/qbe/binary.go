@@ -10,8 +10,24 @@ func (c *Compiler) compileBinaryExpression(expression *ast.BinaryExpression, fun
 	typedLeft := c.compileStatement(expression.Left, function, vtype, isReturn)
 	typedRight := c.compileStatement(expression.Right, function, vtype, isReturn)
 
+	leftType := typedLeft.Type
 	left := typedLeft.Value
+
+	rightType := typedRight.Type
 	right := typedRight.Value
+
+	if leftType.Weight() > rightType.Weight() {
+		typedRight = c.convertToType(rightType, leftType, right, function)
+
+		rightType = typedRight.Type
+		right = typedRight.Value
+	} else if leftType.Weight() < rightType.Weight() {
+		typedLeft = c.convertToType(leftType, rightType, left, function)
+
+		leftType = typedLeft.Type
+		left = typedLeft.Value
+	}
+
 	ty := typedLeft.Type
 
 	var instruction qbe.Instruction

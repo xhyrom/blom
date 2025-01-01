@@ -53,6 +53,13 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 		t = *vtype
 	}
 
+	if t.IsFloatingPoint() {
+		return compileFloatLiteral(&ast.FloatLiteral{
+			Value: float64(literal.Value),
+			Loc:   literal.Loc,
+		}, function, vtype, isReturn)
+	}
+
 	if isReturn {
 		t = function.ReturnType
 	}

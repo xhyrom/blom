@@ -92,3 +92,58 @@ func (c *Compiler) getVariableOr(name string, defaultValue *qbe.TypedValue) *qbe
 
 	return value
 }
+
+func (c *Compiler) convertToType(first qbe.Type, second qbe.Type, value qbe.Value, function *qbe.Function) *qbe.TypedValue {
+	if first.IsPointer() && second.IsPointer() && (first.(qbe.PointerBox).Inner == qbe.Void || second.(qbe.PointerBox).Inner == qbe.Void) {
+		return &qbe.TypedValue{
+			Value: value,
+			Type:  second,
+		}
+	}
+
+	if first.Weight() == second.Weight() {
+		return &qbe.TypedValue{
+			Value: value,
+			Type:  second,
+		}
+	} else if (first.IsInteger() && second.IsInteger()) || (first.IsFloatingPoint() && second.IsFloatingPoint()) {
+		name := "conv"
+		conv := c.getTemporaryValue(&name)
+
+		var instruction qbe.Instruction
+		if first.Weight() > second.Weight() {
+			if first.IsFloatingPoint() {
+				instruction = qbe.NewTruncateInstruction(value)
+			} else {
+				instruction = qbe.NewCopyInstruction(value)
+			}
+		} else {
+			instruction = qbe.NewExtensionInstruction(first, value)
+		}
+
+		function.LastBlock().AddAssign(
+			conv,
+			second,
+			instruction,
+		)
+
+		return &qbe.TypedValue{
+			Value: conv,
+			Type:  second,
+		}
+	} else {
+		name := "conv"
+		conv := c.getTemporaryValue(&name)
+
+		function.LastBlock().AddAssign(
+			conv,
+			second,
+			qbe.NewConversionInstruction(first, second, value),
+		)
+
+		return &qbe.TypedValue{
+			Value: conv,
+			Type:  second,
+		}
+	}
+}

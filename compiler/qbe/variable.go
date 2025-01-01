@@ -22,6 +22,11 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 		},
 	)
 
+	if t != value.Type {
+		cnv := c.convertToType(value.Type, t, value.Value, function)
+		t = cnv.Type
+	}
+
 	function.LastBlock().AddInstruction(
 		qbe.NewStoreInstruction(t, value.Value, address),
 	)
@@ -42,8 +47,16 @@ func (c *Compiler) compileAssignmentStatement(statement *ast.AssignmentStatement
 		panic("missing address")
 	}
 
+	t := variable.Type
+
+	if t != value.Type {
+		cnv := c.convertToType(value.Type, t, value.Value, function)
+		t = cnv.Type
+		value.Type = t
+	}
+
 	function.LastBlock().AddInstruction(
-		qbe.NewStoreInstruction(variable.Type, value.Value, address.Value),
+		qbe.NewStoreInstruction(t, value.Value, address.Value),
 	)
 
 	return value

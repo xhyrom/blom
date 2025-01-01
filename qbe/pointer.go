@@ -38,6 +38,18 @@ func (p PointerBox) IsUnsigned() bool {
 	return Pointer.IsUnsigned()
 }
 
+func (p PointerBox) IsPointer() bool {
+	return true
+}
+
+func (p PointerBox) IsMapToInt() bool {
+	return Pointer.IsMapToInt()
+}
+
+func (p PointerBox) Weight() uint8 {
+	return Pointer.Weight()
+}
+
 func (p PointerBox) Size() uint64 {
 	return uint64(unsafe.Sizeof(uintptr(0)))
 }

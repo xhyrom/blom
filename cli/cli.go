@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -20,8 +21,9 @@ func Run(args []string) {
 	var emitAst bool
 	var emitSse bool
 	var inputFile string
+	var outputFile string = "a.out"
 
-	for _, arg := range args {
+	for i, arg := range args {
 		switch arg {
 		case "-tokens", "--emit-tokens":
 			emitTokens = true
@@ -29,6 +31,9 @@ func Run(args []string) {
 			emitAst = true
 		case "-sse", "--emit-sse":
 			emitSse = true
+		case "-o", "--output":
+			outputFile = args[i+1]
+			i += 1
 		default:
 			if strings.HasSuffix(arg, ".blom") {
 				inputFile = arg
@@ -90,14 +95,32 @@ func Run(args []string) {
 		fmt.Println(sse)
 	}
 
-	err = os.WriteFile("out.sse", []byte(sse), 0644)
+	dir := strings.TrimSuffix(outputFile, "/"+filepath.Base(outputFile))
+	if dir != "" {
+		err := os.MkdirAll(dir, 0755)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	sseFile := filepath.Join(dir, "out.sse")
+	asmFile := filepath.Join(dir, "out.s")
+
+	err = os.WriteFile(sseFile, []byte(sse), 0644)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("Running %s\n", inputFile)
 	startTime = time.Now()
-	cmd := exec.Command("sh", "-c", "qbe -o out.s out.sse && cc -O3 out.s -o a.out && ./a.out")
+	cmd := exec.Command("sh", "-c",
+		fmt.Sprintf("qbe -o %s %s && cc -O3 %s -o %s && %s",
+			asmFile,    // QBE output assembly
+			sseFile,    // QBE input
+			asmFile,    // CC input
+			outputFile, // Final executable
+			outputFile, // Program to run
+		))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Run()
