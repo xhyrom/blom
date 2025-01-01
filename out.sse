@@ -1,23 +1,11 @@
-data $main.8 = { b "%d\n", b 0 }
-data $main.10 = { b "%d\n", b 0 }
-data $main.12 = { b "%d\n", b 0 }
+data $main.4 = { b "xdd: %f\n", b 0 }
+function w $ahoj(w %a.2) {
+@start
+	%tmp.3 =w add %a.2, 9
+	ret %tmp.3
+}
 export function w $main() {
 @start
-	%a.addr.3 =l alloc8 4
-	storew 5, %a.addr.3
-@block.4
-	%a.addr.6 =l alloc8 4
-	storew 7, %a.addr.6
-@block.7
-	storew 9, %a.addr.6
-	%a.5 =w loadw %a.addr.6
-	%tmp.9 =w call $printf(l $main.8,  ..., w %a.5)
-@end.7
-	%a.5 =w loadw %a.addr.6
-	%tmp.11 =w call $printf(l $main.10,  ..., w %a.5)
-@end.4
-	%a.2 =w loadw %a.addr.3
-	%tmp.13 =w call $printf(l $main.12,  ..., w %a.2)
-	%a.2 =w loadw %a.addr.3
-	ret %a.2
+	%tmp.5 =w call $printf(l $main.4,  ..., s s_5.8)
+	ret 0
 }

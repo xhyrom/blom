@@ -69,7 +69,7 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 func compileFloatLiteral(literal *ast.FloatLiteral, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
 	prefix := ""
 
-	var t qbe.Type = qbe.Word
+	var t qbe.Type = qbe.Single
 	if vtype != nil {
 		t = *vtype
 	}
