@@ -11,7 +11,7 @@ func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression)
 	left := a.analyzeExpression(expression.Left)
 	right := a.analyzeExpression(expression.Right)
 
-	if left != right {
+	if left != right && (!a.canBeImplicitlyCast(left, right) && !a.canBeImplicitlyCast(right, left)) {
 		dbg := debug.NewSourceLocation(a.Source, expression.OperatorLoc.Row, expression.OperatorLoc.Column)
 		dbg.ThrowError(
 			fmt.Sprintf(

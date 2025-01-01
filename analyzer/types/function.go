@@ -23,7 +23,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 			ret := statement.(*ast.ReturnStatement)
 			returnType := a.analyzeExpression(ret.Value)
 
-			if returnType != function.ReturnType {
+			if returnType != function.ReturnType && (ret.Value.Kind() != ast.IntLiteralNode && !a.canBeImplicitlyCast(returnType, function.ReturnType)) {
 				dbg := debug.NewSourceLocationFromExpression(a.Source, ret)
 				dbg.ThrowError(
 					fmt.Sprintf(
@@ -70,7 +70,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 	for i, param := range call.Parameters {
 		paramType := a.analyzeExpression(param)
 
-		if !function.IsNative() && paramType != function.Arguments[i].Type {
+		if !function.IsNative() && paramType != function.Arguments[i].Type && !a.canBeImplicitlyCast(paramType, function.Arguments[i].Type) {
 			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)
 			dbg.ThrowError(
 				fmt.Sprintf(

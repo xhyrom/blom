@@ -125,3 +125,11 @@ func (a *TypeAnalyzer) getVariable(name string) *Variable {
 
 	return nil
 }
+
+func (a *TypeAnalyzer) canBeImplicitlyCast(from ast.Type, to ast.Type) bool {
+	if from == to {
+		return true
+	}
+
+	return from < to && from <= ast.Float64 && to <= ast.Float64
+}

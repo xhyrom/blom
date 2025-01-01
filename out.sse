@@ -1,11 +1,10 @@
-data $main.4 = { b "xdd: %f\n", b 0 }
-function w $ahoj(w %a.2) {
+function l $ahoj(l %a.2) {
 @start
-	%tmp.3 =w add %a.2, 9
+	%tmp.3 =l add %a.2, 9
 	ret %tmp.3
 }
-export function w $main() {
+export function l $main() {
 @start
-	%tmp.5 =w call $printf(l $main.4,  ..., s s_5.8)
-	ret 0
+	%tmp.4 =l call $ahoj(l 7)
+	ret %tmp.4
 }

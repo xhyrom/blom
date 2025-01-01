@@ -1,18 +1,9 @@
 fun @native printf(format: string, ...) -> i32;
 
-fun ahoj(a: i32) -> i32 {
+fun ahoj(a: i64) -> i64 {
     return a + 9;
 }
 
-fun @public main() -> i32 {
-    //f32 xdd = 5.8;
-    //i32 lol = ahoj(9);
-
-    //bool c = false;
-
-    //printf("%d - %d\n", 5 + 7, lol);
-    printf("xdd: %f\n", 5.8);
-    //printf("gumi %d hm?\n", ahoj(9));
-    //printf("gumi %b hm?\n", c);
-    return 0;
+fun @public main() -> i64 {
+    return ahoj(7);
 }
