@@ -68,6 +68,14 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 			argType = vtype
 		}
 
+		value := *c.compileStatement(parameter, currentFunction, argType, false)
+
+		// Promotes f32 to f64 acording to the ISO C standard
+		// https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf
+		if value.Type == qbe.Single && i >= len(function.Arguments) {
+			value = *c.convertToType(value.Type, qbe.Double, value.Value, currentFunction)
+		}
+
 		if len(function.Arguments) == i && function.Variadic {
 			parameters = append(parameters, qbe.TypedValue{
 				Value: qbe.NewLiteralValue("..."),
@@ -75,7 +83,7 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 			})
 		}
 
-		parameters = append(parameters, *c.compileStatement(parameter, currentFunction, argType, false))
+		parameters = append(parameters, value)
 	}
 
 	tempValue := c.getTemporaryValue(nil)

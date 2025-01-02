@@ -3,5 +3,5 @@ fun @native printf(format: string, ...) -> i32;
 fun @public main() {
     f32 a = 5.9;
 
-    printf("ahoj %f\n", @cast(f64, a));
+    printf("ahoj %f\n", a);
 }
