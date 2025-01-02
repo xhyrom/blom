@@ -14,7 +14,7 @@ func (b *Block) AddInstruction(instruction Instruction) {
 }
 
 func (b *Block) AddAssign(name Value, t Type, instruction Instruction) {
-	b.AddStatement(AssignStatement{Name: name, Type: t, Instruction: instruction})
+	b.AddStatement(AssignStatement{Name: name, Type: t.IntoAbi(), Instruction: instruction})
 }
 
 func (b *Block) AddStatement(statement Statement) {

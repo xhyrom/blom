@@ -53,6 +53,7 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 		t = *vtype
 	}
 
+	// compile time casting (int to float)
 	if t.IsFloatingPoint() {
 		return compileFloatLiteral(&ast.FloatLiteral{
 			Value: float64(literal.Value),
@@ -79,6 +80,14 @@ func compileFloatLiteral(literal *ast.FloatLiteral, function *qbe.Function, vtyp
 	var t qbe.Type = qbe.Single
 	if vtype != nil {
 		t = *vtype
+	}
+
+	// compile time casting (float to int)
+	if t.IsInteger() {
+		return compileIntLiteral(&ast.IntLiteral{
+			Value: int64(literal.Value),
+			Loc:   literal.Loc,
+		}, function, vtype, isReturn)
 	}
 
 	if isReturn {

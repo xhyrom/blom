@@ -63,21 +63,21 @@ func (f *FunctionCall) SetLocation(row uint64, column uint64) {
 	f.Loc.Column = column
 }
 
-type CompileTimeFunctionCall struct {
+type BuiltinFunctionCall struct {
 	Name       string
 	Parameters []Expression
 	Loc        tokens.Location
 }
 
-func (c CompileTimeFunctionCall) Kind() NodeKind {
+func (c BuiltinFunctionCall) Kind() NodeKind {
 	return CompileTimeFunctionCallNode
 }
 
-func (c CompileTimeFunctionCall) Location() tokens.Location {
+func (c BuiltinFunctionCall) Location() tokens.Location {
 	return c.Loc
 }
 
-func (c *CompileTimeFunctionCall) SetLocation(row uint64, column uint64) {
+func (c *BuiltinFunctionCall) SetLocation(row uint64, column uint64) {
 	c.Loc.Row = row
 	c.Loc.Column = column
 }

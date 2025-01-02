@@ -1,4 +1,7 @@
-fun main() {
-    i64 a = @cast(5, i64);
-    f64 b = @cast(a, f64);
+fun @native printf(format: string, ...) -> i32;
+
+fun @public main() {
+    f32 a = 5.9;
+
+    printf("ahoj %f\n", @cast(f64, a));
 }

@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseCompileTimeFunctionCall(p Parser) *ast.CompileTimeFunctionCall {
+func ParseCompileTimeFunctionCall(p Parser) *ast.BuiltinFunctionCall {
 	p.Consume()
 
 	identifier := p.Consume()
@@ -47,7 +47,7 @@ func ParseCompileTimeFunctionCall(p Parser) *ast.CompileTimeFunctionCall {
 
 	last := p.Consume()
 
-	return &ast.CompileTimeFunctionCall{
+	return &ast.BuiltinFunctionCall{
 		Name:       name,
 		Parameters: parameters,
 		Loc:        last.Location,
