@@ -72,7 +72,12 @@ func (s *SourceLocation) ThrowError(msg string, top bool, hints ...*Hint) {
 	}
 
 	n, _ := fmt.Fprintf(os.Stderr, "[%s:%d:%d]", filepath.Base(s.File), s.Row, s.Column)
-	fmt.Fprintf(os.Stderr, " \x1b[31;1mError\x1b[0m: %s\n", msg)
+
+	msgLines := strings.Split(msg, "\n")
+	fmt.Fprintf(os.Stderr, " \x1b[31;1mError\x1b[0m: %s\n", msgLines[0])
+	for _, line := range msgLines[1:] {
+		fmt.Fprintf(os.Stderr, "%*s%s\n", n+8, "", line)
+	}
 
 	code, ok := fileCache[s.File]
 

@@ -1,6 +1,7 @@
 package qbe
 
 import (
+	"blom/ast"
 	"fmt"
 	"strings"
 )
@@ -84,4 +85,25 @@ func (f Function) String() string {
 	}
 
 	return fmt.Sprintf("%s {\n%s\n}", signature, strings.Join(blocks, "\n"))
+}
+
+func RemapAstFunction(fun ast.FunctionDeclaration) Function {
+	arguments := make([]TypedValue, len(fun.Arguments))
+
+	for i, arg := range fun.Arguments {
+		arguments[i] = TypedValue{
+			Type:  RemapAstType(arg.Type),
+			Value: NewTemporaryValue(arg.Name),
+		}
+	}
+
+	return Function{
+		Linkage:    NewLinkage(fun.HasAnnotation(ast.Public)),
+		Name:       fun.Name,
+		Arguments:  arguments,
+		ReturnType: RemapAstType(fun.ReturnType),
+		Variadic:   fun.Variadic,
+		External:   fun.IsNative(),
+		Blocks:     make([]Block, 0),
+	}
 }

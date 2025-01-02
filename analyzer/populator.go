@@ -11,6 +11,7 @@ func (a *Analyzer) populate() {
 		switch statement := statement.(type) {
 		case *ast.FunctionDeclaration:
 			fun, exists := a.FunctionManager.GetByDeclaration(statement)
+
 			if exists {
 				dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 				dbg.ThrowError(
@@ -49,7 +50,7 @@ func (a *Analyzer) populate() {
 		}
 	}
 
-	if !a.FunctionManager.ContainsByName("main") {
+	if !a.FunctionManager.Has("main") {
 		dbg := debug.NewSourceLocation(a.Source, 1, 1)
 		dbg.ThrowError(
 			"A public 'main' function is required as the program's entry point.",

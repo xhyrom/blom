@@ -23,7 +23,11 @@ func New() *Compiler {
 
 func (c *Compiler) Compile(program *ast.Program) {
 	for _, primitive := range program.Body {
-		c.compilePrimitive(primitive)
+		c.compilePrimitive(primitive, true)
+	}
+
+	for _, primitive := range program.Body {
+		c.compilePrimitive(primitive, false)
 	}
 }
 
@@ -31,10 +35,14 @@ func (c *Compiler) Emit() string {
 	return c.Module.String()
 }
 
-func (c *Compiler) compilePrimitive(primitive ast.Statement) {
+func (c *Compiler) compilePrimitive(primitive ast.Statement, populate bool) {
 	switch primitive := primitive.(type) {
 	case *ast.FunctionDeclaration:
-		c.Module.AddFunction(c.compileFunction(primitive))
+		if populate {
+			c.Module.AddFunction(qbe.RemapAstFunction(*primitive))
+		} else {
+			c.compileFunction(primitive)
+		}
 	default:
 		panic(fmt.Sprintf("'%T' is not a valid primitive", primitive))
 	}

@@ -31,6 +31,15 @@ func (m *Module) GetFunctionByName(name string) *Function {
 	return nil
 }
 
+func (m *Module) SetFunctionByName(name string, function Function) {
+	for i, f := range m.Functions {
+		if f.Name == name {
+			m.Functions[i] = function
+			return
+		}
+	}
+}
+
 func (m *Module) AddType(t TypeDefinition) {
 	m.Types = append(m.Types, t)
 }

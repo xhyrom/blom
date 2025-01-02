@@ -2,7 +2,6 @@ package analyzer
 
 import (
 	"blom/analyzer/manager"
-	"blom/analyzer/overloading"
 	"blom/analyzer/types"
 	"blom/ast"
 )
@@ -25,15 +24,11 @@ func (a *Analyzer) Analyze() {
 	// populator
 	a.populate()
 
-	a.overload()
 	a.analyzeTypes()
+
 	a.eliminateDeadCode()
 	a.inlineFunctions()
 	a.mergeImportedModules()
-}
-
-func (a *Analyzer) overload() {
-	overloading.New(a.Program, a.FunctionManager).Overload()
 }
 
 func (a *Analyzer) analyzeTypes() {

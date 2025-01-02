@@ -1,6 +1,9 @@
 package ast
 
-import "blom/tokens"
+import (
+	"blom/tokens"
+	"strings"
+)
 
 type FunctionArgument struct {
 	Name string
@@ -44,6 +47,14 @@ func (f *FunctionDeclaration) IsNative() bool {
 	return f.HasAnnotation(Native)
 }
 
+func (f FunctionDeclaration) PrettyName() string {
+	if dotIndex := strings.Index(f.Name, "."); dotIndex != -1 {
+		return f.Name[:dotIndex]
+	}
+
+	return f.Name
+}
+
 type FunctionCall struct {
 	Name       string
 	Parameters []Expression
@@ -61,6 +72,14 @@ func (f FunctionCall) Location() tokens.Location {
 func (f *FunctionCall) SetLocation(row uint64, column uint64) {
 	f.Loc.Row = row
 	f.Loc.Column = column
+}
+
+func (f FunctionCall) PrettyName() string {
+	if dotIndex := strings.Index(f.Name, "."); dotIndex != -1 {
+		return f.Name[:dotIndex]
+	}
+
+	return f.Name
 }
 
 type BuiltinFunctionCall struct {

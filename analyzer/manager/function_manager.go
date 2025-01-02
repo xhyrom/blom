@@ -3,55 +3,50 @@ package manager
 import (
 	"blom/ast"
 	"fmt"
-	"strconv"
-	"strings"
 )
 
-type FunctionSignature struct {
-	name       string
-	parameters []ast.Type
-}
-
-func (f *FunctionSignature) Key() string {
-	types := make([]string, len(f.parameters))
-	for i, t := range f.parameters {
-		types[i] = strconv.Itoa(int(t))
-	}
-
-	return fmt.Sprintf("%s(%s)", f.name, strings.Join(types, ","))
-}
-
 type FunctionManager struct {
-	functions map[string]*ast.FunctionDeclaration
+	functions map[string][]*ast.FunctionDeclaration
 }
 
 func NewFunctionManager() *FunctionManager {
 	return &FunctionManager{
-		functions: make(map[string]*ast.FunctionDeclaration),
+		functions: make(map[string][]*ast.FunctionDeclaration),
 	}
 }
 
 func (m *FunctionManager) Register(fun *ast.FunctionDeclaration) {
-	sig := FunctionSignature{
-		name:       fun.Name,
-		parameters: make([]ast.Type, len(fun.Arguments)),
+	if _, ok := m.functions[fun.Name]; !ok {
+		m.functions[fun.Name] = make([]*ast.FunctionDeclaration, 0)
 	}
 
-	for i, arg := range fun.Arguments {
-		sig.parameters[i] = arg.Type
-	}
-
-	m.functions[sig.Key()] = fun
+	m.functions[fun.Name] = append(m.functions[fun.Name], fun)
 }
 
 func (m *FunctionManager) Get(name string, arguments []ast.Type) (*ast.FunctionDeclaration, bool) {
-	sig := FunctionSignature{
-		name:       name,
-		parameters: arguments,
+	if functions, ok := m.functions[name]; ok {
+		for _, fun := range functions {
+			if len(fun.Arguments) == len(arguments) {
+				matches := true
+				for i, arg := range fun.Arguments {
+					if arg.Type != arguments[i] {
+						matches = false
+						break
+					}
+				}
+
+				if matches {
+					return fun, true
+				}
+			}
+		}
 	}
 
-	fun, ok := m.functions[sig.Key()]
-	return fun, ok
+	return nil, false
+}
+
+func (m *FunctionManager) GetAllNamed(name string) []*ast.FunctionDeclaration {
+	return m.functions[name]
 }
 
 func (m *FunctionManager) GetByDeclaration(fun *ast.FunctionDeclaration) (*ast.FunctionDeclaration, bool) {
@@ -63,12 +58,26 @@ func (m *FunctionManager) GetByDeclaration(fun *ast.FunctionDeclaration) (*ast.F
 	return m.Get(fun.Name, arguments)
 }
 
-func (m *FunctionManager) ContainsByName(name string) bool {
-	for key := range m.functions {
-		if strings.HasPrefix(key, name+"(") {
-			return true
-		}
+func (m *FunctionManager) GetNewName(fun *ast.FunctionDeclaration) string {
+	functions := m.functions[fun.Name]
+
+	if functions == nil || len(functions) == 1 {
+		return fun.Name
 	}
 
-	return false
+	index := 1
+	for _, f := range functions {
+		if f == fun {
+			break
+		}
+
+		index++
+	}
+
+	return fmt.Sprintf("%s.%d", fun.Name, index)
+}
+
+func (m *FunctionManager) Has(name string) bool {
+	_, ok := m.functions[name]
+	return ok
 }

@@ -6,7 +6,7 @@ import (
 	"blom/scope"
 )
 
-func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) qbe.Function {
+func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	c.Scopes = append(c.Scopes, scope.New[*qbe.TypedValue]())
 
 	arguments := make([]qbe.TypedValue, len(declaration.Arguments))
@@ -37,7 +37,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) qbe.Fun
 
 	if declaration.IsNative() {
 		c.Scopes = c.Scopes[:len(c.Scopes)-1]
-		return function
+		return
 	}
 
 	function.AddBlock("start")
@@ -48,16 +48,11 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) qbe.Fun
 
 	c.Scopes = c.Scopes[:len(c.Scopes)-1]
 
-	return function
+	c.Module.SetFunctionByName(declaration.Name, function)
 }
 
 func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
-	var function *qbe.Function
-	if call.Name == currentFunction.Name {
-		function = currentFunction
-	} else {
-		function = c.Module.GetFunctionByName(call.Name)
-	}
+	function := c.Module.GetFunctionByName(call.Name)
 
 	parameters := make([]qbe.TypedValue, 0)
 	for i, parameter := range call.Parameters {
