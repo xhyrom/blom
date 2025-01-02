@@ -48,7 +48,7 @@ func (interpreter *Interpreter) InterpretBlock(body *ast.BlockStatement, environ
 		switch stmt.(type) {
 		case *ast.ReturnStatement:
 			return value
-		case *ast.IfStatement:
+		case *ast.If:
 			if value != nil {
 				return value
 			}
@@ -92,11 +92,11 @@ func (intrepreter *Interpreter) InterpretStatement(stmt ast.Statement, environme
 		return expressions.InterpretUnaryExpression(intrepreter, environment, stmt)
 	case *ast.VariableDeclarationStatement:
 		expressions.InterpretDeclarationStatement(intrepreter, environment, stmt)
-	case *ast.AssignmentStatement:
+	case *ast.Assignment:
 		expressions.InterpretAssignmentStatement(intrepreter, environment, stmt)
 	case *ast.ReturnStatement:
 		return expressions.InterpretReturnStatement(intrepreter, environment, stmt)
-	case *ast.IfStatement:
+	case *ast.If:
 		return expressions.InterpretIfStatement(intrepreter, environment, stmt)
 	case *ast.WhileLoopStatement:
 		expressions.InterpretWhileLoopStatement(intrepreter, environment, stmt)

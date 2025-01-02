@@ -2,27 +2,27 @@ package ast
 
 import "blom/tokens"
 
-type IfStatement struct {
+type If struct {
 	Condition Expression
 	Then      []Statement
 	Else      []Statement
 	Loc       tokens.Location
 }
 
-func (i IfStatement) Kind() NodeKind {
+func (i If) Kind() NodeKind {
 	return IfNode
 }
 
-func (i IfStatement) Location() tokens.Location {
+func (i If) Location() tokens.Location {
 	return i.Loc
 }
 
-func (i *IfStatement) SetLocation(row uint64, column uint64) {
+func (i *If) SetLocation(row uint64, column uint64) {
 	i.Loc.Row = row
 	i.Loc.Column = column
 }
 
-func (i *IfStatement) HasElse() bool {
+func (i *If) HasElse() bool {
 	if i.Else != nil && len(i.Else) > 0 {
 		return true
 	}

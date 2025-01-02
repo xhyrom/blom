@@ -8,7 +8,7 @@ import (
 
 // Parses an assignment statement that can have form:
 // <identifier> = <expression>;
-func ParseAssignment(p Parser) *ast.AssignmentStatement {
+func ParseAssignment(p Parser) *ast.Assignment {
 	name := p.Consume()
 
 	eq := p.Consume()
@@ -20,7 +20,7 @@ func ParseAssignment(p Parser) *ast.AssignmentStatement {
 		dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 	}
 
-	return &ast.AssignmentStatement{
+	return &ast.Assignment{
 		Name:  name.Value,
 		Value: value,
 		Loc:   eq.Location,

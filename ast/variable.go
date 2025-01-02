@@ -24,21 +24,21 @@ func (d *VariableDeclarationStatement) SetLocation(row uint64, column uint64) {
 	d.Loc.Column = column
 }
 
-type AssignmentStatement struct {
+type Assignment struct {
 	Name  string
 	Value Expression
 	Loc   tokens.Location
 }
 
-func (a AssignmentStatement) Kind() NodeKind {
+func (a Assignment) Kind() NodeKind {
 	return AssignmentNode
 }
 
-func (a AssignmentStatement) Location() tokens.Location {
+func (a Assignment) Location() tokens.Location {
 	return a.Loc
 }
 
-func (a *AssignmentStatement) SetLocation(row uint64, column uint64) {
+func (a *Assignment) SetLocation(row uint64, column uint64) {
 	a.Loc.Row = row
 	a.Loc.Column = column
 }

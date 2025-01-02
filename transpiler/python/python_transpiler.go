@@ -92,9 +92,9 @@ func (t PythonTranspiler) TranspileStatement(stmt ast.Statement, environment *en
 		return t.TranspileReturnStatement(stmt, environment, indent)
 	case ast.ReturnStatement:
 		return t.TranspileReturnStatement(&stmt, environment, indent)
-	case *ast.IfStatement:
+	case *ast.If:
 		return t.TranspileIfStatement(stmt, environment, indent)
-	case ast.IfStatement:
+	case ast.If:
 		return t.TranspileIfStatement(&stmt, environment, indent)
 	case *ast.FunctionCall:
 		return t.TranspileFunctionCall(stmt, environment, indent)

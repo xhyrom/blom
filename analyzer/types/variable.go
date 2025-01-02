@@ -25,14 +25,14 @@ func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.Variab
 	a.createVariable(statement.Name, &Variable{Type: valueType})
 }
 
-func (a *TypeAnalyzer) analyzeAssignmentStatement(statement *ast.AssignmentStatement) {
-	variable := a.getVariable(statement.Name)
+func (a *TypeAnalyzer) analyzeAssignment(assignment *ast.Assignment) ast.Type {
+	variable := a.getVariable(assignment.Name)
 	if variable == nil {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, statement)
+		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Variable '%s' is not declared, cannot assign value to it",
-				statement.Name,
+				assignment.Name,
 			),
 			true,
 			debug.NewHint(
@@ -42,18 +42,20 @@ func (a *TypeAnalyzer) analyzeAssignmentStatement(statement *ast.AssignmentState
 		)
 	}
 
-	valueType := a.analyzeExpression(statement.Value)
+	valueType := a.analyzeExpression(assignment.Value)
 
 	if variable.Type != valueType && !a.canBeImplicitlyCast(variable.Type, valueType) {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, statement.Value)
+		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment.Value)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Variable '%s' declared as '%s', but assigned with '%s'",
-				statement.Name,
+				assignment.Name,
 				variable.Type,
 				valueType,
 			),
 			true,
 		)
 	}
+
+	return valueType
 }

@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseIf(p Parser) *ast.IfStatement {
+func ParseIf(p Parser) *ast.If {
 	p.Consume()
 
 	condition, err := p.ParseExpression()
@@ -40,7 +40,7 @@ func ParseIf(p Parser) *ast.IfStatement {
 		loc = elseBlock.Loc
 	}
 
-	return &ast.IfStatement{
+	return &ast.If{
 		Condition: condition,
 		Then:      thenBlock.Body,
 		Else:      elseBlock.Body,

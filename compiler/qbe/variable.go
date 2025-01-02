@@ -34,7 +34,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	return value
 }
 
-func (c *Compiler) compileAssignmentStatement(statement *ast.AssignmentStatement, function *qbe.Function, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	variable := c.getVariable(statement.Name)
 	if variable == nil {
 		panic("missing variable")

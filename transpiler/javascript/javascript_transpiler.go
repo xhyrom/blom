@@ -84,9 +84,9 @@ func (t JavascriptTranspiler) TranspileStatement(stmt ast.Statement) string {
 		return t.TranspileReturnStatement(stmt)
 	case ast.ReturnStatement:
 		return t.TranspileReturnStatement(&stmt)
-	case *ast.IfStatement:
+	case *ast.If:
 		return t.TranspileIfStatement(stmt)
-	case ast.IfStatement:
+	case ast.If:
 		return t.TranspileIfStatement(&stmt)
 	case *ast.FunctionCall:
 		return t.TranspileFunctionCall(stmt)

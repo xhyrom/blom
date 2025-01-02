@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func (t JavascriptTranspiler) TranspileIfStatement(statement *ast.IfStatement) string {
+func (t JavascriptTranspiler) TranspileIfStatement(statement *ast.If) string {
 	result := fmt.Sprintf("if (%s) \n", t.TranspileStatement(statement.Condition))
 
 	result += t.TranspileStatement(statement.Then)

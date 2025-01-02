@@ -6,7 +6,7 @@ import (
 	"blom/env/objects"
 )
 
-func InterpretIfStatement(interpreter Interpreter, environment *env.Scope[objects.Object], statement *ast.IfStatement) objects.Object {
+func InterpretIfStatement(interpreter Interpreter, environment *env.Scope[objects.Object], statement *ast.If) objects.Object {
 	condition := interpreter.InterpretStatement(statement.Condition, environment)
 
 	if condition == nil {

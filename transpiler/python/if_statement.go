@@ -5,7 +5,7 @@ import (
 	"blom/env"
 )
 
-func (t PythonTranspiler) TranspileIfStatement(statement *ast.IfStatement, environment *env.Scope, indent int) string {
+func (t PythonTranspiler) TranspileIfStatement(statement *ast.If, environment *env.Scope, indent int) string {
 	result := "if " + t.TranspileStatement(statement.Condition, environment, indent) + ":\n"
 
 	result += t.TranspileStatement(statement.Then, environment, indent)

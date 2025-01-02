@@ -46,11 +46,11 @@ func ParseForLoop(p Parser) (*ast.VariableDeclarationStatement, *ast.WhileLoopSt
 		p.Consume() // consume the semicolon
 	}
 
-	var step *ast.AssignmentStatement
+	var step *ast.Assignment
 	location := p.Current().Location
 	stmts, _ := p.ParseStatement()
 	for _, stmt := range stmts {
-		if decl, ok := stmt.(*ast.AssignmentStatement); ok {
+		if decl, ok := stmt.(*ast.Assignment); ok {
 			step = decl
 		} else {
 			dbg := debug.NewSourceLocation(p.Source(), location.Row, location.Column)

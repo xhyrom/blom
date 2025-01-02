@@ -45,18 +45,16 @@ func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement) (ast.Type, bool
 		a.analyzeFunctionDeclaration(statement)
 	case *ast.VariableDeclarationStatement:
 		a.analyzeVariableDeclarationStatement(statement)
-	case *ast.AssignmentStatement:
-		a.analyzeAssignmentStatement(statement)
 	case *ast.WhileLoopStatement:
 		a.analyzeWhileLoopStatement(statement)
 	case *ast.FunctionCall:
 		a.analyzeFunctionCall(statement)
 	default:
-		if statement.Kind() != ast.IfNode {
+		if statement.Kind() != ast.IfNode && statement.Kind() != ast.AssignmentNode {
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 			dbg.ThrowWarning(
 				fmt.Sprintf(
-					"The statement '%s' has no effect on the program's behavior.",
+					"The statement '%T' has no effect on the program's behavior.",
 					statement.Kind(),
 				),
 				true,
@@ -94,9 +92,12 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 	case *ast.UnaryExpression:
 		unaryExpression := expression.(*ast.UnaryExpression)
 		return a.analyzeUnaryExpression(unaryExpression)
-	case *ast.IfStatement: // if is statement but also an expression
-		ifExpression := expression.(*ast.IfStatement)
-		return a.analyzeIfExpression(ifExpression)
+	case *ast.If: // if is statement but also an expression
+		ifExpression := expression.(*ast.If)
+		return a.analyzeIf(ifExpression)
+	case *ast.Assignment:
+		assignmentExpression := expression.(*ast.Assignment)
+		return a.analyzeAssignment(assignmentExpression)
 	case *ast.FunctionCall:
 		functionCall := expression.(*ast.FunctionCall)
 		return a.analyzeFunctionCall(functionCall)

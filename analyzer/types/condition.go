@@ -6,33 +6,7 @@ import (
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeIfStatement(expression *ast.IfStatement) {
-	conditionType := a.analyzeExpression(expression.Condition)
-	if conditionType != ast.Boolean {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Condition)
-		dbg.ThrowError(
-			fmt.Sprintf(
-				"Condition requires a 'boolean' type, but got '%s'",
-				conditionType,
-			),
-			true,
-		)
-	}
-
-	a.analyzeBlock(&ast.BlockStatement{
-		Body: expression.Then,
-		Loc:  expression.Loc,
-	})
-
-	if expression.HasElse() {
-		a.analyzeBlock(&ast.BlockStatement{
-			Body: expression.Else,
-			Loc:  expression.Loc,
-		})
-	}
-}
-
-func (a *TypeAnalyzer) analyzeIfExpression(expression *ast.IfStatement) ast.Type {
+func (a *TypeAnalyzer) analyzeIf(expression *ast.If) ast.Type {
 	conditionType := a.analyzeExpression(expression.Condition)
 	if conditionType != ast.Boolean {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Condition)

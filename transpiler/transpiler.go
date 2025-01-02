@@ -11,6 +11,6 @@ type Transpiler interface {
 	TranspileUnaryExpression(expression *ast.UnaryExpression) string
 	TranspileDeclarationStatement(declaration *ast.VariableDeclarationStatement) string
 	TranspileReturnStatement(statement *ast.ReturnStatement) string
-	TranspileIfStatement(statement *ast.IfStatement) string
+	TranspileIfStatement(statement *ast.If) string
 	TranspileFunctionCall(call *ast.FunctionCall) string
 }
