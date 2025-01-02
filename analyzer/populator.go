@@ -10,8 +10,8 @@ func (a *Analyzer) populate() {
 	for _, statement := range a.Program.Body {
 		switch statement := statement.(type) {
 		case *ast.FunctionDeclaration:
-			fun := a.Functions[statement.Name]
-			if fun != nil {
+			fun, exists := a.FunctionManager.GetByDeclaration(statement)
+			if exists {
 				dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 				dbg.ThrowError(
 					fmt.Sprintf(
@@ -39,7 +39,7 @@ func (a *Analyzer) populate() {
 				)
 			}
 
-			a.Functions[statement.Name] = statement
+			a.FunctionManager.Register(statement)
 		default:
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 			dbg.ThrowError(
@@ -49,7 +49,7 @@ func (a *Analyzer) populate() {
 		}
 	}
 
-	if a.Functions["main"] == nil {
+	if !a.FunctionManager.ContainsByName("main") {
 		dbg := debug.NewSourceLocation(a.Source, 1, 1)
 		dbg.ThrowError(
 			"A public 'main' function is required as the program's entry point.",

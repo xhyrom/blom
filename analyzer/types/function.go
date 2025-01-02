@@ -42,7 +42,12 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 }
 
 func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
-	function, exists := a.Functions.Get(call.Name)
+	paramTypes := make([]ast.Type, 0)
+	for _, param := range call.Parameters {
+		paramTypes = append(paramTypes, a.analyzeExpression(param))
+	}
+
+	function, exists := a.FunctionManager.Get(call.Name, paramTypes)
 	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
@@ -65,24 +70,6 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 			),
 			true,
 		)
-	}
-
-	for i, param := range call.Parameters {
-		paramType := a.analyzeExpression(param)
-
-		if !function.IsNative() && paramType != function.Arguments[i].Type && !a.canBeImplicitlyCast(paramType, function.Arguments[i].Type) {
-			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)
-			dbg.ThrowError(
-				fmt.Sprintf(
-					"Function '%s' expects argument %d to be of type '%s', but got '%s'.",
-					call.Name,
-					i+1,
-					function.Arguments[i].Type,
-					paramType,
-				),
-				true,
-			)
-		}
 	}
 
 	return function.ReturnType

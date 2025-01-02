@@ -1,0 +1,11 @@
+fun a(first: i32) -> i32 {
+    return a(first, 5);
+}
+
+fun a(first: i32, second: i32) -> i32 {
+    return first + second;
+}
+
+fun @public main() {
+    return a(2) + a(3, 7);
+}

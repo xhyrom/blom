@@ -1,6 +1,7 @@
 package types
 
 import (
+	"blom/analyzer/manager"
 	"blom/ast"
 	"blom/debug"
 	"blom/scope"
@@ -8,28 +9,22 @@ import (
 )
 
 type TypeAnalyzer struct {
-	Source    string
-	Program   *ast.Program
-	Scopes    []scope.Scope[*Variable]
-	Functions scope.Scope[*ast.FunctionDeclaration]
+	Source          string
+	Program         *ast.Program
+	Scopes          []scope.Scope[*Variable]
+	FunctionManager *manager.FunctionManager
 }
 
 type Variable struct {
 	Type ast.Type
 }
 
-func New(file string, program *ast.Program, functions map[string]*ast.FunctionDeclaration) *TypeAnalyzer {
-	funcs := scope.New[*ast.FunctionDeclaration]()
-
-	for _, function := range functions {
-		funcs.Set(function.Name, function)
-	}
-
+func New(file string, program *ast.Program, functionManager *manager.FunctionManager) *TypeAnalyzer {
 	return &TypeAnalyzer{
-		Source:    file,
-		Program:   program,
-		Scopes:    make([]scope.Scope[*Variable], 0),
-		Functions: funcs,
+		Source:          file,
+		Program:         program,
+		Scopes:          make([]scope.Scope[*Variable], 0),
+		FunctionManager: functionManager,
 	}
 }
 
