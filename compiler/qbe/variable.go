@@ -35,15 +35,15 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 }
 
 func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
-	variable := c.getVariable(statement.Name)
-	if variable == nil {
+	variable, exists := c.Scopes.GetValue(statement.Name)
+	if !exists {
 		panic("missing variable")
 	}
 
 	value := c.compileStatement(statement.Value, function, &variable.Type, isReturn)
 
-	address := c.getVariable(fmt.Sprintf("%s.addr", statement.Name))
-	if address == nil {
+	address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", statement.Name))
+	if !exists {
 		panic("missing address")
 	}
 

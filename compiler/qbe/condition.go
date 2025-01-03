@@ -3,12 +3,11 @@ package qbe
 import (
 	"blom/ast"
 	"blom/qbe"
-	"blom/scope"
 	"fmt"
 )
 
 func (c *Compiler) compileCondition(conditionStatement *ast.If, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
-	c.Scopes = append(c.Scopes, scope.New[*qbe.TypedValue]())
+	c.Scopes.Append()
 
 	c.TempCounter += 1
 
@@ -61,7 +60,7 @@ func (c *Compiler) compileCondition(conditionStatement *ast.If, function *qbe.Fu
 	// End of if
 	function.AddBlock(endLabel)
 
-	c.Scopes = c.Scopes[:len(c.Scopes)-1]
+	c.Scopes.Pop()
 
 	return nil
 }

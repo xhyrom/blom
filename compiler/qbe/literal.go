@@ -26,13 +26,13 @@ func (c *Compiler) compileLiteral(literal ast.Statement, function *qbe.Function,
 }
 
 func compileIdentifierLiteral(c *Compiler, literal *ast.IdentifierLiteral, function *qbe.Function) *qbe.TypedValue {
-	variable := c.getVariable(literal.Value)
-	if variable == nil {
+	variable, exists := c.Scopes.GetValue(literal.Value)
+	if !exists {
 		panic("missing variable")
 	}
 
-	address := c.getVariable(fmt.Sprintf("%s.addr", literal.Value))
-	if address == nil {
+	address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", literal.Value))
+	if !exists {
 		return variable
 	}
 

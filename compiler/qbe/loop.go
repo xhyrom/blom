@@ -3,12 +3,11 @@ package qbe
 import (
 	"blom/ast"
 	"blom/qbe"
-	"blom/scope"
 	"fmt"
 )
 
 func (c *Compiler) compileLoop(loopStatement *ast.WhileLoopStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
-	c.Scopes = append(c.Scopes, scope.New[*qbe.TypedValue]())
+	c.Scopes.Append()
 
 	c.TempCounter += 1
 
@@ -47,7 +46,7 @@ func (c *Compiler) compileLoop(loopStatement *ast.WhileLoopStatement, function *
 	// End of loop
 	function.AddBlock(endLabel)
 
-	c.Scopes = c.Scopes[:len(c.Scopes)-1]
+	c.Scopes.Pop()
 
 	return nil
 }

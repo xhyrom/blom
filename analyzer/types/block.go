@@ -3,12 +3,11 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/scope"
 	"fmt"
 )
 
 func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
-	a.Scopes = append(a.Scopes, scope.New[*Variable]())
+	a.Scopes.Append()
 
 	lastReturnType := ast.Void
 
@@ -28,7 +27,7 @@ func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
 		}
 	}
 
-	a.Scopes = a.Scopes[:len(a.Scopes)-1]
+	a.Scopes.Pop()
 
 	return lastReturnType
 }

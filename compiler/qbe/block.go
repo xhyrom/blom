@@ -3,12 +3,14 @@ package qbe
 import (
 	"blom/ast"
 	"blom/qbe"
-	"blom/scope"
 	"fmt"
+
+	"github.com/gookit/goutil/dump"
 )
 
 func (c *Compiler) compileBlock(block *ast.BlockStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
-	c.Scopes = append(c.Scopes, scope.New[*qbe.TypedValue]())
+	dump.P(c.Scopes)
+	c.Scopes.Append()
 
 	c.TempCounter += 1
 
@@ -23,7 +25,8 @@ func (c *Compiler) compileBlock(block *ast.BlockStatement, function *qbe.Functio
 
 	function.AddBlock(endLabel)
 
-	c.Scopes = c.Scopes[:len(c.Scopes)-1]
+	dump.P(c.Scopes)
+	c.Scopes.Pop()
 
 	return nil
 }

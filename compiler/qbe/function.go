@@ -3,11 +3,10 @@ package qbe
 import (
 	"blom/ast"
 	"blom/qbe"
-	"blom/scope"
 )
 
 func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
-	c.Scopes = append(c.Scopes, scope.New[*qbe.TypedValue]())
+	c.Scopes.Append()
 
 	arguments := make([]qbe.TypedValue, len(declaration.Arguments))
 	for i, argument := range declaration.Arguments {
@@ -36,7 +35,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	}
 
 	if declaration.IsNative() {
-		c.Scopes = c.Scopes[:len(c.Scopes)-1]
+		c.Scopes.Pop()
 		return
 	}
 
@@ -46,7 +45,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 		c.compileStatement(statement, &function, nil, false)
 	}
 
-	c.Scopes = c.Scopes[:len(c.Scopes)-1]
+	c.Scopes.Pop()
 
 	c.Module.SetFunctionByName(declaration.Name, function)
 }

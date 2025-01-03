@@ -10,14 +10,14 @@ import (
 type Compiler struct {
 	TempCounter int
 	Module      qbe.Module
-	Scopes      []scope.Scope[*qbe.TypedValue]
+	Scopes      *scope.Scopes[*qbe.TypedValue]
 }
 
 func New() *Compiler {
 	return &Compiler{
 		TempCounter: 0,
 		Module:      qbe.NewModule(),
-		Scopes:      make([]scope.Scope[*qbe.TypedValue], 0),
+		Scopes:      scope.NewScopes[*qbe.TypedValue](),
 	}
 }
 
@@ -73,32 +73,12 @@ func (c *Compiler) getTemporaryValue(name *string) *qbe.TemporaryValue {
 func (c *Compiler) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
 	tmp := c.getTemporaryValue(&name)
 
-	c.Scopes[len(c.Scopes)-1].Set(name, &qbe.TypedValue{
+	c.Scopes.Set(name, &qbe.TypedValue{
 		Type:  t,
 		Value: tmp,
 	})
 
 	return tmp
-}
-
-func (c *Compiler) getVariable(name string) *qbe.TypedValue {
-	for i := len(c.Scopes) - 1; i >= 0; i-- {
-		value, exists := c.Scopes[i].Get(name)
-		if exists {
-			return value
-		}
-	}
-
-	return nil
-}
-
-func (c *Compiler) getVariableOr(name string, defaultValue *qbe.TypedValue) *qbe.TypedValue {
-	value := c.getVariable(name)
-	if value == nil {
-		return defaultValue
-	}
-
-	return value
 }
 
 func (c *Compiler) convertToType(first qbe.Type, second qbe.Type, value qbe.Value, function *qbe.Function) *qbe.TypedValue {

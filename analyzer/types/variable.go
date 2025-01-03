@@ -22,12 +22,12 @@ func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.Variab
 		)
 	}
 
-	a.createVariable(statement.Name, &Variable{Type: valueType})
+	a.Scopes.Set(statement.Name, &Variable{Type: valueType})
 }
 
 func (a *TypeAnalyzer) analyzeAssignment(assignment *ast.Assignment) ast.Type {
-	variable := a.getVariable(assignment.Name)
-	if variable == nil {
+	variable, exists := a.Scopes.GetValue(assignment.Name)
+	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment)
 		dbg.ThrowError(
 			fmt.Sprintf(

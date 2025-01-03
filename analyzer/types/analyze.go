@@ -11,7 +11,7 @@ import (
 type TypeAnalyzer struct {
 	Source          string
 	Program         *ast.Program
-	Scopes          []scope.Scope[*Variable]
+	Scopes          *scope.Scopes[*Variable]
 	FunctionManager *manager.FunctionManager
 }
 
@@ -23,7 +23,7 @@ func New(file string, program *ast.Program, functionManager *manager.FunctionMan
 	return &TypeAnalyzer{
 		Source:          file,
 		Program:         program,
-		Scopes:          make([]scope.Scope[*Variable], 0),
+		Scopes:          scope.NewScopes[*Variable](),
 		FunctionManager: functionManager,
 	}
 }
@@ -105,21 +105,6 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 	}
 
 	return ast.Void
-}
-
-func (a *TypeAnalyzer) createVariable(name string, variable *Variable) {
-	a.Scopes[len(a.Scopes)-1].Set(name, variable)
-}
-
-func (a *TypeAnalyzer) getVariable(name string) *Variable {
-	for i := len(a.Scopes) - 1; i >= 0; i-- {
-		value, exists := a.Scopes[i].Get(name)
-		if exists {
-			return value
-		}
-	}
-
-	return nil
 }
 
 func (a *TypeAnalyzer) canBeImplicitlyCast(from ast.Type, to ast.Type) bool {
