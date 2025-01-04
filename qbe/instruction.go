@@ -269,7 +269,7 @@ func (i CompareInstruction) InstructionType() InstructionType {
 
 func (i CompareInstruction) String() string {
 	base := "c"
-	if !i.Type.IsFloatingPoint() && i.Type.IsSigned() {
+	if !i.Type.IsFloatingPoint() && i.Type.IsSigned() && i.Comparison != Equal && i.Comparison != NotEqual {
 		base += "s"
 	}
 	base += i.Comparison.String()

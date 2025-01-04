@@ -66,3 +66,11 @@ func (s *Scopes[T]) Pop() Scope[T] {
 	*s = (*s)[:len(*s)-1]
 	return scope
 }
+
+func (s *Scopes[T]) PopUntil(index int) {
+	*s = (*s)[:index]
+}
+
+func (s *Scopes[T]) Length() int {
+	return len(*s)
+}

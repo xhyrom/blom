@@ -16,8 +16,19 @@ func Printf(parameters []objects.Object) interface{} {
 			args[i] = parameter.Value()
 		case *objects.FloatObject:
 			args[i] = parameter.Value()
+		case *objects.DoubleObject:
+			args[i] = parameter.Value()
 		case *objects.StringObject:
 			args[i] = unescape(parameter.Value().(string))
+		case *objects.CharacterObject:
+			args[i] = parameter.Value()
+		case *objects.BooleanObject:
+			val := parameter.Value().(bool)
+			if val {
+				args[i] = 1
+			} else {
+				args[i] = 0
+			}
 		default:
 			panic(fmt.Sprintf("'%T' is not a valid parameter", parameter))
 		}

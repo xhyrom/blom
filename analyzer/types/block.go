@@ -16,12 +16,12 @@ func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
 			ret := statement.(*ast.ReturnStatement)
 			returnType := a.analyzeExpression(ret.Value)
 
-			handleInconsistentReturnTypes(a, ret, returnType, lastReturnType)
+			//handleInconsistentReturnTypes(a, ret, returnType, lastReturnType)
 			lastReturnType = returnType
 		} else {
 			returnType, hasReturnType := a.analyzeStatement(statement)
 			if hasReturnType {
-				handleInconsistentReturnTypes(a, statement, returnType, lastReturnType)
+				//handleInconsistentReturnTypes(a, statement, returnType, lastReturnType)
 				lastReturnType = returnType
 			}
 		}

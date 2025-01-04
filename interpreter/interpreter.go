@@ -29,7 +29,7 @@ func (t *Interpreter) Interpret(program *ast.Program) {
 		Name:       "main",
 		Parameters: []ast.Expression{},
 		Loc:        program.Loc,
-	})
+	}, t.Functions["main"], &t.Functions["main"].ReturnType, false)
 	t.Scopes.Pop()
 }
 

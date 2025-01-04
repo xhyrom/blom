@@ -45,6 +45,8 @@ func FromType(t ast.Type) Object {
 		return &FloatObject{}
 	case ast.Float64:
 		return &DoubleObject{}
+	case ast.Boolean:
+		return &BooleanObject{}
 	case ast.Char:
 		return &CharacterObject{}
 	case ast.String:
