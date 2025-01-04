@@ -7,9 +7,9 @@ import (
 )
 
 func (a *TypeAnalyzer) analyzeIdentifier(expression *ast.IdentifierLiteral) ast.Type {
-	variable := a.getVariable(expression.Value)
+	variable, exists := a.Scopes.GetValue(expression.Value)
 
-	if variable == nil {
+	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, expression)
 		dbg.ThrowError(
 			fmt.Sprintf(

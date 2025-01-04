@@ -3,12 +3,11 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/scope"
 	"fmt"
 )
 
 func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
-	a.Scopes = append(a.Scopes, scope.New[*Variable]())
+	a.Scopes.Append()
 
 	lastReturnType := ast.Void
 
@@ -17,18 +16,18 @@ func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
 			ret := statement.(*ast.ReturnStatement)
 			returnType := a.analyzeExpression(ret.Value)
 
-			handleInconsistentReturnTypes(a, ret, returnType, lastReturnType)
+			//handleInconsistentReturnTypes(a, ret, returnType, lastReturnType)
 			lastReturnType = returnType
 		} else {
 			returnType, hasReturnType := a.analyzeStatement(statement)
 			if hasReturnType {
-				handleInconsistentReturnTypes(a, statement, returnType, lastReturnType)
+				//handleInconsistentReturnTypes(a, statement, returnType, lastReturnType)
 				lastReturnType = returnType
 			}
 		}
 	}
 
-	a.Scopes = a.Scopes[:len(a.Scopes)-1]
+	a.Scopes.Pop()
 
 	return lastReturnType
 }

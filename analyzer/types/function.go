@@ -3,16 +3,15 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/scope"
 	"fmt"
 	"strings"
 )
 
 func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclaration) {
-	a.Scopes = append(a.Scopes, scope.New[*Variable]())
+	a.Scopes.Append()
 
 	for _, arg := range function.Arguments {
-		a.Scopes[len(a.Scopes)-1].Set(arg.Name, &Variable{Type: arg.Type})
+		a.Scopes.Set(arg.Name, &Variable{Type: arg.Type})
 	}
 
 	if function.IsNative() {
@@ -43,7 +42,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 
 	function.Name = a.FunctionManager.GetNewName(function)
 
-	a.Scopes = a.Scopes[:len(a.Scopes)-1]
+	a.Scopes.Pop()
 }
 
 func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {

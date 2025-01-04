@@ -3,6 +3,7 @@ package cli
 import (
 	"blom/analyzer"
 	"blom/compiler"
+	"blom/interpreter"
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
@@ -75,12 +76,12 @@ func Run(args []string) {
 
 	//os.Exit(1)
 
-	//_ = interpreter.New(inputFile)
+	inp := interpreter.New()
 
 	fmt.Printf("Interpreting %s\n", inputFile)
 
 	startTime := time.Now()
-	//inp.Interpret(ast, int64(len(os.Args)-1))
+	inp.Interpret(ast)
 	endTime := time.Since(startTime)
 
 	fmt.Printf("Interpreted %s ran for %s\n", inputFile, endTime)

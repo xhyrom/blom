@@ -30,7 +30,7 @@ fun @public main() -> i32 {
         i = i + 1;
     }
 
-    printf("Hello, World! %d | %d\n", fib(40), 99);
+    printf("Hello, World! %d | %d\n", fib(30), 99);
 
     return i;
 }

@@ -6,7 +6,11 @@ import (
 )
 
 type CharacterObject struct {
-	Value rune
+	value rune
+}
+
+func NewCharacterObject(value rune) *CharacterObject {
+	return &CharacterObject{value: value}
 }
 
 func (c *CharacterObject) Type() ast.Type {
@@ -14,7 +18,15 @@ func (c *CharacterObject) Type() ast.Type {
 }
 
 func (c *CharacterObject) Inspect() string {
-	return fmt.Sprintf("%c", c.Value)
+	return fmt.Sprintf("%c", c.value)
+}
+
+func (c *CharacterObject) Value() interface{} {
+	return c.value
+}
+
+func (c *CharacterObject) SetValue(value interface{}) {
+	c.value = value.(rune)
 }
 
 func (c *CharacterObject) Add(other Object) Object {
@@ -60,16 +72,16 @@ func (c *CharacterObject) RightShift(other Object) Object {
 func (c *CharacterObject) Equals(other Object) Object {
 	switch o := other.(type) {
 	case *CharacterObject:
-		return &BooleanObject{Value: c.Value == o.Value}
+		return &BooleanObject{value: c.value == o.value}
 	}
 
-	return &BooleanObject{Value: false}
+	return &BooleanObject{value: false}
 }
 
 func (c *CharacterObject) LessThan(other Object) Object {
 	switch o := other.(type) {
 	case *CharacterObject:
-		return &BooleanObject{Value: c.Value < o.Value}
+		return &BooleanObject{value: c.value < o.value}
 	}
 
 	return nil
@@ -78,7 +90,7 @@ func (c *CharacterObject) LessThan(other Object) Object {
 func (c *CharacterObject) LessThanOrEqual(other Object) Object {
 	switch o := other.(type) {
 	case *CharacterObject:
-		return &BooleanObject{Value: c.Value <= o.Value}
+		return &BooleanObject{value: c.value <= o.value}
 	}
 
 	return nil
@@ -87,7 +99,7 @@ func (c *CharacterObject) LessThanOrEqual(other Object) Object {
 func (c *CharacterObject) GreaterThan(other Object) Object {
 	switch o := other.(type) {
 	case *CharacterObject:
-		return &BooleanObject{Value: c.Value > o.Value}
+		return &BooleanObject{value: c.value > o.value}
 	}
 
 	return nil
@@ -96,7 +108,7 @@ func (c *CharacterObject) GreaterThan(other Object) Object {
 func (c *CharacterObject) GreaterThanOrEqual(other Object) Object {
 	switch o := other.(type) {
 	case *CharacterObject:
-		return &BooleanObject{Value: c.Value >= o.Value}
+		return &BooleanObject{value: c.value >= o.value}
 	}
 
 	return nil

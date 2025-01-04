@@ -6,7 +6,7 @@ import (
 )
 
 type LongObject struct {
-	Value int64
+	value int64
 }
 
 func (i *LongObject) Type() ast.Type {
@@ -14,13 +14,42 @@ func (i *LongObject) Type() ast.Type {
 }
 
 func (i *LongObject) Inspect() string {
-	return fmt.Sprintf("%d", i.Value)
+	return fmt.Sprintf("%d", i.value)
+}
+
+func (i *LongObject) Value() interface{} {
+	return i.value
+}
+
+func (i *LongObject) SetValue(value interface{}) {
+	switch value.(type) {
+	case int8:
+		i.value = int64(value.(int8))
+	case uint8:
+		i.value = int64(value.(uint8))
+	case int16:
+		i.value = int64(value.(int16))
+	case uint16:
+		i.value = int64(value.(uint16))
+	case int32:
+		i.value = int64(value.(int32))
+	case uint32:
+		i.value = int64(value.(uint32))
+	case int64:
+		i.value = value.(int64)
+	case uint64:
+		i.value = int64(value.(uint64))
+	case float32:
+		i.value = int64(value.(float32))
+	case float64:
+		i.value = int64(value.(float64))
+	}
 }
 
 func (i LongObject) Add(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value + o.Value}
+		return &LongObject{value: i.value + o.value}
 	}
 
 	return nil
@@ -29,7 +58,7 @@ func (i LongObject) Add(other Object) Object {
 func (i *LongObject) Subtract(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value - o.Value}
+		return &LongObject{value: i.value - o.value}
 	}
 
 	return nil
@@ -38,7 +67,7 @@ func (i *LongObject) Subtract(other Object) Object {
 func (i *LongObject) Multiply(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value * o.Value}
+		return &LongObject{value: i.value * o.value}
 	}
 
 	return nil
@@ -47,7 +76,7 @@ func (i *LongObject) Multiply(other Object) Object {
 func (i *LongObject) Divide(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value / o.Value}
+		return &LongObject{value: i.value / o.value}
 	}
 
 	return nil
@@ -56,7 +85,7 @@ func (i *LongObject) Divide(other Object) Object {
 func (i *LongObject) Modulo(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value % o.Value}
+		return &LongObject{value: i.value % o.value}
 	}
 
 	return nil
@@ -65,7 +94,7 @@ func (i *LongObject) Modulo(other Object) Object {
 func (i *LongObject) BitwiseAnd(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value & o.Value}
+		return &LongObject{value: i.value & o.value}
 	}
 
 	return nil
@@ -74,7 +103,7 @@ func (i *LongObject) BitwiseAnd(other Object) Object {
 func (i *LongObject) BitwiseOr(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value | o.Value}
+		return &LongObject{value: i.value | o.value}
 	}
 
 	return nil
@@ -83,7 +112,7 @@ func (i *LongObject) BitwiseOr(other Object) Object {
 func (i *LongObject) BitwiseXor(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value ^ o.Value}
+		return &LongObject{value: i.value ^ o.value}
 	}
 
 	return nil
@@ -92,7 +121,7 @@ func (i *LongObject) BitwiseXor(other Object) Object {
 func (i *LongObject) LeftShift(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value << uint(o.Value)}
+		return &LongObject{value: i.value << uint(o.value)}
 	}
 
 	return nil
@@ -101,7 +130,7 @@ func (i *LongObject) LeftShift(other Object) Object {
 func (i *LongObject) RightShift(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &LongObject{Value: i.Value >> uint(o.Value)}
+		return &LongObject{value: i.value >> uint(o.value)}
 	}
 
 	return nil
@@ -110,16 +139,16 @@ func (i *LongObject) RightShift(other Object) Object {
 func (i *LongObject) Equals(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &BooleanObject{Value: i.Value == o.Value}
+		return &BooleanObject{value: i.value == o.value}
 	}
 
-	return &BooleanObject{Value: false}
+	return &BooleanObject{value: false}
 }
 
 func (i *LongObject) LessThan(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &BooleanObject{Value: i.Value < o.Value}
+		return &BooleanObject{value: i.value < o.value}
 	}
 
 	return nil
@@ -128,7 +157,7 @@ func (i *LongObject) LessThan(other Object) Object {
 func (i *LongObject) LessThanOrEqual(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &BooleanObject{Value: i.Value <= o.Value}
+		return &BooleanObject{value: i.value <= o.value}
 	}
 
 	return nil
@@ -137,7 +166,7 @@ func (i *LongObject) LessThanOrEqual(other Object) Object {
 func (i *LongObject) GreaterThan(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &BooleanObject{Value: i.Value > o.Value}
+		return &BooleanObject{value: i.value > o.value}
 	}
 
 	return nil
@@ -146,7 +175,7 @@ func (i *LongObject) GreaterThan(other Object) Object {
 func (i *LongObject) GreaterThanOrEqual(other Object) Object {
 	switch o := other.(type) {
 	case *LongObject:
-		return &BooleanObject{Value: i.Value >= o.Value}
+		return &BooleanObject{value: i.value >= o.value}
 	}
 
 	return nil

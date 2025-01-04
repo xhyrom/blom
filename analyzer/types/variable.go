@@ -9,7 +9,7 @@ import (
 func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.VariableDeclarationStatement) {
 	valueType := a.analyzeExpression(statement.Value)
 
-	if statement.Type != valueType && !a.canBeImplicitlyCast(valueType, statement.Type) {
+	if statement.Type != valueType && (!a.canBeImplicitlyCast(valueType, statement.Type) || statement.Value.Kind() == ast.FunctionCallNode) {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, statement.Value)
 		dbg.ThrowError(
 			fmt.Sprintf(
@@ -22,12 +22,12 @@ func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.Variab
 		)
 	}
 
-	a.createVariable(statement.Name, &Variable{Type: valueType})
+	a.Scopes.Set(statement.Name, &Variable{Type: valueType})
 }
 
 func (a *TypeAnalyzer) analyzeAssignment(assignment *ast.Assignment) ast.Type {
-	variable := a.getVariable(assignment.Name)
-	if variable == nil {
+	variable, exists := a.Scopes.GetValue(assignment.Name)
+	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment)
 		dbg.ThrowError(
 			fmt.Sprintf(

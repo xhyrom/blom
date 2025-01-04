@@ -64,3 +64,36 @@ func (t Type) IsNumeric() bool {
 func (t Type) IsInteger() bool {
 	return t >= Int8 && t <= UnsignedInt64
 }
+
+func (t Type) IsFloatingPoint() bool {
+	return t == Float32 || t == Float64
+}
+
+func (t Type) IsMapToInt() bool {
+	switch t {
+	case Int8, UnsignedInt8, Int16, UnsignedInt16, UnsignedInt32, Boolean, Char, Void:
+		return true
+	}
+
+	return false
+}
+
+func (t Type) Weight() uint8 {
+	switch t {
+	// double
+	case Float64:
+		return 4
+	case Float32:
+		return 3
+	case Int64, UnsignedInt64, String:
+		return 2
+	case Int32:
+		return 1
+	default:
+		if t.IsMapToInt() {
+			return 1
+		}
+
+		return 0
+	}
+}

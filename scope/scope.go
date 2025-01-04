@@ -2,7 +2,7 @@ package scope
 
 type Scope[T any] map[string]T
 
-func New[T any]() Scope[T] {
+func NewScope[T any]() Scope[T] {
 	return make(Scope[T])
 }
 
