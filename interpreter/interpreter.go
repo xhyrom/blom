@@ -41,3 +41,10 @@ func (t *Interpreter) populateFunctions(primitive ast.Statement) {
 		panic(fmt.Sprintf("'%T' is not a valid primitive", primitive))
 	}
 }
+
+func (t *Interpreter) convertToType(first ast.Type, second ast.Type, value objects.Object) objects.Object {
+	obj := objects.FromType(second)
+	obj.SetValue(value.Value())
+
+	return obj
+}

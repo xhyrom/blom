@@ -29,6 +29,17 @@ func (s *Scopes[T]) GetValue(key string) (T, bool) {
 	return zero, false
 }
 
+func (s *Scopes[T]) GetValueScope(key string) (Scope[T], bool) {
+	for i := len(*s) - 1; i >= 0; i-- {
+		_, ok := (*s)[i].Get(key)
+		if ok {
+			return (*s)[i], ok
+		}
+	}
+
+	return nil, false
+}
+
 func (s *Scopes[T]) GetValueOrDefault(key string, defaultValue T) T {
 	val, ok := s.GetValue(key)
 	if ok {

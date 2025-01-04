@@ -1,7 +1,7 @@
 fun @native printf(format: string, ...) -> i32;
 
 fun @public main() {
-    i32 a = @cast(i32, 5.9);
+    i32 a = @cast(i32, 5.8);
 
     {
         i32 a = 7;

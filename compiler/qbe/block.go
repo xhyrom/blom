@@ -4,12 +4,9 @@ import (
 	"blom/ast"
 	"blom/qbe"
 	"fmt"
-
-	"github.com/gookit/goutil/dump"
 )
 
 func (c *Compiler) compileBlock(block *ast.BlockStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
-	dump.P(c.Scopes)
 	c.Scopes.Append()
 
 	c.TempCounter += 1
@@ -25,7 +22,6 @@ func (c *Compiler) compileBlock(block *ast.BlockStatement, function *qbe.Functio
 
 	function.AddBlock(endLabel)
 
-	dump.P(c.Scopes)
 	c.Scopes.Pop()
 
 	return nil

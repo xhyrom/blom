@@ -3,7 +3,11 @@ package objects
 import "blom/ast"
 
 type StringObject struct {
-	Value string
+	value string
+}
+
+func NewStringObject(value string) *StringObject {
+	return &StringObject{value: value}
 }
 
 func (s *StringObject) Type() ast.Type {
@@ -11,7 +15,15 @@ func (s *StringObject) Type() ast.Type {
 }
 
 func (s *StringObject) Inspect() string {
-	return s.Value
+	return s.value
+}
+
+func (s *StringObject) Value() interface{} {
+	return s.value
+}
+
+func (s *StringObject) SetValue(value interface{}) {
+	s.value = value.(string)
 }
 
 func (s *StringObject) Add(other Object) Object {
@@ -57,10 +69,10 @@ func (s *StringObject) RightShift(other Object) Object {
 func (s *StringObject) Equals(other Object) Object {
 	switch o := other.(type) {
 	case *StringObject:
-		return &BooleanObject{Value: s.Value == o.Value}
+		return &BooleanObject{value: s.value == o.value}
 	}
 
-	return &BooleanObject{Value: false}
+	return &BooleanObject{value: false}
 }
 
 func (s *StringObject) LessThan(other Object) Object {

@@ -8,15 +8,28 @@ import (
 
 func (t *Interpreter) interpretLiteral(literal ast.Statement) objects.Object {
 	switch literal := literal.(type) {
+	case *ast.IdentifierLiteral:
+		return interpretIdentifierLiteral(t, literal)
 	case *ast.IntLiteral:
-		return &objects.IntObject{Value: int32(literal.Value)}
+		return objects.NewIntObject(int32(literal.Value))
 	case *ast.FloatLiteral:
-		return &objects.FloatObject{Value: float32(literal.Value)}
+		return objects.NewFloatObject(float32(literal.Value))
 	case *ast.CharLiteral:
-		return &objects.CharacterObject{Value: literal.Value}
+		return objects.NewCharacterObject(rune(literal.Value))
 	case *ast.StringLiteral:
-		return &objects.StringObject{Value: literal.Value}
-	default:
-		panic(fmt.Sprintf("'%T' is not a valid literal", literal))
+		return objects.NewStringObject(literal.Value)
+	case *ast.BooleanLiteral:
+		return objects.NewBooleanObject(literal.Value)
 	}
+
+	panic(fmt.Sprintf("'%T' is not a valid literal", literal))
+}
+
+func interpretIdentifierLiteral(t *Interpreter, literal *ast.IdentifierLiteral) objects.Object {
+	variable, exists := t.Scopes.GetValue(literal.Value)
+	if !exists {
+		panic("missing variable")
+	}
+
+	return variable
 }

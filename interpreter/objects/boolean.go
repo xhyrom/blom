@@ -6,7 +6,11 @@ import (
 )
 
 type BooleanObject struct {
-	Value bool
+	value bool
+}
+
+func NewBooleanObject(value bool) *BooleanObject {
+	return &BooleanObject{value: value}
 }
 
 func (b *BooleanObject) Type() ast.Type {
@@ -14,7 +18,16 @@ func (b *BooleanObject) Type() ast.Type {
 }
 
 func (b *BooleanObject) Inspect() string {
-	return fmt.Sprintf("%t", b.Value)
+	return fmt.Sprintf("%t", b.value)
+}
+
+func (b *BooleanObject) Value() interface{} {
+	return b.value
+}
+
+func (b *BooleanObject) SetValue(value interface{}) {
+	v := value.(bool)
+	b.value = v
 }
 
 func (b *BooleanObject) Add(other Object) Object {
@@ -60,10 +73,10 @@ func (b *BooleanObject) RightShift(other Object) Object {
 func (b *BooleanObject) Equals(other Object) Object {
 	switch o := other.(type) {
 	case *BooleanObject:
-		return &BooleanObject{Value: b.Value == o.Value}
+		return &BooleanObject{value: b.value == o.value}
 	}
 
-	return &BooleanObject{Value: false}
+	return &BooleanObject{value: false}
 }
 
 func (b *BooleanObject) LessThan(other Object) Object {

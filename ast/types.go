@@ -64,3 +64,7 @@ func (t Type) IsNumeric() bool {
 func (t Type) IsInteger() bool {
 	return t >= Int8 && t <= UnsignedInt64
 }
+
+func (t Type) IsFloatingPoint() bool {
+	return t == Float32 || t == Float64
+}
