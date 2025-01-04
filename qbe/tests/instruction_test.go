@@ -167,7 +167,7 @@ func TestCompareInstruction(t *testing.T) {
 		t.Errorf("Expected Compare, got %v", instr.InstructionType())
 	}
 
-	expected := "cseqw %left, %right"
+	expected := "ceqw %left, %right"
 	if instr.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, instr.String())
 	}
