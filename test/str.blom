@@ -4,7 +4,7 @@ fun lol() {
     printf("\"Hello, World!\"\n");
 }
 
-fun main() -> i32 {
+fun @public main() -> i32 {
     lol();
 
     return 0;

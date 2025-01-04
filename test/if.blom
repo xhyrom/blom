@@ -30,7 +30,7 @@ fun b() -> i32 {
 
 fun a() -> i32 {
     if b() == 3 {
-        printf("b is 3\n")
+        printf("b is 3\n");
         return 2;
     } else {
         return 3;
@@ -39,10 +39,10 @@ fun a() -> i32 {
     return b() + 2;
 }
 
-fun main() -> i32 {
+fun @public main() -> i32 {
     i32 c = fact(a());
 
-    printf("result: %d\n", c)
+    printf("result: %d\n", c);
 
     return 0;
 }
