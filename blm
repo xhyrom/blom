@@ -1,0 +1,18 @@
+#!/bin/sh
+
+MOON_PATH=$(which moon 2>/dev/null)
+if [ -z "$MOON_PATH" ]; then
+    echo "'moon' command not found. Please install 'moon' by following the instructions at: https://moonrepo.dev/docs/install"
+    exit 1
+fi
+
+TASK=$1
+if [ -z "$TASK" ]; then
+    echo "$0: missing task name"
+fi
+
+if [ -z "$(echo $TASK | grep ':')" ]; then
+    TASK=":$TASK"
+fi
+
+moon run $TASK

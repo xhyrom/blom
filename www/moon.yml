@@ -14,7 +14,7 @@ tasks:
       - "public/**/*"
     outputs:
       - "dist"
-  run:
+  dev:
     description: Start the development server
     command: bun run dev
     inputs:
