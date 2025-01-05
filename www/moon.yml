@@ -1,0 +1,24 @@
+type: application
+language: typescript
+
+project:
+  name: www
+  description: Documentation website for the Blom programming language
+
+tasks:
+  build:
+    description: Build the website
+    command: bun run build
+    inputs:
+      - "src/**/*"
+      - "public/**/*"
+    outputs:
+      - "dist"
+  run:
+    description: Start the development server
+    command: bun run dev
+    inputs:
+      - "src/**/*"
+      - "public/**/*"
+    outputs:
+      - "dist"

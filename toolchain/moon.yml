@@ -1,0 +1,21 @@
+type: application
+language: go
+
+project:
+  name: toolchain
+  description: Toolchain for the Blom programming language
+
+tasks:
+  build:
+    description: Build the toolchain
+    command: go build -o bin/blom ./cmd/blomc && go build -o bin/blom ./cmd/blom
+    inputs:
+      - "cmd/**/*"
+      - "pkg/**/*"
+    outputs:
+      - "bin/blom"
+  test:
+    description: Run the tests
+    command: go test ./qbe/...
+    inputs:
+      - "**/*.go"

@@ -1,0 +1,6 @@
+# https://moonrepo.dev/docs/config/workspace
+$schema: "https://moonrepo.dev/schemas/workspace.json"
+
+projects:
+  - "toolchain"
+  - "www"
