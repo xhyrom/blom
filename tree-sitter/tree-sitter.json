@@ -1,0 +1,36 @@
+{
+  "grammars": [
+    {
+      "name": "blom",
+      "camelcase": "Blom",
+      "scope": "source.blom",
+      "file-types": [
+        ".blom"
+      ],
+      "injection-regex": "^blom$"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "EUPL-1.2",
+    "description": "A programming language built in Go, offering compilation with QBE, direct interpretation, and transpilation to multiple languages",
+    "authors": [
+      {
+        "name": "Jozef Steinhübl",
+        "email": "contact@xhyrom.dev",
+        "url": "https://xhyrom.dev/"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/xhyrom/blom"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true
+  }
+}
