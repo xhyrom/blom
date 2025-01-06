@@ -4,9 +4,11 @@
       "name": "blom",
       "camelcase": "Blom",
       "scope": "source.blom",
-      "file-types": [
-        ".blom"
-      ],
+      "path": ".",
+      "file-types": ["blom"],
+      "highlights": "queries/highlights.scm",
+      "tags": "queries/tags.scm",
+      "first-line-regex": "#!.*\\bblom$",
       "injection-regex": "^blom$"
     }
   ],
