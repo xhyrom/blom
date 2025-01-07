@@ -1,0 +1,5 @@
+tasks:
+  delegate:
+    description: Delegates changes to the subtree repository
+    command: |
+      git subtree push --prefix=tree-sitter-blom https://github.com/xhyrom-utils/tree-sitter-blom.git main

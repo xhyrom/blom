@@ -1,0 +1,12 @@
+type: library
+
+project:
+  name: tree-sitter
+  description: Tree-sitter parser for the Blom programming language
+
+tasks:
+  build:
+    description: Builds the parser
+    command: bun run generate
+    inputs:
+      - "src/**/*"
