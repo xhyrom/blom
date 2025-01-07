@@ -1,0 +1,11 @@
+id = "blom"
+name = "Blom"
+version = "0.0.1"
+schema_version = 1
+authors = ["Jozef Steinhübl <contact@xhyrom.dev>"]
+description = "Support for Blom programming language."
+repository = "https://github.com/xhyrom/blom"
+
+[grammars.blom]
+repository = "https://github.com/xhyrom-utils/tree-sitter-blom"
+commit = "901b4ba4f0ff9895b824412bab0f3ccaba6d122e"
