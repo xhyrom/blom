@@ -1,0 +1,110 @@
+{
+  "scopeName": "source.blom",
+  "displayName": "Blom",
+  "name": "blom",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#function_definitions"
+    },
+    {
+      "include": "#statements"
+    },
+    {
+      "include": "#expressions"
+    },
+    {
+      "include": "#types"
+    },
+    {
+      "include": "#literals"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.blom",
+          "match": "//.*"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.blom",
+          "match": "\\b(fun|return|if|else|for|while)\\b"
+        }
+      ]
+    },
+    "function_definitions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.blom",
+          "match": "\\bfun\\s+([a-zA-Z_]\\w*)"
+        },
+        {
+          "name": "storage.modifier.annotation.blom",
+          "match": "@[a-zA-Z_]\\w*"
+        }
+      ]
+    },
+    "expressions": {
+      "patterns": [
+        {
+          "name": "keyword.operator.assignment.blom",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.arithmetic.blom",
+          "match": "\\+|\\-|\\*|\\/|%"
+        },
+        {
+          "name": "keyword.operator.comparison.blom",
+          "match": "==|!=|<|>|<=|>="
+        },
+        {
+          "name": "keyword.operator.logical.blom",
+          "match": "&&|\\|\\|"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "storage.type.primitive.blom",
+          "match": "\\b(i8|u8|i16|u16|i32|u32|i64|u64|f32|f64|bool|string|char)\\b"
+        }
+      ]
+    },
+    "literals": {
+      "patterns": [
+        {
+          "name": "constant.numeric.integer.blom",
+          "match": "\\b[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.float.blom",
+          "match": "\\b[0-9]+\\.[0-9]+\\b"
+        },
+        {
+          "name": "string.quoted.double.blom",
+          "match": "\".*?\""
+        },
+        {
+          "name": "constant.character.blom",
+          "match": "'.*?'"
+        },
+        {
+          "name": "constant.language.boolean.blom",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    }
+  }
+}

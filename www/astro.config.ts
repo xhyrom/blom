@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
@@ -20,6 +22,13 @@ export default defineConfig({
         baseUrl: "https://github.com/xhyrom/blom/tree/main/www",
       },
       customCss: ["./src/styles/index.css"],
+      expressiveCode: {
+        shiki: {
+          langs: [
+            JSON.parse(readFileSync("blom-textmate-grammar.json", "utf-8")),
+          ],
+        },
+      },
       sidebar: [
         {
           label: "Guides",
