@@ -1,9 +1,8 @@
-package cli
+package main
 
 import (
 	"blom/analyzer"
 	"blom/compiler"
-	"blom/interpreter"
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
@@ -17,10 +16,13 @@ import (
 	"github.com/gookit/goutil/dump"
 )
 
-func Run(args []string) {
+func main() {
+	args := os.Args[1:]
+
 	var emitTokens bool
 	var emitAst bool
 	var emitSse bool
+
 	var inputFile string
 	var outputFile string = "a.out"
 
@@ -30,8 +32,6 @@ func Run(args []string) {
 			emitTokens = true
 		case "-ast", "--emit-ast":
 			emitAst = true
-		case "-sse", "--emit-sse":
-			emitSse = true
 		case "-o", "--output":
 			outputFile = args[i+1]
 			i += 1
@@ -74,59 +74,54 @@ func Run(args []string) {
 		dump.Println(ast)
 	}
 
-	//os.Exit(1)
-
-	inp := interpreter.New()
-
-	fmt.Printf("Interpreting %s\n", inputFile)
-
-	startTime := time.Now()
-	inp.Interpret(ast)
-	endTime := time.Since(startTime)
-
-	fmt.Printf("Interpreted %s ran for %s\n", inputFile, endTime)
-
-	fmt.Println()
-
-	fmt.Printf("Compiling %s\n", inputFile)
-	compiler := compiler.New(compiler.QBE)
-	sse := compiler.Compile(ast)
+	comp := compiler.New(compiler.QBE)
+	sse := comp.Compile(ast)
 
 	if emitSse {
 		fmt.Println(sse)
 	}
 
-	dir := strings.TrimSuffix(outputFile, "/"+filepath.Base(outputFile))
-	if dir != "" {
-		err := os.MkdirAll(dir, 0755)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	sseFile := filepath.Join(dir, "out.sse")
-	asmFile := filepath.Join(dir, "out.s")
+	sseFile := "out.sse"
+	asmFile := "out.s"
 
 	err = os.WriteFile(sseFile, []byte(sse), 0644)
 	if err != nil {
 		panic(err)
 	}
 
+	outputDir := filepath.Dir(outputFile)
+	if outputDir != "." {
+		err := os.MkdirAll(outputDir, 0755)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	fmt.Printf("Running %s\n", inputFile)
-	startTime = time.Now()
+	startTime := time.Now()
 	cmd := exec.Command("sh", "-c",
-		fmt.Sprintf("qbe -o %s %s && cc -O3 %s -o %s && %s",
+		fmt.Sprintf("qbe -o %s %s && cc -O3 %s -o %s",
 			asmFile,    // QBE output assembly
 			sseFile,    // QBE input
 			asmFile,    // CC input
 			outputFile, // Final executable
-			outputFile, // Program to run
 		))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Run()
-	cmd.Wait()
-	endTime = time.Since(startTime)
+	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	// Run the compiled executable
+	cmd = exec.Command(outputFile)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+	endTime := time.Since(startTime)
 
 	fmt.Printf("Compiled %s ran for %s\n", inputFile, endTime)
 

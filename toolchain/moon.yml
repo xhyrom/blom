@@ -8,10 +8,21 @@ project:
 tasks:
   build:
     description: Build the toolchain
-    command: go build -o bin/blom ./cmd/blomc && go build -o bin/blom ./cmd/blom
+    command: go build -o bin/blomc ./cmd/blomc && go build -o bin/blom ./cmd/blom
     inputs:
+      - "analyzer/**/*"
+      - "ast/**/*"
       - "cmd/**/*"
-      - "pkg/**/*"
+      - "compiler/**/*"
+      - "debug/**/*"
+      - "interpreter/**/*"
+      - "lexer/**/*"
+      - "parser/**/*"
+      - "qbe/**/*"
+      - "reader/**/*"
+      - "scope/**/*"
+      - "tokens/**/*"
+      - "transpiler/**/*"
     outputs:
       - "bin/blom"
   test:
