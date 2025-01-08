@@ -16,11 +16,13 @@ jobs:
 
       - uses: "oven-sh/setup-bun@v2"
       - run: |
+          git config --global url.https://github-actions[bot]:${{ secrets.ACCESS_TOKEN }}@github.com/.insteadOf https://github.com/
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git remote add subtree https://xhyrom-utils:${{ secrets.ACCESS_TOKEN }}@github.com/xhyrom-utils/tree-sitter-blom.git
+          git remote add subtree https://github-actions[bot]:${{ secrets.ACCESS_TOKEN }}@github.com/xhyrom-utils/tree-sitter-blom.git
+          git remote -v
 
-      - uses: "moonrepo/setup-toolchain@v0"
-      - run: "moon :delegate"
+      - run: |
+          git subtree push --prefix=tree-sitter-blom subtree main
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
