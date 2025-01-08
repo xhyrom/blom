@@ -18,6 +18,7 @@ jobs:
       - run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git remote add subtree https://xhyrom-utils:${{ secrets.ACCESS_TOKEN }}@github.com/xhyrom-utils/tree-sitter-blom.git
 
       - uses: "moonrepo/setup-toolchain@v0"
       - run: "moon :delegate"
