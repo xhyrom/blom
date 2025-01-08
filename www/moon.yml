@@ -6,6 +6,10 @@ project:
   description: Documentation website for the Blom programming language
 
 tasks:
+  install:
+    description: Install dependencies
+    command: bun install
+
   build:
     description: Build the website
     command: bun run build

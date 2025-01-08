@@ -5,6 +5,10 @@ project:
   description: Tree-sitter parser for the Blom programming language
 
 tasks:
+  install:
+    description: Install dependencies
+    command: bun install
+
   build:
     description: Builds the parser
     command: bun run generate
