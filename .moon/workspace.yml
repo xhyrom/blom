@@ -6,3 +6,6 @@ projects:
   www: "www"
   tree-sitter: "tree-sitter-blom"
   root: "."
+
+vcs:
+  defaultBranch: main
