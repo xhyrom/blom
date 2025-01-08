@@ -13,16 +13,20 @@ jobs:
       - uses: "actions/checkout@v4"
         with:
           fetch-depth: 0
+          token: ${{ secrets.ACCESS_TOKEN }}
+          persist-credentials: false
 
-      - uses: "oven-sh/setup-bun@v2"
       - run: |
-          git config --global url.https://${{ secrets.ACCESS_TOKEN }}@github.com/.insteadOf https://github.com/
           git config user.name xhyrom
           git config user.email github@xhyrom.dev
+          git config --global url.https://${{ secrets.ACCESS_TOKEN }}@github.com/.insteadOf https://github.com/
           git remote add subtree https://${{ secrets.ACCESS_TOKEN }}@github.com/xhyrom-utils/tree-sitter-blom.git
-          git remote -v
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
       - run: |
           git subtree push --prefix=tree-sitter-blom subtree main
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
