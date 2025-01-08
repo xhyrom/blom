@@ -1,11 +1,9 @@
-name: "CI"
+name: "Pipeline"
 on:
   push:
-    paths:
-      - "tree-sitter-blom/**"
-
-permissions:
-  contents: write
+    branches:
+      - "main"
+  pull_request:
 
 jobs:
   ci:
