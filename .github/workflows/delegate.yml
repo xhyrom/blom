@@ -21,3 +21,5 @@ jobs:
 
       - uses: "moonrepo/setup-toolchain@v0"
       - run: "moon :delegate"
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
