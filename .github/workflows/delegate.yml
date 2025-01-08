@@ -16,10 +16,10 @@ jobs:
 
       - uses: "oven-sh/setup-bun@v2"
       - run: |
-          git config --global url.https://github-actions[bot]:${{ secrets.ACCESS_TOKEN }}@github.com/.insteadOf https://github.com/
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git remote add subtree https://github-actions[bot]:${{ secrets.ACCESS_TOKEN }}@github.com/xhyrom-utils/tree-sitter-blom.git
+          git config --global url.https://${{ secrets.ACCESS_TOKEN }}@github.com/.insteadOf https://github.com/
+          git config user.name xhyrom
+          git config user.email github@xhyrom.dev
+          git remote add subtree https://${{ secrets.ACCESS_TOKEN }}@github.com/xhyrom-utils/tree-sitter-blom.git
           git remote -v
 
       - run: |
