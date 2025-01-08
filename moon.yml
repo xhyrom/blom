@@ -5,3 +5,5 @@ tasks:
       git subtree push --prefix=tree-sitter-blom https://github.com/xhyrom-utils/tree-sitter-blom.git main
     inputs:
       - "tree-sitter-blom/**"
+    options:
+      runInCI: false

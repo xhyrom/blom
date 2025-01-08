@@ -4,9 +4,6 @@ on:
     paths:
       - "tree-sitter-blom/**"
 
-permissions:
-  contents: write
-
 jobs:
   delegate:
     name: "Delegate"
@@ -16,11 +13,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: "oven-sh/setup-bun@v2"
       - run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       - uses: "moonrepo/setup-toolchain@v0"
-      - run: "moon ci :delegate"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: "moon :delegate"
