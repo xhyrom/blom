@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - "tree-sitter-blom/**"
+  workflow_dispatch:
 
 jobs:
   delegate:
