@@ -51,7 +51,8 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 		paramTypes = append(paramTypes, a.analyzeExpression(param))
 	}
 
-	function, exists := a.FunctionManager.Get(call.Name, paramTypes)
+	// TODO: fix the hacky way of changing function call in ast etc...
+	function, exists := a.FunctionManager.Get(strings.Split(call.Name, ".")[0], paramTypes)
 	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 
@@ -120,6 +121,23 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 				true,
 			)
 		}
+	}
+
+	if !function.HasAnnotation(ast.Infix) && call.Infix {
+		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+		dbg.ThrowError(
+			fmt.Sprintf("Function '%s' is not marked as infix.", call.PrettyName()),
+			true,
+			debug.NewHint(
+				fmt.Sprintf(
+					"Mark the function '%s' at %d:%d as infix",
+					call.PrettyName(),
+					function.Location().Row,
+					function.Location().Column,
+				),
+				"",
+			),
+		)
 	}
 
 	call.Name = a.FunctionManager.GetNewName(function)

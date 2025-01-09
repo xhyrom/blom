@@ -4,6 +4,8 @@ import (
 	"blom/ast"
 	"blom/debug"
 	"blom/tokens"
+
+	"github.com/gookit/goutil/dump"
 )
 
 func ParseBlock(p Parser) *ast.BlockStatement {
@@ -31,6 +33,8 @@ func ParseBlock(p Parser) *ast.BlockStatement {
 		dbg := debug.NewSourceLocation(p.Source(), current.Location.Row, current.Location.Column)
 		dbg.ThrowError("Expected closing bracket", true, debug.NewHint("Did you forget to add a closing bracket?", "}"))
 	}
+
+	dump.P(body)
 
 	return &ast.BlockStatement{
 		Body: body,

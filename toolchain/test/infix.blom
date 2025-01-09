@@ -1,0 +1,7 @@
+fun @infix lol(left: i32, right: i32) -> i32 {
+  return left + right;
+}
+
+fun @public main() {
+  return 5 lol 3;
+}

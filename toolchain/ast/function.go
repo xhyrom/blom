@@ -58,6 +58,7 @@ func (f FunctionDeclaration) PrettyName() string {
 type FunctionCall struct {
 	Name       string
 	Parameters []Expression
+	Infix      bool
 	Loc        tokens.Location
 }
 

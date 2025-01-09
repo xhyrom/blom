@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"blom/analyzer/manager"
 	"blom/ast"
 	"blom/lexer"
 	"blom/parser/expressions"
@@ -11,29 +12,45 @@ import (
 )
 
 type Parser struct {
-	tokens []tokens.Token
-	source string
+	tokens    []tokens.Token
+	source    string
+	functions manager.FunctionManager
 }
 
 func New(file string) *Parser {
 	return &Parser{
-		tokens: make([]tokens.Token, 0),
-		source: file,
+		tokens:    make([]tokens.Token, 0),
+		source:    file,
+		functions: *manager.NewFunctionManager(),
 	}
 }
 
 func (p *Parser) AST(file string, code string) *ast.Program {
 	lexer := lexer.New(file, code)
+	tkns := make([]tokens.Token, 0)
 
 	for {
 		token := lexer.Next()
 
-		p.tokens = append(p.tokens, *token)
+		tkns = append(tkns, *token)
 
 		if token.Kind == tokens.Eof {
 			break
 		}
 	}
+
+	p.tokens = tkns
+
+	// collect functions
+	for !p.IsEof() {
+		if p.Current().Kind == tokens.Fun {
+			p.functions.Register(statements.ParseFunction(p))
+		} else {
+			p.Consume()
+		}
+	}
+
+	p.tokens = tkns
 
 	prog := &ast.Program{
 		Loc: tokens.Location{
@@ -124,6 +141,10 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (as
 
 	for !p.IsEof() && precedence < p.Current().Kind.Precedence() {
 		op := p.Current()
+		if op.Kind == tokens.Identifier && (!p.functions.Has(op.Value) || !p.functions.GetAllNamed(op.Value)[0].HasAnnotation(ast.Infix)) {
+			break
+		}
+
 		p.Consume()
 
 		right, err := p.parseExpressionWithPrecedence(op.Kind.Precedence())
@@ -131,12 +152,24 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (as
 			return nil, err
 		}
 
-		left = &ast.BinaryExpression{
-			Left:        left,
-			Operator:    op.Kind,
-			Right:       right,
-			Loc:         right.Location(),
-			OperatorLoc: op.Location,
+		if op.Kind == tokens.Identifier {
+			left = &ast.FunctionCall{
+				Name: op.Value,
+				Parameters: []ast.Expression{
+					left,
+					right,
+				},
+				Infix: true,
+				Loc:   op.Location,
+			}
+		} else {
+			left = &ast.BinaryExpression{
+				Left:        left,
+				Operator:    op.Kind,
+				Right:       right,
+				Loc:         right.Location(),
+				OperatorLoc: op.Location,
+			}
 		}
 	}
 
