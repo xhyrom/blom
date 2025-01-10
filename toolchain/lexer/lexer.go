@@ -44,6 +44,18 @@ func (lex *Lexer) Next() *tokens.Token {
 			lex.NewLine()
 			return lex.Next()
 		}
+	case '!':
+		{
+			lex.Advance()
+
+			switch lex.CurrentChar() {
+			case '=':
+				kind = tokens.NotEquals
+			default:
+				// TODO: implement
+				lex.Rewind()
+			}
+		}
 	case '=':
 		{
 			lex.Advance()

@@ -4,6 +4,8 @@ import (
 	"blom/ast"
 	"blom/debug"
 	"blom/tokens"
+
+	"github.com/gookit/goutil/dump"
 )
 
 func ParseFunctionCall(p Parser, identifier tokens.Token, requiresSemicolon bool) *ast.FunctionCall {
@@ -14,6 +16,7 @@ func ParseFunctionCall(p Parser, identifier tokens.Token, requiresSemicolon bool
 
 	for p.Current().Kind != tokens.RightParenthesis {
 		exp, err := p.ParseExpression()
+		dump.P(exp)
 		if err != nil {
 			dbg := debug.NewSourceLocation(p.Source(), identifier.Location.Row, identifier.Location.Column+2)
 			dbg.ThrowError(

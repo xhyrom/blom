@@ -77,6 +77,13 @@ func (c *Compiler) compileBinaryExpression(expression *ast.BinaryExpression, fun
 			left,
 			right,
 		)
+	case tokens.NotEquals:
+		instruction = qbe.NewCompareInstruction(
+			ty,
+			qbe.NotEqual,
+			left,
+			right,
+		)
 	case tokens.Ampersand:
 		instruction = qbe.NewBitwiseAndInstruction(left, right)
 	case tokens.VerticalLine:

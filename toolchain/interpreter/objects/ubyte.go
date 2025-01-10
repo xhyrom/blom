@@ -145,6 +145,15 @@ func (i *UnsignedByteObject) Equals(other Object) Object {
 	return &BooleanObject{value: false}
 }
 
+func (i *UnsignedByteObject) NotEquals(other Object) Object {
+	switch o := other.(type) {
+	case *UnsignedByteObject:
+		return &BooleanObject{value: i.value != o.value}
+	}
+
+	return &BooleanObject{value: true}
+}
+
 func (i *UnsignedByteObject) LessThan(other Object) Object {
 	switch o := other.(type) {
 	case *UnsignedByteObject:

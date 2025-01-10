@@ -149,6 +149,15 @@ func (i *IntObject) Equals(other Object) Object {
 	return &BooleanObject{value: false}
 }
 
+func (i *IntObject) NotEquals(other Object) Object {
+	switch o := other.(type) {
+	case *IntObject:
+		return &BooleanObject{value: i.value != o.value}
+	}
+
+	return &BooleanObject{value: true}
+}
+
 func (i *IntObject) LessThan(other Object) Object {
 	switch o := other.(type) {
 	case *IntObject:

@@ -28,6 +28,7 @@ const (
 
 	// Operators
 	Equals
+	NotEquals
 	Plus
 	Minus
 	Asterisk
@@ -80,6 +81,7 @@ var tokens = []string{
 	For:                "for",
 	While:              "while",
 	Equals:             "==",
+	NotEquals:          "!=",
 	Plus:               "+",
 	Minus:              "-",
 	Asterisk:           "*",
@@ -168,7 +170,7 @@ func (kind TokenKind) Precedence() Precedence {
 		return BitwiseXorPrecedence
 	case Ampersand:
 		return BitwiseAndPrecedence
-	case Equals:
+	case Equals, NotEquals:
 		return EqualityPrecedence
 	case LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual:
 		return RelationalPrecedence

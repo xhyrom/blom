@@ -27,8 +27,8 @@ func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression)
 	switch expression.Operator {
 	case tokens.Equals:
 		return ast.Boolean
-	//case tokens.NotEquals:
-	//	return compiler.Boolean
+	case tokens.NotEquals:
+		return ast.Boolean
 	case tokens.LessThan:
 		return ast.Boolean
 	case tokens.LessThanOrEqual:

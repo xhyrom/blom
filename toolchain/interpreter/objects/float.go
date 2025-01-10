@@ -119,6 +119,15 @@ func (i *FloatObject) Equals(other Object) Object {
 	return &BooleanObject{value: false}
 }
 
+func (i *FloatObject) NotEquals(other Object) Object {
+	switch o := other.(type) {
+	case *FloatObject:
+		return &BooleanObject{value: i.value != o.value}
+	}
+
+	return &BooleanObject{value: true}
+}
+
 func (i *FloatObject) LessThan(other Object) Object {
 	switch o := other.(type) {
 	case *FloatObject:

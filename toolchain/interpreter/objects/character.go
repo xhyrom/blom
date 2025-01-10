@@ -78,6 +78,15 @@ func (c *CharacterObject) Equals(other Object) Object {
 	return &BooleanObject{value: false}
 }
 
+func (c *CharacterObject) NotEquals(other Object) Object {
+	switch o := other.(type) {
+	case *CharacterObject:
+		return &BooleanObject{value: c.value != o.value}
+	}
+
+	return &BooleanObject{value: true}
+}
+
 func (c *CharacterObject) LessThan(other Object) Object {
 	switch o := other.(type) {
 	case *CharacterObject:

@@ -52,6 +52,8 @@ func (t *Interpreter) interpretBinaryExpression(expression *ast.BinaryExpression
 		obj = left.GreaterThanOrEqual(right)
 	case tokens.Equals:
 		obj = left.Equals(right)
+	case tokens.NotEquals:
+		obj = left.NotEquals(right)
 	case tokens.Ampersand:
 		obj = left.BitwiseAnd(right)
 	case tokens.VerticalLine:
@@ -80,7 +82,8 @@ func isComparisonOperator(operator tokens.TokenKind) bool {
 		tokens.LessThanOrEqual,
 		tokens.GreaterThan,
 		tokens.GreaterThanOrEqual,
-		tokens.Equals:
+		tokens.Equals,
+		tokens.NotEquals:
 		return true
 	}
 

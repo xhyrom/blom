@@ -18,6 +18,7 @@ type Object interface {
 	LeftShift(other Object) Object
 	RightShift(other Object) Object
 	Equals(other Object) Object
+	NotEquals(other Object) Object
 	LessThan(other Object) Object
 	LessThanOrEqual(other Object) Object
 	GreaterThan(other Object) Object

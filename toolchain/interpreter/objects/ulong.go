@@ -145,6 +145,15 @@ func (i *UnsignedLongObject) Equals(other Object) Object {
 	return &BooleanObject{value: false}
 }
 
+func (i *UnsignedLongObject) NotEquals(other Object) Object {
+	switch o := other.(type) {
+	case *UnsignedLongObject:
+		return &BooleanObject{value: i.value != o.value}
+	}
+
+	return &BooleanObject{value: true}
+}
+
 func (i *UnsignedLongObject) LessThan(other Object) Object {
 	switch o := other.(type) {
 	case *UnsignedLongObject:
