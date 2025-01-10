@@ -1,7 +1,18 @@
+fun @native printf(format: string, ...) -> i32;
+
 fun @infix lol(left: i32, right: i32) -> i32 {
   return left + right;
 }
 
+fun @infix lol(left: string, right: i32) -> i32 {
+  return 99 + right;
+}
+
+fun @infix lol(left: i32, right: string) -> i32 {
+  return left + 99;
+}
+
 fun @public main() {
-  return 5 lol 3;
+  printf("%d\n", 5 lol 3 lol 9 lol "a");
+  return 0;
 }
