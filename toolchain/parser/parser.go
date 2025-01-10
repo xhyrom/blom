@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"blom/analyzer/manager"
 	"blom/ast"
 	"blom/lexer"
 	"blom/parser/expressions"
@@ -12,45 +11,29 @@ import (
 )
 
 type Parser struct {
-	tokens    []tokens.Token
-	source    string
-	functions manager.FunctionManager
+	tokens []tokens.Token
+	source string
 }
 
 func New(file string) *Parser {
 	return &Parser{
-		tokens:    make([]tokens.Token, 0),
-		source:    file,
-		functions: *manager.NewFunctionManager(),
+		tokens: make([]tokens.Token, 0),
+		source: file,
 	}
 }
 
 func (p *Parser) AST(file string, code string) *ast.Program {
 	lexer := lexer.New(file, code)
-	tkns := make([]tokens.Token, 0)
 
 	for {
 		token := lexer.Next()
 
-		tkns = append(tkns, *token)
+		p.tokens = append(p.tokens, *token)
 
 		if token.Kind == tokens.Eof {
 			break
 		}
 	}
-
-	p.tokens = tkns
-
-	// collect functions
-	for !p.IsEof() {
-		if p.Current().Kind == tokens.Fun {
-			p.functions.Register(statements.ParseFunction(p))
-		} else {
-			p.Consume()
-		}
-	}
-
-	p.tokens = tkns
 
 	prog := &ast.Program{
 		Loc: tokens.Location{
@@ -141,35 +124,22 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (as
 
 	for !p.IsEof() && precedence < p.Current().Kind.Precedence() {
 		op := p.Current()
-		if op.Kind == tokens.Identifier && (!p.functions.Has(op.Value) || !p.functions.GetAllNamed(op.Value)[0].HasAnnotation(ast.Infix)) {
+		if op.Kind == tokens.Identifier {
 			break
 		}
 
 		p.Consume()
-
 		right, err := p.parseExpressionWithPrecedence(op.Kind.Precedence())
 		if err != nil {
 			return nil, err
 		}
 
-		if op.Kind == tokens.Identifier {
-			left = &ast.FunctionCall{
-				Name: op.Value,
-				Parameters: []ast.Expression{
-					left,
-					right,
-				},
-				Infix: true,
-				Loc:   op.Location,
-			}
-		} else {
-			left = &ast.BinaryExpression{
-				Left:        left,
-				Operator:    op.Kind,
-				Right:       right,
-				Loc:         right.Location(),
-				OperatorLoc: op.Location,
-			}
+		left = &ast.BinaryExpression{
+			Left:        left,
+			Operator:    op.Kind,
+			Right:       right,
+			Loc:         right.Location(),
+			OperatorLoc: op.Location,
 		}
 	}
 
@@ -177,6 +147,55 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (as
 }
 
 func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
+	// parse cases that can't be infix
+	switch p.Current().Kind {
+	case tokens.LeftCurlyBracket:
+		return expressions.ParseBlock(p), nil
+	case tokens.If:
+		return expressions.ParseIf(p), nil
+	case tokens.AtMark:
+		return expressions.ParseCompileTimeFunctionCall(p), nil
+	case tokens.LeftParenthesis:
+		p.Consume() // consume '('
+		expr, err := p.ParseExpression()
+		p.Consume() // consume ')'
+		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
+		return expr, err
+	}
+
+	left, err := p.parseSingleExpression()
+	if err != nil {
+		return nil, err
+	}
+
+	if !p.IsEof() && p.Current().Kind == tokens.Identifier {
+		op := p.Current()
+
+		p.Consume()
+		if !p.IsEof() && p.Current().Kind != tokens.LeftCurlyBracket &&
+			p.Current().Kind != tokens.If && p.Current().Kind != tokens.LeftParenthesis {
+			right, err := p.ParsePrimaryExpression()
+			if err == nil {
+				return &ast.FunctionCall{
+					Name: op.Value,
+					Parameters: []ast.Expression{
+						left,
+						right,
+					},
+					Infix: true,
+					Loc:   op.Location,
+				}, nil
+			}
+		}
+
+		// restore
+		p.tokens = append([]tokens.Token{op}, p.tokens...)
+	}
+
+	return left, nil
+}
+
+func (p *Parser) parseSingleExpression() (ast.Expression, error) {
 	switch p.Current().Kind {
 	case tokens.CharLiteral:
 		token := p.Consume()
@@ -221,17 +240,6 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		}
 
 		return expressions.ParseIdentifier(p), nil
-	case tokens.If:
-		return expressions.ParseIf(p), nil
-	case tokens.LeftCurlyBracket:
-		return expressions.ParseBlock(p), nil
-	case tokens.LeftParenthesis:
-		p.Consume() // consume '('
-		expr, err := p.ParseExpression()
-		p.Consume() // consume ')'
-
-		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
-		return expr, err
 	case tokens.Plus, tokens.Minus, tokens.Tilde:
 		return expressions.ParseUnary(p), nil
 	}

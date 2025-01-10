@@ -178,8 +178,6 @@ func (kind TokenKind) Precedence() Precedence {
 		return AdditivePrecedence
 	case Asterisk, Slash, PercentSign:
 		return MultiplicativePrecedence
-	case Identifier:
-		return HighestPrecedence
 	default:
 		return LowestPrecedence
 	}
