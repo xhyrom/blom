@@ -124,8 +124,11 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (as
 
 	for !p.IsEof() && precedence < p.Current().Kind.Precedence() {
 		op := p.Current()
-		p.Consume()
+		if op.Kind == tokens.Identifier {
+			break
+		}
 
+		p.Consume()
 		right, err := p.parseExpressionWithPrecedence(op.Kind.Precedence())
 		if err != nil {
 			return nil, err
@@ -144,6 +147,55 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (as
 }
 
 func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
+	// parse cases that can't be infix
+	switch p.Current().Kind {
+	case tokens.LeftCurlyBracket:
+		return expressions.ParseBlock(p), nil
+	case tokens.If:
+		return expressions.ParseIf(p), nil
+	case tokens.AtMark:
+		return expressions.ParseCompileTimeFunctionCall(p), nil
+	case tokens.LeftParenthesis:
+		p.Consume() // consume '('
+		expr, err := p.ParseExpression()
+		p.Consume() // consume ')'
+		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
+		return expr, err
+	}
+
+	left, err := p.parseSingleExpression()
+	if err != nil {
+		return nil, err
+	}
+
+	if !p.IsEof() && p.Current().Kind == tokens.Identifier {
+		op := p.Current()
+
+		p.Consume()
+		if !p.IsEof() && p.Current().Kind != tokens.LeftCurlyBracket &&
+			p.Current().Kind != tokens.If && p.Current().Kind != tokens.LeftParenthesis {
+			right, err := p.ParsePrimaryExpression()
+			if err == nil {
+				return &ast.FunctionCall{
+					Name: op.Value,
+					Parameters: []ast.Expression{
+						left,
+						right,
+					},
+					Infix: true,
+					Loc:   op.Location,
+				}, nil
+			}
+		}
+
+		// restore
+		p.tokens = append([]tokens.Token{op}, p.tokens...)
+	}
+
+	return left, nil
+}
+
+func (p *Parser) parseSingleExpression() (ast.Expression, error) {
 	switch p.Current().Kind {
 	case tokens.CharLiteral:
 		token := p.Consume()
@@ -188,17 +240,6 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		}
 
 		return expressions.ParseIdentifier(p), nil
-	case tokens.If:
-		return expressions.ParseIf(p), nil
-	case tokens.LeftCurlyBracket:
-		return expressions.ParseBlock(p), nil
-	case tokens.LeftParenthesis:
-		p.Consume() // consume '('
-		expr, err := p.ParseExpression()
-		p.Consume() // consume ')'
-
-		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
-		return expr, err
 	case tokens.Plus, tokens.Minus, tokens.Tilde:
 		return expressions.ParseUnary(p), nil
 	}

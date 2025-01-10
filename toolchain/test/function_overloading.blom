@@ -6,6 +6,10 @@ fun a(first: i32, second: i32) -> i32 {
     return first + second;
 }
 
+fun @infix l(a: i32, b: i32) -> i32 {
+    return a + b;
+}
+
 fun @public main() {
     return a(2) + a(3, 7);
 }

@@ -15,6 +15,10 @@ import (
 )
 
 func main() {
+	dump.Config(func(o *dump.Options) {
+		o.MaxDepth = 100
+	})
+
 	args := os.Args[1:]
 
 	var emitTokens bool

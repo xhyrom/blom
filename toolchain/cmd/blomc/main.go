@@ -17,6 +17,10 @@ import (
 )
 
 func main() {
+	dump.Config(func(o *dump.Options) {
+		o.MaxDepth = 100
+	})
+
 	args := os.Args[1:]
 
 	var emitTokens bool
@@ -81,20 +85,20 @@ func main() {
 		fmt.Println(sse)
 	}
 
-	sseFile := "out.sse"
-	asmFile := "out.s"
-
-	err = os.WriteFile(sseFile, []byte(sse), 0644)
-	if err != nil {
-		panic(err)
-	}
-
 	outputDir := filepath.Dir(outputFile)
 	if outputDir != "." {
 		err := os.MkdirAll(outputDir, 0755)
 		if err != nil {
 			panic(err)
 		}
+	}
+
+	sseFile := filepath.Join(outputDir, "out.sse")
+	asmFile := filepath.Join(outputDir, "out.s")
+
+	err = os.WriteFile(sseFile, []byte(sse), 0644)
+	if err != nil {
+		panic(err)
 	}
 
 	fmt.Printf("Running %s\n", inputFile)
