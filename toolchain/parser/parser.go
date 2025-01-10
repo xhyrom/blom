@@ -124,11 +124,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (as
 
 	for !p.IsEof() && precedence < p.Current().Kind.Precedence() {
 		op := p.Current()
-		if op.Kind == tokens.Identifier {
-			break
-		}
-
 		p.Consume()
+
 		right, err := p.parseExpressionWithPrecedence(op.Kind.Precedence())
 		if err != nil {
 			return nil, err
