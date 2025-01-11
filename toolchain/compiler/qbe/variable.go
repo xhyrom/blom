@@ -23,8 +23,8 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	)
 
 	if t != value.Type {
-		cnv := c.convertToType(value.Type, t, value.Value, function)
-		t = cnv.Type
+		value = c.convertToType(value.Type, t, value.Value, function)
+		t = value.Type
 	}
 
 	function.LastBlock().AddInstruction(
@@ -50,9 +50,8 @@ func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, functio
 	t := variable.Type
 
 	if t != value.Type {
-		cnv := c.convertToType(value.Type, t, value.Value, function)
-		t = cnv.Type
-		value.Type = t
+		value = c.convertToType(value.Type, t, value.Value, function)
+		t = value.Type
 	}
 
 	function.LastBlock().AddInstruction(

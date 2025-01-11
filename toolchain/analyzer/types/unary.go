@@ -40,6 +40,9 @@ func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression) a
 		}
 
 		return operand
+	case tokens.Ampersand: // address of
+		// todo: implement
+		return operand
 	}
 
 	return ast.Void

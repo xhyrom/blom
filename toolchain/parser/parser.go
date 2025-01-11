@@ -237,7 +237,7 @@ func (p *Parser) parseSingleExpression() (ast.Expression, error) {
 		}
 
 		return expressions.ParseIdentifier(p), nil
-	case tokens.Plus, tokens.Minus, tokens.Tilde:
+	case tokens.Plus, tokens.Minus, tokens.Tilde, tokens.Ampersand, tokens.Asterisk:
 		return expressions.ParseUnary(p), nil
 	}
 

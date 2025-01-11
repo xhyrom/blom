@@ -1,0 +1,9 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun @public main() -> i32 {
+  i32 a = 5;
+  i32 b = &a;
+
+  printf("%d %p %d\n", a, &a, *(&a));
+  return 0;
+}
