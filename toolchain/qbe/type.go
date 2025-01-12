@@ -95,6 +95,10 @@ func RemapAstType(t ast.Type) Type {
 		return Null
 	}
 
+	if t.IsPointer() {
+		return PointerBox{Inner: RemapAstType(t.Dereference())}
+	}
+
 	panic(fmt.Sprintf("Unknown type '%s'", t))
 }
 

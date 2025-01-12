@@ -12,7 +12,19 @@ import (
 func ParseVariableDeclaration(p Parser) *ast.VariableDeclarationStatement {
 	valueTypeToken := p.Consume()
 
-	valueType, err := ast.ParseType(valueTypeToken.Value)
+	var typeStr string
+	if valueTypeToken.Kind == tokens.Identifier {
+		typeStr = valueTypeToken.Value
+		for p.Current().Kind == tokens.Asterisk {
+			typeStr += "*"
+			p.Consume()
+		}
+	} else {
+		dbg := debug.NewSourceLocation(p.Source(), valueTypeToken.Location.Row, valueTypeToken.Location.Column)
+		dbg.ThrowError("Expected type identifier", true)
+	}
+
+	valueType, err := ast.ParseType(typeStr)
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), valueTypeToken.Location.Row, valueTypeToken.Location.Column)
 		dbg.ThrowError(err.Error(), true)

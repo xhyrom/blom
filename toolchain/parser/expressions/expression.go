@@ -9,6 +9,7 @@ type Parser interface {
 	Source() string
 	IsEof() bool
 	Current() tokens.Token
+	Next() tokens.Token
 	Consume() tokens.Token
 	ParseStatement() ([]ast.Statement, error)
 	ParseExpression() (ast.Expression, error)

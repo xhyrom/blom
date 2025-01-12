@@ -2,8 +2,11 @@ fun @native printf(format: string, ...) -> i32;
 
 fun @public main() -> i32 {
   i32 a = 5;
-  i32 b = &a;
+  i32* b = &a;
 
-  printf("%d %p %d\n", a, &a, *(&a));
+  *b = 9;
+  a = 50;
+
+  printf("%d %d\n", *b, a);
   return 0;
 }
