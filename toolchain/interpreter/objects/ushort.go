@@ -9,6 +9,10 @@ type UnsignedShortObject struct {
 	value uint16
 }
 
+func NewUnsignedShortObject(value uint16) *UnsignedShortObject {
+	return &UnsignedShortObject{value: value}
+}
+
 func (i *UnsignedShortObject) Type() ast.Type {
 	return ast.UnsignedInt16
 }

@@ -25,8 +25,8 @@ func (d *VariableDeclarationStatement) SetLocation(row uint64, column uint64) {
 }
 
 type Assignment struct {
-	Name  string
-	Value Expression
+	Left  Expression
+	Right Expression
 	Loc   tokens.Location
 }
 

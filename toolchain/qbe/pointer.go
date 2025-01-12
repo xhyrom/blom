@@ -19,23 +19,23 @@ func (p PointerBox) String() string {
 }
 
 func (p PointerBox) IsNumeric() bool {
-	return Pointer.IsNumeric()
+	return p.Inner.IsNumeric()
 }
 
 func (p PointerBox) IsInteger() bool {
-	return Pointer.IsInteger()
+	return p.Inner.IsInteger()
 }
 
 func (p PointerBox) IsFloatingPoint() bool {
-	return Pointer.IsFloatingPoint()
+	return p.Inner.IsFloatingPoint()
 }
 
 func (p PointerBox) IsSigned() bool {
-	return Pointer.IsSigned()
+	return p.Inner.IsSigned()
 }
 
 func (p PointerBox) IsUnsigned() bool {
-	return Pointer.IsUnsigned()
+	return p.Inner.IsUnsigned()
 }
 
 func (p PointerBox) IsPointer() bool {

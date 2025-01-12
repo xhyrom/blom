@@ -26,36 +26,20 @@ func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.Variab
 }
 
 func (a *TypeAnalyzer) analyzeAssignment(assignment *ast.Assignment) ast.Type {
-	variable, exists := a.Scopes.GetValue(assignment.Name)
-	if !exists {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment)
+	leftType := a.analyzeExpression(assignment.Left)
+	rightType := a.analyzeExpression(assignment.Right)
+
+	if leftType != rightType && !a.canBeImplicitlyCast(rightType, leftType) {
+		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment.Right)
 		dbg.ThrowError(
 			fmt.Sprintf(
-				"Variable '%s' is not declared, cannot assign value to it",
-				assignment.Name,
-			),
-			true,
-			debug.NewHint(
-				"Consider declaring the variable before assigning a value to it.",
-				"",
-			),
-		)
-	}
-
-	valueType := a.analyzeExpression(assignment.Value)
-
-	if variable.Type != valueType && !a.canBeImplicitlyCast(variable.Type, valueType) {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment.Value)
-		dbg.ThrowError(
-			fmt.Sprintf(
-				"Variable '%s' declared as '%s', but assigned with '%s'",
-				assignment.Name,
-				variable.Type,
-				valueType,
+				"Cannot assign value of type '%s' to '%s'",
+				rightType,
+				leftType,
 			),
 			true,
 		)
 	}
 
-	return valueType
+	return leftType
 }

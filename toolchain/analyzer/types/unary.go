@@ -10,37 +10,51 @@ import (
 func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression) ast.Type {
 	operand := a.analyzeExpression(expression.Operand)
 
-	if !operand.IsNumeric() {
+	switch expression.Operator {
+	case tokens.Plus:
+		expectsType(a, expression, operand, "a numeric", isNumeric)
+		return operand
+	case tokens.Minus:
+		expectsType(a, expression, operand, "a numeric", isNumeric)
+		return operand
+	case tokens.Tilde:
+		expectsType(a, expression, operand, "an integer", isInteger)
+		return operand
+	case tokens.Ampersand: // address of
+		return ast.NewPointerType(operand)
+	case tokens.Asterisk: // dereference
+		expectsType(a, expression, operand, "a pointer", isPointer)
+		return operand.Dereference()
+	}
+
+	return ast.Void
+}
+
+type TypeCheckFunc func(ast.Type) bool
+
+func expectsType(a *TypeAnalyzer, expression *ast.UnaryExpression, operand ast.Type, name string, checkFunc TypeCheckFunc) {
+	if !checkFunc(operand) {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Operand)
 		dbg.ThrowError(
 			fmt.Sprintf(
-				"Unary expression '%s' expects a numeric operand, got '%s'",
+				"Unary expression '%s' expects %s operand, got '%s'",
 				expression.Operator,
+				name,
 				operand,
 			),
 			true,
 		)
 	}
+}
 
-	switch expression.Operator {
-	case tokens.Plus:
-		return operand
-	case tokens.Minus:
-		return operand
-	case tokens.Tilde:
-		if !operand.IsInteger() {
-			dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Operand)
-			dbg.ThrowError(
-				fmt.Sprintf(
-					"Unary expression '~' expects an integer operand, got '%s'",
-					operand,
-				),
-				true,
-			)
-		}
+func isNumeric(t ast.Type) bool {
+	return t.IsNumeric()
+}
 
-		return operand
-	}
+func isInteger(t ast.Type) bool {
+	return t.IsInteger()
+}
 
-	return ast.Void
+func isPointer(t ast.Type) bool {
+	return t.IsPointer()
 }

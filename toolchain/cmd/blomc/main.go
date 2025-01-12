@@ -71,6 +71,10 @@ func main() {
 	parser := parser.New(inputFile)
 	ast := parser.AST(inputFile, string(content))
 
+	if emitAst {
+		dump.Println(ast)
+	}
+
 	analyzer := analyzer.New(inputFile, ast)
 	analyzer.Analyze()
 

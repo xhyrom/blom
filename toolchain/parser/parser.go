@@ -72,6 +72,10 @@ func (p *Parser) Next() tokens.Token {
 	return p.tokens[1]
 }
 
+func (p *Parser) Peek(i int) tokens.Token {
+	return p.tokens[i]
+}
+
 func (p *Parser) Consume() tokens.Token {
 	prev := p.tokens[0]
 	p.Advance()
@@ -99,7 +103,8 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 	case tokens.While:
 		return []ast.Statement{statements.ParseWhileLoop(p)}, nil
 	case tokens.Identifier:
-		if p.Next().Kind == tokens.Identifier {
+		if p.Next().Kind == tokens.Identifier ||
+			(p.Next().Kind == tokens.Asterisk && p.Peek(2).Kind == tokens.Identifier) {
 			return []ast.Statement{statements.ParseVariableDeclaration(p)}, nil
 		}
 
@@ -163,6 +168,10 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 	left, err := p.parseSingleExpression()
 	if err != nil {
 		return nil, err
+	}
+
+	if !p.IsEof() && p.Current().Kind == tokens.Assign {
+		return statements.ParseAssignment(p, left), nil
 	}
 
 	if !p.IsEof() && p.Current().Kind == tokens.Identifier {
@@ -232,12 +241,8 @@ func (p *Parser) parseSingleExpression() (ast.Expression, error) {
 	case tokens.AtMark:
 		return expressions.ParseCompileTimeFunctionCall(p), nil
 	case tokens.Identifier:
-		if p.Next().Kind == tokens.Assign {
-			return statements.ParseAssignment(p), nil
-		}
-
 		return expressions.ParseIdentifier(p), nil
-	case tokens.Plus, tokens.Minus, tokens.Tilde:
+	case tokens.Plus, tokens.Minus, tokens.Tilde, tokens.Ampersand, tokens.Asterisk:
 		return expressions.ParseUnary(p), nil
 	}
 

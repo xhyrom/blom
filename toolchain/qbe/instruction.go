@@ -416,6 +416,12 @@ type Alloc8Instruction struct {
 	Value Value
 }
 
+func NewAlloc8Instruction(value Value) Alloc8Instruction {
+	return Alloc8Instruction{
+		Value: value,
+	}
+}
+
 func (i Alloc8Instruction) InstructionType() InstructionType {
 	return Alloc8
 }

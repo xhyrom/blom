@@ -24,6 +24,7 @@ const (
 	String
 	Void
 	Null
+	Pointer
 )
 
 var types = []string{
@@ -42,9 +43,18 @@ var types = []string{
 	String:        "string",
 	Void:          "void",
 	Null:          "null",
+	Pointer:       "ptr",
 }
 
 func ParseType(str string) (Type, error) {
+	if len(str) > 1 && str[len(str)-1] == '*' {
+		baseType, err := ParseType(str[:len(str)-1])
+		if err != nil {
+			return -1, err
+		}
+		return NewPointerType(baseType), nil
+	}
+
 	index := slices.Index(types, str)
 	if index == -1 {
 		return -1, errors.New(fmt.Sprintf("Unknown type '%s'", str))
@@ -53,7 +63,25 @@ func ParseType(str string) (Type, error) {
 	return Type(index), nil
 }
 
+func NewPointerType(baseType Type) Type {
+	return Type(int(Pointer) + int(baseType))
+}
+
+func (t Type) IsPointer() bool {
+	return t >= Pointer
+}
+
+func (t Type) Dereference() Type {
+	if !t.IsPointer() {
+		panic(fmt.Sprintf("Type '%s' is not a pointer", t))
+	}
+	return Type(int(t) - int(Pointer))
+}
+
 func (t Type) String() string {
+	if t.IsPointer() {
+		return t.Dereference().String() + "*"
+	}
 	return types[t]
 }
 
@@ -80,7 +108,6 @@ func (t Type) IsMapToInt() bool {
 
 func (t Type) Weight() uint8 {
 	switch t {
-	// double
 	case Float64:
 		return 4
 	case Float32:

@@ -9,6 +9,10 @@ type ShortObject struct {
 	value int16
 }
 
+func NewShortObject(value int16) *ShortObject {
+	return &ShortObject{value: value}
+}
+
 func (i *ShortObject) Type() ast.Type {
 	return ast.Int16
 }

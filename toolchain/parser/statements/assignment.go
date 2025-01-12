@@ -7,22 +7,24 @@ import (
 )
 
 // Parses an assignment statement that can have form:
-// <identifier> = <expression>;
-func ParseAssignment(p Parser) *ast.Assignment {
-	name := p.Consume()
+// <expression> = <expression>;
+func ParseAssignment(p Parser, left ast.Expression) *ast.Assignment {
+	if left == nil {
+		left, _ = p.ParseExpression()
+	}
 
 	eq := p.Consume()
 
-	value, _ := p.ParseExpression()
+	right, _ := p.ParseExpression()
 
 	if p.Consume().Kind != tokens.Semicolon {
-		dbg := debug.NewSourceLocationFromExpression(p.Source(), value)
+		dbg := debug.NewSourceLocationFromExpression(p.Source(), right)
 		dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 	}
 
 	return &ast.Assignment{
-		Name:  name.Value,
-		Value: value,
+		Left:  left,
+		Right: right,
 		Loc:   eq.Location,
 	}
 }

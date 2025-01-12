@@ -9,6 +9,10 @@ type LongObject struct {
 	value int64
 }
 
+func NewLongObject(value int64) *LongObject {
+	return &LongObject{value: value}
+}
+
 func (i *LongObject) Type() ast.Type {
 	return ast.Int64
 }

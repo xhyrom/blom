@@ -3,6 +3,7 @@ package qbe
 import (
 	"blom/ast"
 	"blom/qbe"
+	"blom/tokens"
 	"fmt"
 )
 
@@ -23,8 +24,8 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	)
 
 	if t != value.Type {
-		cnv := c.convertToType(value.Type, t, value.Value, function)
-		t = cnv.Type
+		value = c.convertToType(value.Type, t, value.Value, function)
+		t = value.Type
 	}
 
 	function.LastBlock().AddInstruction(
@@ -35,24 +36,14 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 }
 
 func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
-	variable, exists := c.Scopes.GetValue(statement.Name)
-	if !exists {
-		panic("missing variable")
-	}
+	address := evaluateLeftSide(c, statement.Left, function)
 
-	value := c.compileStatement(statement.Value, function, &variable.Type, isReturn)
+	value := c.compileStatement(statement.Right, function, &address.Type, isReturn)
 
-	address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", statement.Name))
-	if !exists {
-		panic("missing address")
-	}
-
-	t := variable.Type
-
+	t := address.Type
 	if t != value.Type {
-		cnv := c.convertToType(value.Type, t, value.Value, function)
-		t = cnv.Type
-		value.Type = t
+		value = c.convertToType(value.Type, t, value.Value, function)
+		t = value.Type
 	}
 
 	function.LastBlock().AddInstruction(
@@ -60,4 +51,27 @@ func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, functio
 	)
 
 	return value
+}
+
+func evaluateLeftSide(c *Compiler, left ast.Expression, function *qbe.Function) *qbe.TypedValue {
+	switch expr := left.(type) {
+	case *ast.IdentifierLiteral:
+		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", expr.Value))
+		if !exists {
+			panic("missing address")
+		}
+
+		return address
+
+	case *ast.UnaryExpression:
+		if expr.Operator != tokens.Asterisk {
+			panic("unsupported unary operator")
+		}
+
+		operand := c.compileStatement(expr.Operand, function, nil, false)
+		return operand
+
+	default:
+		panic("unsupported left expression")
+	}
 }
