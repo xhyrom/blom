@@ -9,6 +9,10 @@ type DoubleObject struct {
 	value float64
 }
 
+func NewDoubleObject(value float64) *DoubleObject {
+	return &DoubleObject{value: value}
+}
+
 func (i *DoubleObject) Type() ast.Type {
 	return ast.Float64
 }

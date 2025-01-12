@@ -54,5 +54,12 @@ func FromType(t ast.Type) Object {
 		return &StringObject{}
 	}
 
+	if t.IsPointer() {
+		target := FromType(t.Dereference())
+		return &PointerObject{
+			target: &target,
+		}
+	}
+
 	return nil
 }

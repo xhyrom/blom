@@ -9,6 +9,10 @@ type UnsignedLongObject struct {
 	value uint64
 }
 
+func NewUnsignedLongObject(value uint64) *UnsignedLongObject {
+	return &UnsignedLongObject{value: value}
+}
+
 func (i *UnsignedLongObject) Type() ast.Type {
 	return ast.UnsignedInt64
 }

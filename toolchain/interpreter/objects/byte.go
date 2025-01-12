@@ -9,6 +9,10 @@ type ByteObject struct {
 	value int8
 }
 
+func NewByteObject(value int8) *ByteObject {
+	return &ByteObject{value: value}
+}
+
 func (i *ByteObject) Type() ast.Type {
 	return ast.Int8
 }

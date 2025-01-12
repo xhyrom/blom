@@ -9,6 +9,10 @@ type UnsignedByteObject struct {
 	value uint8
 }
 
+func NewUnsignedByteObject(value uint8) *UnsignedByteObject {
+	return &UnsignedByteObject{value: value}
+}
+
 func (i *UnsignedByteObject) Type() ast.Type {
 	return ast.UnsignedInt8
 }
