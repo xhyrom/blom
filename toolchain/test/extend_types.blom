@@ -1,0 +1,10 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun i32::www(i32 self) -> i32 {
+  return self;
+}
+
+fun @public main() -> i32 {
+  printf("%d\n", 5.www());
+  return 0;
+}
