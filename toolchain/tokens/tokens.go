@@ -52,6 +52,7 @@ const (
 	Ellipsis
 	Comma
 	Colon
+	DoubleColon
 	Semicolon
 	AtMark
 	LeftParenthesis
@@ -103,6 +104,7 @@ var tokens = []string{
 	Ellipsis:           "...",
 	Comma:              ",",
 	Colon:              ":",
+	DoubleColon:        "::",
 	Semicolon:          ";",
 	AtMark:             "@",
 	LeftParenthesis:    "(",

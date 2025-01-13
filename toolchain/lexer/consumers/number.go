@@ -30,6 +30,14 @@ func ConsumeNumber(lex Lexer) *tokens.Token {
 		char = lex.CurrentChar()
 	}
 
+	// check if last character is an dot, if so, rewind
+	if value[len(value)-1] == '.' {
+		value = value[:len(value)-1]
+		isFloat = false
+
+		lex.Rewind()
+	}
+
 	if err == nil {
 		lex.Rewind()
 	}

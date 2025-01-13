@@ -7,7 +7,6 @@ import (
 	"blom/parser/statements"
 	"blom/tokens"
 	"errors"
-	"strconv"
 )
 
 type Parser struct {
@@ -202,48 +201,28 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 }
 
 func (p *Parser) parseSingleExpression() (ast.Expression, error) {
+	var exp ast.Expression
+
 	switch p.Current().Kind {
-	case tokens.CharLiteral:
-		token := p.Consume()
-		value := []rune(token.Value)[0]
-		return &ast.CharLiteral{
-			Value: value,
-			Loc:   token.Location,
-		}, nil
-	case tokens.StringLiteral:
-		token := p.Consume()
-		value := token.Value
-		return &ast.StringLiteral{
-			Value: value,
-			Loc:   token.Location,
-		}, nil
-	case tokens.IntLiteral:
-		token := p.Consume()
-		value, _ := strconv.ParseInt(token.Value, 10, 64)
-		return &ast.IntLiteral{
-			Value: int64(value),
-			Loc:   token.Location,
-		}, nil
-	case tokens.FloatLiteral:
-		token := p.Consume()
-		value, _ := strconv.ParseFloat(token.Value, 64)
-		return &ast.FloatLiteral{
-			Value: float64(value),
-			Loc:   token.Location,
-		}, nil
-	case tokens.BooleanLiteral:
-		token := p.Consume()
-		value, _ := strconv.ParseBool(token.Value)
-		return &ast.BooleanLiteral{
-			Value: value,
-			Loc:   token.Location,
-		}, nil
+	case tokens.CharLiteral,
+		tokens.StringLiteral,
+		tokens.IntLiteral,
+		tokens.FloatLiteral,
+		tokens.BooleanLiteral,
+		tokens.Identifier:
+		exp, _ = expressions.ParseLiteral(p)
 	case tokens.AtMark:
-		return expressions.ParseCompileTimeFunctionCall(p), nil
-	case tokens.Identifier:
-		return expressions.ParseIdentifier(p), nil
+		exp = expressions.ParseCompileTimeFunctionCall(p)
 	case tokens.Plus, tokens.Minus, tokens.Tilde, tokens.Ampersand, tokens.Asterisk:
-		return expressions.ParseUnary(p), nil
+		exp = expressions.ParseUnary(p)
+	}
+
+	if p.Current().Kind == tokens.Dot {
+		exp = expressions.ParseMemberAccess(p, exp)
+	}
+
+	if exp != nil {
+		return exp, nil
 	}
 
 	return nil, errors.New("Unexpected token " + p.Current().Kind.String())
