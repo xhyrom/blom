@@ -1,0 +1,15 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun string::lol(self: string) -> i32 {
+  return 99;
+}
+
+fun i32::lol(self: i32) -> string {
+  return "a";
+}
+
+fun @public main() -> i32 {
+  printf("%s\n", 5.lol());
+  printf("%s\n", 5.lol().lol().lol());
+  return 0;
+}

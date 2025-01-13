@@ -145,7 +145,15 @@ func (lex *Lexer) Next() *tokens.Token {
 	case ',':
 		kind = tokens.Comma
 	case ':':
-		kind = tokens.Colon
+		lex.Advance()
+
+		switch lex.CurrentChar() {
+		case ':':
+			kind = tokens.DoubleColon
+		default:
+			kind = tokens.Colon
+			lex.Rewind()
+		}
 	case ';':
 		kind = tokens.Semicolon
 	case '@':

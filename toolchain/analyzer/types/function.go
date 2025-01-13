@@ -46,17 +46,22 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 }
 
 func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
+	name := call.Name
+
 	paramTypes := make([]ast.Type, 0)
 	for _, param := range call.Parameters {
 		paramTypes = append(paramTypes, a.analyzeExpression(param))
 	}
 
-	// TODO: fix the hacky way of changing function call in ast etc...
-	function, exists := a.FunctionManager.Get(strings.Split(call.Name, ".")[0], paramTypes)
+	if call.MemberAccess {
+		name = paramTypes[0].String() + "." + name
+	}
+
+	function, exists := a.FunctionManager.Get(name, paramTypes)
 	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 
-		overloads := a.FunctionManager.GetAllNamed(call.Name)
+		overloads := a.FunctionManager.GetAllNamed(name)
 
 		if len(overloads) == 0 {
 			dbg.ThrowError(
@@ -105,7 +110,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 	}
 
 	for i, param := range call.Parameters {
-		paramType := a.analyzeExpression(param)
+		paramType := paramTypes[i]
 
 		if !function.IsNative() && paramType != function.Arguments[i].Type && !a.canBeImplicitlyCast(paramType, function.Arguments[i].Type) {
 			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)

@@ -28,6 +28,33 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 		dbg.ThrowError(fmt.Sprintf("Function name must be valid identifier, got \"%s\"", name.Value), true)
 	}
 
+	if p.Current().Kind == tokens.DoubleColon {
+		_, err := ast.ParseType(name.Value)
+		if err != nil {
+			dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
+			dbg.ThrowError(
+				fmt.Sprintf(
+					"Cannot extend type \"%s\" because it isn't a primitive type",
+					name.Value,
+				),
+				true,
+			)
+		}
+
+		p.Consume()
+		identifier := p.Consume()
+		if identifier.Kind != tokens.Identifier {
+			dbg := debug.NewSourceLocation(p.Source(), identifier.Location.Row, identifier.Location.Column)
+			dbg.ThrowError(fmt.Sprintf("Function name must be valid identifier, got \"%s\"", name.Value), true)
+		}
+
+		name = tokens.Token{
+			Kind:     tokens.Identifier,
+			Location: name.Location,
+			Value:    name.Value + "." + identifier.Value,
+		}
+	}
+
 	current := p.Consume()
 
 	if current.Kind != tokens.LeftParenthesis {
