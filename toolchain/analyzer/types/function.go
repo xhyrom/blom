@@ -55,10 +55,8 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 
 	if call.MemberAccess {
 		name = paramTypes[0].String() + "." + name
-		call.MemberAccess = false
 	}
 
-	// TODO: fix the hacky way of changing function call in ast etc...
 	function, exists := a.FunctionManager.Get(name, paramTypes)
 	if !exists {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
@@ -112,7 +110,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 	}
 
 	for i, param := range call.Parameters {
-		paramType := a.analyzeExpression(param)
+		paramType := paramTypes[i]
 
 		if !function.IsNative() && paramType != function.Arguments[i].Type && !a.canBeImplicitlyCast(paramType, function.Arguments[i].Type) {
 			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)

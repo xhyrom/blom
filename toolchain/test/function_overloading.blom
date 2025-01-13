@@ -1,3 +1,5 @@
+fun @native printf(format: string, ...) -> i32;
+
 fun a(first: i32) -> i32 {
     return a(first, 5);
 }
@@ -11,5 +13,7 @@ fun @infix l(a: i32, b: i32) -> i32 {
 }
 
 fun @public main() {
+    //printf("%d\n", 5 l 3 l 9);
+    printf("%d\n", a(2) + a(3, 7));
     return a(2) + a(3, 7);
 }
