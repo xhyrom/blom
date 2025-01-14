@@ -216,13 +216,19 @@ func parseArgument(p Parser, fun *ast.FunctionDeclaration) (*ast.FunctionArgumen
 	}
 
 	typToken := p.Consume()
+	typStr := typToken.Value
 
 	if typToken.Kind != tokens.Identifier {
 		dbg := debug.NewSourceLocation(p.Source(), typToken.Location.Row, typToken.Location.Column)
 		dbg.ThrowError(fmt.Sprintf("Argument type must be a valid type, got \"%s\"", typToken.Value), true)
 	}
 
-	typ, err := ast.ParseType(typToken.Value)
+	if p.Current().Kind == tokens.Asterisk {
+		typStr = typToken.Value + "*"
+		typToken = p.Consume()
+	}
+
+	typ, err := ast.ParseType(typStr)
 
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), typToken.Location.Row, typToken.Location.Column)
