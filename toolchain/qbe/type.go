@@ -40,6 +40,7 @@ const (
 	Boolean
 	Void
 	Null
+	Func
 )
 
 var types = []string{
@@ -59,6 +60,7 @@ var types = []string{
 	Boolean: "w",
 	Void:    "w",
 	Null:    "",
+	Func:    "l",
 }
 
 func RemapAstType(t ast.Type) Type {
@@ -145,7 +147,7 @@ func (t TypeId) Weight() uint8 {
 		return 4
 	case Single:
 		return 3
-	case Long, UnsignedLong, Pointer:
+	case Long, UnsignedLong, Pointer, Func:
 		return 2
 	case Word:
 		return 1
@@ -170,7 +172,7 @@ func (t TypeId) Size() uint64 {
 	case Double:
 		return 8
 	// Returns 8 on 64-bit systems and 4 on 32-bit systems
-	case UnsignedLong, Long, Pointer:
+	case UnsignedLong, Long, Pointer, Func:
 		return uint64(unsafe.Sizeof(uintptr(0)))
 	default:
 		panic(fmt.Sprintf("Unknown type '%s'", t))

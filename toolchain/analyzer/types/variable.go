@@ -22,7 +22,19 @@ func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.Variab
 		)
 	}
 
-	a.Scopes.Set(statement.Name, &Variable{Type: valueType})
+	if valueType.IsPointer() && valueType.Dereference() == ast.Void {
+		lambda := statement.Value.(*ast.LambdaDeclaration)
+
+		a.FunctionManager.Register(&ast.FunctionDeclaration{
+			Name:       statement.Name,
+			Arguments:  lambda.Arguments,
+			ReturnType: lambda.ReturnType,
+			Body:       lambda.Body,
+			Loc:        statement.Loc,
+		})
+	} else {
+		a.Scopes.Set(statement.Name, &Variable{Type: valueType})
+	}
 }
 
 func (a *TypeAnalyzer) analyzeAssignment(assignment *ast.Assignment) ast.Type {

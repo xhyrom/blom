@@ -70,8 +70,25 @@ func (c *Compiler) getTemporaryValue(name *string) *qbe.TemporaryValue {
 	}
 }
 
+func (c *Compiler) getGlobalValue(name *string) *qbe.GlobalValue {
+	return &qbe.GlobalValue{
+		Name: c.assignNameToValueWithPrefix(*name),
+	}
+}
+
 func (c *Compiler) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
 	tmp := c.getTemporaryValue(&name)
+
+	c.Scopes.Set(name, &qbe.TypedValue{
+		Type:  t,
+		Value: tmp,
+	})
+
+	return tmp
+}
+
+func (c *Compiler) createGlobalVariable(t qbe.Type, name string) *qbe.GlobalValue {
+	tmp := c.getGlobalValue(&name)
 
 	c.Scopes.Set(name, &qbe.TypedValue{
 		Type:  t,
