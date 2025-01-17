@@ -215,6 +215,8 @@ func (p *Parser) parseSingleExpression() (ast.Expression, error) {
 		exp = expressions.ParseCompileTimeFunctionCall(p)
 	case tokens.Plus, tokens.Minus, tokens.Tilde, tokens.Ampersand, tokens.Asterisk:
 		exp = expressions.ParseUnary(p)
+	case tokens.Fun:
+		exp = expressions.ParseLambda(p)
 	}
 
 	if p.Current().Kind == tokens.Dot {

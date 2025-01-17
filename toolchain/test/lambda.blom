@@ -1,0 +1,10 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun @public main() -> i32 {
+  void x = fun(a: i32) -> i32 {
+    return 5;
+  };
+
+  printf("%d\n", x);
+  return 0;
+}
