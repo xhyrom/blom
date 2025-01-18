@@ -36,5 +36,5 @@ func (a *TypeAnalyzer) analyzeLambdaDeclaration(lambda *ast.LambdaDeclaration) a
 
 	a.Scopes.Pop()
 
-	return ast.NewLambdaBox(*lambda)
+	return ast.NewFunctionBox(*lambda)
 }

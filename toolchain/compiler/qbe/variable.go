@@ -44,7 +44,7 @@ func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, functio
 	value := c.compileStatement(statement.Right, function, &address.Type, isReturn)
 
 	t := address.Type
-	if t != value.Type {
+	if !value.Type.IsFunction() && t != value.Type {
 		value = c.convertToType(value.Type, t, value.Value, function)
 		t = value.Type
 	}

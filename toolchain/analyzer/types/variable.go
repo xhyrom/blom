@@ -28,7 +28,7 @@ func (a *TypeAnalyzer) analyzeAssignment(assignment *ast.Assignment) ast.Type {
 	leftType := a.analyzeExpression(assignment.Left)
 	rightType := a.analyzeExpression(assignment.Right)
 
-	if leftType != rightType && !a.canBeImplicitlyCast(rightType, leftType) {
+	if (!leftType.IsFunction() || !rightType.IsFunction()) && leftType != rightType && !a.canBeImplicitlyCast(rightType, leftType) {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment.Right)
 		dbg.ThrowError(
 			fmt.Sprintf(

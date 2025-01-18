@@ -8,6 +8,7 @@ import (
 
 type Type interface {
 	IsPointer() bool
+	IsFunction() bool
 	Dereference() Type
 	String() string
 	IsNumeric() bool
@@ -36,7 +37,7 @@ const (
 	String
 	Void
 	Null
-	Lambda
+	Function
 	Pointer
 )
 
@@ -57,7 +58,7 @@ var types = []string{
 	Void:          "void",
 	Null:          "null",
 	Pointer:       "ptr",
-	Lambda:        "fun",
+	Function:      "fun",
 }
 
 func ParseType(str string) (TypeId, error) {
@@ -85,8 +86,12 @@ func (t TypeId) IsPointer() bool {
 	return t >= Pointer
 }
 
+func (t TypeId) IsFunction() bool {
+	return t == Function
+}
+
 func (t TypeId) IsLambda() bool {
-	return t == Lambda
+	return t == Function
 }
 
 func (t TypeId) Dereference() Type {
@@ -130,7 +135,7 @@ func (t TypeId) Weight() uint8 {
 		return 4
 	case Float32:
 		return 3
-	case Int64, UnsignedInt64, String, Lambda:
+	case Int64, UnsignedInt64, String, Function:
 		return 2
 	case Int32:
 		return 1
@@ -147,46 +152,50 @@ func (t TypeId) AsId() TypeId {
 	return t
 }
 
-type LambdaBox struct {
+type FunctionBox struct {
 	Inner LambdaDeclaration
 }
 
-func NewLambdaBox(inner LambdaDeclaration) LambdaBox {
-	return LambdaBox{Inner: inner}
+func NewFunctionBox(inner LambdaDeclaration) FunctionBox {
+	return FunctionBox{Inner: inner}
 }
 
-func (f LambdaBox) IsPointer() bool {
+func (f FunctionBox) IsPointer() bool {
 	return false
 }
 
-func (f LambdaBox) Dereference() Type {
+func (f FunctionBox) IsFunction() bool {
+	return true
+}
+
+func (f FunctionBox) Dereference() Type {
 	panic("FunctionBox is not a pointer")
 }
 
-func (f LambdaBox) String() string {
-	return Lambda.String()
+func (f FunctionBox) String() string {
+	return Function.String()
 }
 
-func (f LambdaBox) IsNumeric() bool {
-	return Lambda.IsNumeric()
+func (f FunctionBox) IsNumeric() bool {
+	return Function.IsNumeric()
 }
 
-func (f LambdaBox) IsInteger() bool {
-	return Lambda.IsInteger()
+func (f FunctionBox) IsInteger() bool {
+	return Function.IsInteger()
 }
 
-func (f LambdaBox) IsFloatingPoint() bool {
-	return Lambda.IsFloatingPoint()
+func (f FunctionBox) IsFloatingPoint() bool {
+	return Function.IsFloatingPoint()
 }
 
-func (f LambdaBox) IsMapToInt() bool {
-	return Lambda.IsMapToInt()
+func (f FunctionBox) IsMapToInt() bool {
+	return Function.IsMapToInt()
 }
 
-func (f LambdaBox) Weight() uint8 {
-	return Lambda.Weight()
+func (f FunctionBox) Weight() uint8 {
+	return Function.Weight()
 }
 
-func (f LambdaBox) AsId() TypeId {
-	return Lambda
+func (f FunctionBox) AsId() TypeId {
+	return Function
 }

@@ -9,6 +9,11 @@ fun @public main() -> i32 {
     return a * 9;
   };
 
+  x = fun(a: i32) -> i32 {
+    return a * 10;
+  };
+
   printf("%d\n", caller(55, x));
+  printf("%d\n", x(19));
   return 0;
 }

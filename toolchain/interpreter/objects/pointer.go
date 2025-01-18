@@ -14,7 +14,7 @@ func NewPointerObject(target Object) *PointerObject {
 }
 
 func (p *PointerObject) Type() ast.Type {
-	return ast.NewPointerType((*p.target).Type())
+	return ast.NewPointerType((*p.target).Type().AsId())
 }
 
 func (p *PointerObject) Inspect() string {
