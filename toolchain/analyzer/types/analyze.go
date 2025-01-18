@@ -100,7 +100,8 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 		compileTimeFunctionCall := expression.(*ast.BuiltinFunctionCall)
 		return a.analyzeBuiltinFunctionCall(compileTimeFunctionCall)
 	case *ast.LambdaDeclaration:
-		return ast.NewPointerType(ast.Void)
+		lambdaDeclaration := expression.(*ast.LambdaDeclaration)
+		return a.analyzeLambdaDeclaration(lambdaDeclaration)
 	case *ast.BlockStatement:
 		blockStatement := expression.(*ast.BlockStatement)
 		return a.analyzeBlock(blockStatement)

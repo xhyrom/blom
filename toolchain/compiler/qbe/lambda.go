@@ -39,7 +39,7 @@ func (c *Compiler) compileLambda(declaration *ast.LambdaDeclaration, function *q
 	c.Module.AddFunction(lambda)
 
 	return &qbe.TypedValue{
-		Type:  qbe.Func,
+		Type:  qbe.NewFunctionBox(lambda),
 		Value: tempValue,
 	}
 }

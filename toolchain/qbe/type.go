@@ -15,6 +15,7 @@ type Type interface {
 	IsSigned() bool
 	IsUnsigned() bool
 	IsPointer() bool
+	IsFunction() bool
 	IsMapToInt() bool
 	Weight() uint8
 	Size() uint64
@@ -130,6 +131,10 @@ func (t TypeId) IsUnsigned() bool {
 
 func (t TypeId) IsPointer() bool {
 	return t == Pointer
+}
+
+func (t TypeId) IsFunction() bool {
+	return t == Func
 }
 
 func (t TypeId) IsMapToInt() bool {

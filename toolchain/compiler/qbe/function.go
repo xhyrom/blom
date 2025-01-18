@@ -3,6 +3,7 @@ package qbe
 import (
 	"blom/ast"
 	"blom/qbe"
+	"fmt"
 )
 
 func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
@@ -52,6 +53,33 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 
 func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
 	function := c.Module.GetFunctionByName(call.Name)
+	var name qbe.Value
+
+	if function == nil {
+		// lambda
+		variable, exists := c.Scopes.GetValue(call.Name)
+		if !exists {
+			panic("lambda function not found")
+		}
+
+		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", call.Name))
+		if !exists {
+			panic("lambda function address not found")
+		}
+
+		currentFunction.LastBlock().AddAssign(
+			variable.Value,
+			variable.Type,
+			qbe.NewLoadInstruction(variable.Type, address.Value),
+		)
+
+		inner := variable.Type.(qbe.FunctionBox).Inner
+		function = &inner
+
+		name = variable.Value
+	} else {
+		name = qbe.NewGlobalValue(function.Name)
+	}
 
 	parameters := make([]qbe.TypedValue, 0)
 	for i, parameter := range call.Parameters {
@@ -85,7 +113,7 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 	currentFunction.LastBlock().AddAssign(
 		tempValue,
 		function.ReturnType,
-		qbe.NewCallInstruction(qbe.NewGlobalValue(function.Name), parameters...),
+		qbe.NewCallInstruction(name, parameters...),
 	)
 
 	return &qbe.TypedValue{

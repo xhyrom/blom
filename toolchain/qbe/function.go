@@ -107,3 +107,61 @@ func RemapAstFunction(fun ast.FunctionDeclaration) Function {
 		Blocks:     make([]Block, 0),
 	}
 }
+
+// FunctionBox is a wrapped around a Type that represents a function
+// It holds the function
+type FunctionBox struct {
+	Inner Function
+}
+
+func NewFunctionBox(inner Function) FunctionBox {
+	return FunctionBox{Inner: inner}
+}
+
+func (f FunctionBox) String() string {
+	return Func.String()
+}
+
+func (f FunctionBox) IsNumeric() bool {
+	return Func.IsNumeric()
+}
+
+func (f FunctionBox) IsInteger() bool {
+	return Func.IsInteger()
+}
+
+func (f FunctionBox) IsFloatingPoint() bool {
+	return Func.IsFloatingPoint()
+}
+
+func (f FunctionBox) IsSigned() bool {
+	return Func.IsSigned()
+}
+
+func (f FunctionBox) IsUnsigned() bool {
+	return Func.IsUnsigned()
+}
+
+func (f FunctionBox) IsPointer() bool {
+	return Func.IsPointer()
+}
+
+func (f FunctionBox) IsFunction() bool {
+	return Func.IsFunction()
+}
+
+func (f FunctionBox) IsMapToInt() bool {
+	return Func.IsMapToInt()
+}
+
+func (f FunctionBox) Weight() uint8 {
+	return Func.Weight()
+}
+
+func (f FunctionBox) Size() uint64 {
+	return Func.Size()
+}
+
+func (f FunctionBox) IntoAbi() Type {
+	return Func
+}

@@ -5,8 +5,6 @@ import (
 	"blom/debug"
 	"blom/tokens"
 	"fmt"
-
-	"github.com/gookit/goutil/dump"
 )
 
 // Parses a lambda expression that can have form:
@@ -120,7 +118,6 @@ func ParseLambda(p Parser) *ast.LambdaDeclaration {
 
 	lambda.Body = block.Body
 
-	dump.P(lambda)
 	return &lambda
 }
 

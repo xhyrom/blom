@@ -11,6 +11,9 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	t := qbe.RemapAstType(statement.Type)
 
 	value := c.compileStatement(statement.Value, function, &t, isReturn)
+	if value.Type.IsFunction() {
+		t = value.Type
+	}
 
 	c.createVariable(t, statement.Name)
 	address := c.createVariable(t, fmt.Sprintf("%s.addr", statement.Name))
@@ -23,7 +26,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 		},
 	)
 
-	if t != value.Type {
+	if !value.Type.IsFunction() && t != value.Type {
 		value = c.convertToType(value.Type, t, value.Value, function)
 		t = value.Type
 	}
