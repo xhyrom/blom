@@ -1,10 +1,14 @@
 fun @native printf(format: string, ...) -> i32;
 
+fun @public caller(a: i32, callback: void*) -> i32 {
+  return 5 + callback(a);
+}
+
 fun @public main() -> i32 {
   void* x = fun(a: i32) -> i32 {
     return a * 9;
   };
 
-  printf("%d\n", x(5));
+  printf("%d\n", caller(55, x));
   return 0;
 }

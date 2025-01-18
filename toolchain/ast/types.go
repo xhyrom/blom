@@ -6,10 +6,22 @@ import (
 	"slices"
 )
 
-type Type int
+type Type interface {
+	IsPointer() bool
+	Dereference() Type
+	String() string
+	IsNumeric() bool
+	IsInteger() bool
+	IsFloatingPoint() bool
+	IsMapToInt() bool
+	Weight() uint8
+	AsId() TypeId
+}
+
+type TypeId int
 
 const (
-	Int8 Type = iota
+	Int8 TypeId = iota
 	UnsignedInt8
 	Int16
 	UnsignedInt16
@@ -24,6 +36,7 @@ const (
 	String
 	Void
 	Null
+	Lambda
 	Pointer
 )
 
@@ -44,9 +57,10 @@ var types = []string{
 	Void:          "void",
 	Null:          "null",
 	Pointer:       "ptr",
+	Lambda:        "fun",
 }
 
-func ParseType(str string) (Type, error) {
+func ParseType(str string) (TypeId, error) {
 	if len(str) > 1 && str[len(str)-1] == '*' {
 		baseType, err := ParseType(str[:len(str)-1])
 		if err != nil {
@@ -60,44 +74,48 @@ func ParseType(str string) (Type, error) {
 		return -1, errors.New(fmt.Sprintf("Unknown type '%s'", str))
 	}
 
-	return Type(index), nil
+	return TypeId(index), nil
 }
 
-func NewPointerType(baseType Type) Type {
-	return Type(int(Pointer) + int(baseType))
+func NewPointerType(baseType TypeId) TypeId {
+	return TypeId(int(Pointer) + int(baseType))
 }
 
-func (t Type) IsPointer() bool {
+func (t TypeId) IsPointer() bool {
 	return t >= Pointer
 }
 
-func (t Type) Dereference() Type {
+func (t TypeId) IsLambda() bool {
+	return t == Lambda
+}
+
+func (t TypeId) Dereference() Type {
 	if !t.IsPointer() {
 		panic(fmt.Sprintf("Type '%s' is not a pointer", t))
 	}
-	return Type(int(t) - int(Pointer))
+	return TypeId(int(t) - int(Pointer))
 }
 
-func (t Type) String() string {
+func (t TypeId) String() string {
 	if t.IsPointer() {
 		return t.Dereference().String() + "*"
 	}
 	return types[t]
 }
 
-func (t Type) IsNumeric() bool {
+func (t TypeId) IsNumeric() bool {
 	return t >= Int8 && t <= Float64
 }
 
-func (t Type) IsInteger() bool {
+func (t TypeId) IsInteger() bool {
 	return t >= Int8 && t <= UnsignedInt64
 }
 
-func (t Type) IsFloatingPoint() bool {
+func (t TypeId) IsFloatingPoint() bool {
 	return t == Float32 || t == Float64
 }
 
-func (t Type) IsMapToInt() bool {
+func (t TypeId) IsMapToInt() bool {
 	switch t {
 	case Int8, UnsignedInt8, Int16, UnsignedInt16, UnsignedInt32, Boolean, Char, Void:
 		return true
@@ -106,13 +124,13 @@ func (t Type) IsMapToInt() bool {
 	return false
 }
 
-func (t Type) Weight() uint8 {
+func (t TypeId) Weight() uint8 {
 	switch t {
 	case Float64:
 		return 4
 	case Float32:
 		return 3
-	case Int64, UnsignedInt64, String:
+	case Int64, UnsignedInt64, String, Lambda:
 		return 2
 	case Int32:
 		return 1
@@ -123,4 +141,52 @@ func (t Type) Weight() uint8 {
 
 		return 0
 	}
+}
+
+func (t TypeId) AsId() TypeId {
+	return t
+}
+
+type LambdaBox struct {
+	Inner LambdaDeclaration
+}
+
+func NewLambdaBox(inner LambdaDeclaration) LambdaBox {
+	return LambdaBox{Inner: inner}
+}
+
+func (f LambdaBox) IsPointer() bool {
+	return false
+}
+
+func (f LambdaBox) Dereference() Type {
+	panic("FunctionBox is not a pointer")
+}
+
+func (f LambdaBox) String() string {
+	return Lambda.String()
+}
+
+func (f LambdaBox) IsNumeric() bool {
+	return Lambda.IsNumeric()
+}
+
+func (f LambdaBox) IsInteger() bool {
+	return Lambda.IsInteger()
+}
+
+func (f LambdaBox) IsFloatingPoint() bool {
+	return Lambda.IsFloatingPoint()
+}
+
+func (f LambdaBox) IsMapToInt() bool {
+	return Lambda.IsMapToInt()
+}
+
+func (f LambdaBox) Weight() uint8 {
+	return Lambda.Weight()
+}
+
+func (f LambdaBox) AsId() TypeId {
+	return Lambda
 }

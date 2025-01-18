@@ -36,5 +36,5 @@ func (a *TypeAnalyzer) analyzeLambdaDeclaration(lambda *ast.LambdaDeclaration) a
 
 	a.Scopes.Pop()
 
-	return ast.NewPointerType(ast.Void) // TODO: real signature
+	return ast.NewLambdaBox(*lambda)
 }

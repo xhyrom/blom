@@ -111,9 +111,17 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 }
 
 func (a *TypeAnalyzer) canBeImplicitlyCast(from ast.Type, to ast.Type) bool {
-	if from == to {
+	if from.AsId() == to.AsId() {
 		return true
 	}
 
-	return from < to && from <= ast.Float64 && to <= ast.Float64
+	if from.IsPointer() && from.Dereference() == ast.Void {
+		return true
+	}
+
+	if to.IsPointer() && to.Dereference() == ast.Void {
+		return true
+	}
+
+	return from.AsId() < to.AsId() && from.AsId() <= ast.Float64 && to.AsId() <= ast.Float64
 }

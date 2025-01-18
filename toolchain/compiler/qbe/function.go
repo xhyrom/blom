@@ -63,18 +63,26 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 		}
 
 		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", call.Name))
-		if !exists {
-			panic("lambda function address not found")
+		if exists {
+			currentFunction.LastBlock().AddAssign(
+				variable.Value,
+				variable.Type,
+				qbe.NewLoadInstruction(variable.Type, address.Value),
+			)
 		}
 
-		currentFunction.LastBlock().AddAssign(
-			variable.Value,
-			variable.Type,
-			qbe.NewLoadInstruction(variable.Type, address.Value),
-		)
+		if !variable.Type.IsFunction() {
+			fallback := qbe.Function{
+				Linkage:    qbe.NewLinkage(false),
+				Arguments:  make([]qbe.TypedValue, 0),
+				ReturnType: qbe.Word,
+			}
 
-		inner := variable.Type.(qbe.FunctionBox).Inner
-		function = &inner
+			function = &fallback
+		} else {
+			inner := variable.Type.(qbe.FunctionBox).Inner
+			function = &inner
+		}
 
 		name = variable.Value
 	} else {
