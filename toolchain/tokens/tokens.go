@@ -65,6 +65,7 @@ const (
 	// Keywords
 	Fun
 	Return
+	Type
 )
 
 var tokens = []string{
@@ -115,6 +116,7 @@ var tokens = []string{
 	RightCurlyBracket:  "}",
 	Fun:                "fun",
 	Return:             "return",
+	Type:               "type",
 }
 
 var reserved = []string{
@@ -124,6 +126,7 @@ var reserved = []string{
 	While:  "while",
 	Fun:    "fun",
 	Return: "return",
+	Type:   "type",
 }
 
 func (t TokenKind) String() string {

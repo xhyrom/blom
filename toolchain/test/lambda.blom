@@ -1,6 +1,6 @@
 fun @native printf(format: string, ...) -> i32;
 
-//type adder = fun(a: i32) -> i32;
+type adder = fun(i32) -> i32;
 
 fun @public caller(a: i32, callback: void*) -> i32 {
   return 5 + callback(a);

@@ -7,16 +7,14 @@ import (
 )
 
 type Type interface {
+	String() string
 	IsPointer() bool
 	IsFunction() bool
-	Dereference() Type
-	String() string
 	IsNumeric() bool
 	IsInteger() bool
 	IsFloatingPoint() bool
 	IsMapToInt() bool
 	Weight() uint8
-	AsId() TypeId
 }
 
 type TypeId int
@@ -37,6 +35,7 @@ const (
 	String
 	Void
 	Null
+
 	Function
 	Pointer
 )
@@ -61,59 +60,42 @@ var types = []string{
 	Function:      "fun",
 }
 
-func ParseType(str string) (TypeId, error) {
+func ParseType(str string) (Type, error) {
 	if len(str) > 1 && str[len(str)-1] == '*' {
 		baseType, err := ParseType(str[:len(str)-1])
 		if err != nil {
-			return -1, err
+			return nil, err
 		}
-		return NewPointerType(baseType), nil
+
+		return NewPointer(baseType), nil
 	}
 
 	index := slices.Index(types, str)
 	if index == -1 {
-		return -1, errors.New(fmt.Sprintf("Unknown type '%s'", str))
+		return nil, errors.New(fmt.Sprintf("Unknown type '%s'", str))
 	}
 
 	return TypeId(index), nil
 }
 
-func NewPointerType(baseType TypeId) TypeId {
-	return TypeId(int(Pointer) + int(baseType))
+func (t TypeId) String() string {
+	return types[t]
 }
 
 func (t TypeId) IsPointer() bool {
-	return t >= Pointer
+	return t == Pointer
 }
 
 func (t TypeId) IsFunction() bool {
 	return t == Function
 }
 
-func (t TypeId) IsLambda() bool {
-	return t == Function
-}
-
-func (t TypeId) Dereference() Type {
-	if !t.IsPointer() {
-		panic(fmt.Sprintf("Type '%s' is not a pointer", t))
-	}
-	return TypeId(int(t) - int(Pointer))
-}
-
-func (t TypeId) String() string {
-	if t.IsPointer() {
-		return t.Dereference().String() + "*"
-	}
-	return types[t]
-}
-
 func (t TypeId) IsNumeric() bool {
-	return t >= Int8 && t <= Float64
+	return t.IsInteger() || t.IsFloatingPoint()
 }
 
 func (t TypeId) IsInteger() bool {
-	return t >= Int8 && t <= UnsignedInt64
+	return t == Int8 || t == UnsignedInt8 || t == Int16 || t == UnsignedInt16 || t == Int32 || t == UnsignedInt32 || t == Int64 || t == UnsignedInt64
 }
 
 func (t TypeId) IsFloatingPoint() bool {
@@ -148,54 +130,95 @@ func (t TypeId) Weight() uint8 {
 	}
 }
 
-func (t TypeId) AsId() TypeId {
-	return t
+// PointerType is a wrapper around a Type that represents a pointer.
+// It holds a reference to the inner Type.
+type PointerType struct {
+	Inner Type
 }
 
-type FunctionBox struct {
-	Inner LambdaDeclaration
+func NewPointer(inner Type) PointerType {
+	return PointerType{Inner: inner}
 }
 
-func NewFunctionBox(inner LambdaDeclaration) FunctionBox {
-	return FunctionBox{Inner: inner}
+func (p PointerType) String() string {
+	return fmt.Sprintf("*%s", p.Inner.String())
 }
 
-func (f FunctionBox) IsPointer() bool {
-	return false
+func (p PointerType) IsNumeric() bool {
+	return p.Inner.IsNumeric()
 }
 
-func (f FunctionBox) IsFunction() bool {
+func (p PointerType) IsInteger() bool {
+	return p.Inner.IsInteger()
+}
+
+func (p PointerType) IsFloatingPoint() bool {
+	return p.Inner.IsFloatingPoint()
+}
+
+func (p PointerType) IsPointer() bool {
 	return true
 }
 
-func (f FunctionBox) Dereference() Type {
-	panic("FunctionBox is not a pointer")
+func (p PointerType) IsFunction() bool {
+	return p.Inner.IsFunction()
 }
 
-func (f FunctionBox) String() string {
+func (p PointerType) IsMapToInt() bool {
+	return Pointer.IsMapToInt()
+}
+
+func (p PointerType) Weight() uint8 {
+	return Pointer.Weight()
+}
+
+func (p PointerType) Dereference() Type {
+	return p.Inner
+}
+
+// FunctionType is a wrapper around a Type that represents a function.
+// It holds a reference to the inner Type.
+type FunctionType struct {
+	Arguments  []Type
+	ReturnType Type
+}
+
+func NewFunctionType(args []Type, returnType Type) FunctionType {
+	return FunctionType{Arguments: args, ReturnType: returnType}
+}
+
+func (f FunctionType) String() string {
 	return Function.String()
 }
 
-func (f FunctionBox) IsNumeric() bool {
+func (f FunctionType) IsPointer() bool {
+	return Function.IsPointer()
+}
+
+func (f FunctionType) IsFunction() bool {
+	return true
+}
+
+func (f FunctionType) IsNumeric() bool {
 	return Function.IsNumeric()
 }
 
-func (f FunctionBox) IsInteger() bool {
+func (f FunctionType) IsInteger() bool {
 	return Function.IsInteger()
 }
 
-func (f FunctionBox) IsFloatingPoint() bool {
+func (f FunctionType) IsFloatingPoint() bool {
 	return Function.IsFloatingPoint()
 }
 
-func (f FunctionBox) IsMapToInt() bool {
+func (f FunctionType) IsMapToInt() bool {
 	return Function.IsMapToInt()
 }
 
-func (f FunctionBox) Weight() uint8 {
+func (f FunctionType) Weight() uint8 {
 	return Function.Weight()
 }
 
-func (f FunctionBox) AsId() TypeId {
+func (f FunctionType) AsId() TypeId {
 	return Function
 }

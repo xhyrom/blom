@@ -92,6 +92,8 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 		return []ast.Statement{statements.ParseFunction(p)}, nil
 	case tokens.Return:
 		return []ast.Statement{statements.ParseReturn(p)}, nil
+	case tokens.Type:
+		return []ast.Statement{statements.ParseTypeDefinition(p)}, nil
 	case tokens.For:
 		decl, while := statements.ParseForLoop(p)
 		if decl != nil {

@@ -41,6 +41,8 @@ func (a *Analyzer) populate() {
 			}
 
 			a.FunctionManager.Register(statement)
+		case *ast.TypeDefinition:
+
 		default:
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 			dbg.ThrowError(
