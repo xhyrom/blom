@@ -1,6 +1,7 @@
 package main
 
 import (
+	"blom/analyzer"
 	"blom/lexer"
 	"blom/parser"
 	"blom/tokens"
@@ -61,9 +62,9 @@ func main() {
 	fmt.Println("Abstract Syntax Tree before analysis:")
 	dump.Println(ast)
 
-	/*analyzer := analyzer.New(inputFile, ast)
+	analyzer := analyzer.New(inputFile, ast)
 	analyzer.Analyze()
 
 	fmt.Println("Abstract Syntax Tree after analysis:")
-	dump.Println(ast)*/
+	dump.Println(ast)
 }

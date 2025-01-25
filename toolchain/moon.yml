@@ -8,7 +8,7 @@ project:
 tasks:
   build:
     description: Build the toolchain
-    command: go build -o bin/blomc ./cmd/blomc && go build -o bin/blom ./cmd/blom
+    command: go build -o bin/blomc ./cmd/blomc && go build -o bin/blomp ./cmd/blomp && go build -o bin/blom ./cmd/blom
     inputs:
       - "analyzer/**/*"
       - "ast/**/*"
@@ -25,6 +25,8 @@ tasks:
       - "transpiler/**/*"
     outputs:
       - "bin/blom"
+      - "bin/blomc"
+      - "bin/blomp"
   test:
     description: Run the tests
     command: go test ./qbe/...
