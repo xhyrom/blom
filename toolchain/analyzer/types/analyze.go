@@ -122,8 +122,22 @@ func (a *TypeAnalyzer) canBeImplicitlyCast(from ast.Type, to ast.Type) bool {
 	}
 
 	if from.IsFunction() && to.IsFunction() {
-		fromFunction := from.(ast.FunctionType)
-		toFunction := to.(ast.FunctionType)
+		var fromFunction ast.FunctionType
+		var toFunction ast.FunctionType
+
+		if from.IsPointer() {
+			from = from.(ast.PointerType).Dereference()
+			fromFunction = from.(ast.FunctionType)
+		} else {
+			fromFunction = from.(ast.FunctionType)
+		}
+
+		if to.IsPointer() {
+			to = to.(ast.PointerType).Dereference()
+			toFunction = to.(ast.FunctionType)
+		} else {
+			toFunction = to.(ast.FunctionType)
+		}
 
 		if fromFunction.ReturnType != toFunction.ReturnType {
 			return false
