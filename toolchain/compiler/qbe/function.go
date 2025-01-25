@@ -3,6 +3,7 @@ package qbe
 import (
 	"blom/ast"
 	"blom/qbe"
+	"fmt"
 )
 
 func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
@@ -50,14 +51,49 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	c.Module.SetFunctionByName(declaration.Name, function)
 }
 
-func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
+func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	function := c.Module.GetFunctionByName(call.Name)
+	var name qbe.Value
+
+	if function == nil {
+		// lambda
+		variable, exists := c.Scopes.GetValue(call.Name)
+		if !exists {
+			panic("lambda function not found")
+		}
+
+		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", call.Name))
+		if exists {
+			currentFunction.LastBlock().AddAssign(
+				variable.Value,
+				variable.Type,
+				qbe.NewLoadInstruction(variable.Type, address.Value),
+			)
+		}
+
+		if !variable.Type.IsFunction() {
+			fallback := qbe.Function{
+				Linkage:    qbe.NewLinkage(false),
+				Arguments:  make([]qbe.TypedValue, 0),
+				ReturnType: qbe.Word,
+			}
+
+			function = &fallback
+		} else {
+			inner := variable.Type.(qbe.FunctionBox).Inner
+			function = &inner
+		}
+
+		name = variable.Value
+	} else {
+		name = qbe.NewGlobalValue(function.Name)
+	}
 
 	parameters := make([]qbe.TypedValue, 0)
 	for i, parameter := range call.Parameters {
-		var argType *qbe.Type
+		var argType qbe.Type
 		if i < len(function.Arguments) {
-			argType = &function.Arguments[i].Type
+			argType = function.Arguments[i].Type
 		} else {
 			argType = vtype
 		}
@@ -85,7 +121,7 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 	currentFunction.LastBlock().AddAssign(
 		tempValue,
 		function.ReturnType,
-		qbe.NewCallInstruction(qbe.NewGlobalValue(function.Name), parameters...),
+		qbe.NewCallInstruction(name, parameters...),
 	)
 
 	return &qbe.TypedValue{

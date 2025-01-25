@@ -29,7 +29,7 @@ func (m *FunctionManager) Get(name string, arguments []ast.Type) (*ast.FunctionD
 			if len(fun.Arguments) == len(arguments) {
 				matches := true
 				for i, arg := range fun.Arguments {
-					if arg.Type != arguments[i] {
+					if !arg.Type.Equal(arguments[i]) {
 						matches = false
 						break
 					}

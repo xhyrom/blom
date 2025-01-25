@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileLoop(loopStatement *ast.WhileLoopStatement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileLoop(loopStatement *ast.WhileLoopStatement, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	c.Scopes.Append()
 
 	c.TempCounter += 1

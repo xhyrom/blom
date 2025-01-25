@@ -13,18 +13,20 @@ type TypeAnalyzer struct {
 	Program         *ast.Program
 	Scopes          *scope.Scopes[*Variable]
 	FunctionManager *manager.FunctionManager
+	TypeManager     *manager.TypeManager
 }
 
 type Variable struct {
 	Type ast.Type
 }
 
-func New(file string, program *ast.Program, functionManager *manager.FunctionManager) *TypeAnalyzer {
+func New(file string, program *ast.Program, functionManager *manager.FunctionManager, typeManager *manager.TypeManager) *TypeAnalyzer {
 	return &TypeAnalyzer{
 		Source:          file,
 		Program:         program,
 		Scopes:          scope.NewScopes[*Variable](),
 		FunctionManager: functionManager,
+		TypeManager:     typeManager,
 	}
 }
 
@@ -99,6 +101,9 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 	case *ast.BuiltinFunctionCall:
 		compileTimeFunctionCall := expression.(*ast.BuiltinFunctionCall)
 		return a.analyzeBuiltinFunctionCall(compileTimeFunctionCall)
+	case *ast.LambdaDeclaration:
+		lambdaDeclaration := expression.(*ast.LambdaDeclaration)
+		return a.analyzeLambdaDeclaration(lambdaDeclaration)
 	case *ast.BlockStatement:
 		blockStatement := expression.(*ast.BlockStatement)
 		return a.analyzeBlock(blockStatement)
@@ -108,9 +113,73 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 }
 
 func (a *TypeAnalyzer) canBeImplicitlyCast(from ast.Type, to ast.Type) bool {
+	if from.IsFunction() && to.IsPointer() && to.(ast.PointerType).Dereference() == ast.Void {
+		return true
+	}
+
+	if from.IsPointer() && from.(ast.PointerType).Dereference() == ast.Void && to.IsFunction() {
+		return true
+	}
+
+	if from.IsFunction() && to.IsFunction() {
+		var fromFunction ast.FunctionType
+		var toFunction ast.FunctionType
+
+		if from.IsPointer() {
+			from = from.(ast.PointerType).Dereference()
+			fromFunction = from.(ast.FunctionType)
+		} else {
+			fromFunction = from.(ast.FunctionType)
+		}
+
+		if to.IsPointer() {
+			to = to.(ast.PointerType).Dereference()
+			toFunction = to.(ast.FunctionType)
+		} else {
+			toFunction = to.(ast.FunctionType)
+		}
+
+		if fromFunction.ReturnType != toFunction.ReturnType {
+			return false
+		}
+
+		if len(fromFunction.Arguments) != len(toFunction.Arguments) {
+			return false
+		}
+
+		for i, fromArg := range fromFunction.Arguments {
+			toArg := toFunction.Arguments[i]
+
+			if fromArg != toArg {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	if (from.IsFunction() && !to.IsFunction()) || (!from.IsFunction() && to.IsFunction()) {
+		return false
+	}
+
+	if from.IsPointer() && from.(ast.PointerType).Dereference() == ast.Void {
+		return true
+	}
+
+	if to.IsPointer() && to.(ast.PointerType).Dereference() == ast.Void {
+		return true
+	}
+
 	if from == to {
 		return true
 	}
 
-	return from < to && from <= ast.Float64 && to <= ast.Float64
+	if from.IsNumeric() && to.IsNumeric() {
+		fromWeight := from.Weight()
+		toWeight := to.Weight()
+
+		return fromWeight <= toWeight && fromWeight <= uint8(ast.Float64) && to.Weight() <= uint8(ast.Float64)
+	}
+
+	return false
 }

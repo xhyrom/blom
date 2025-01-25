@@ -58,44 +58,76 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 	}
 
 	function, exists := a.FunctionManager.Get(name, paramTypes)
+	skipChecking := false
+
 	if !exists {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+		variable, exists := a.Scopes.GetValue(name)
+		if !exists {
+			dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 
-		overloads := a.FunctionManager.GetAllNamed(name)
+			overloads := a.FunctionManager.GetAllNamed(name)
 
-		if len(overloads) == 0 {
-			dbg.ThrowError(
-				fmt.Sprintf("Function '%s' is not defined.", call.PrettyName()),
-				true,
-			)
-		} else if len(overloads) == 1 {
-			function = overloads[0]
-		} else {
-			var overloadStrings []string
-			for _, overload := range overloads {
-				overloadStrings = append(overloadStrings, formatFunctionSignature(overload))
+			if len(overloads) == 0 {
+				dbg.ThrowError(
+					fmt.Sprintf("Function '%s' is not defined.", call.PrettyName()),
+					true,
+				)
+			} else if len(overloads) == 1 {
+				function = overloads[0]
+			} else {
+				var overloadStrings []string
+				for _, overload := range overloads {
+					overloadStrings = append(overloadStrings, formatFunctionSignature(overload))
+				}
+
+				message := fmt.Sprintf(
+					"No matching overload found for function '%s' with parameter types (%s).\n\n"+
+						"Available overloads are:\n%s",
+					call.PrettyName(),
+					formatTypeList(paramTypes),
+					strings.Join(overloadStrings, "\n"),
+				)
+
+				dbg.ThrowError(
+					message,
+					true,
+					debug.NewHint(
+						"Create an overload with the correct parameter types",
+						"",
+					),
+				)
 			}
+		} else {
+			if variable.Type.IsPointer() && variable.Type.(ast.PointerType).Dereference() == ast.Void {
+				skipChecking = true
 
-			message := fmt.Sprintf(
-				"No matching overload found for function '%s' with parameter types (%s).\n\n"+
-					"Available overloads are:\n%s",
-				call.PrettyName(),
-				formatTypeList(paramTypes),
-				strings.Join(overloadStrings, "\n"),
-			)
+				function = &ast.FunctionDeclaration{
+					Name:        name,
+					Arguments:   []ast.FunctionArgument{},
+					ReturnType:  variable.Type,
+					Annotations: []ast.Annotation{},
+				}
+			} else {
+				fnType := variable.Type.(ast.FunctionType)
+				fnArguments := make([]ast.FunctionArgument, len(fnType.Arguments))
 
-			dbg.ThrowError(
-				message,
-				true,
-				debug.NewHint(
-					"Create an overload with the correct parameter types",
-					"",
-				),
-			)
+				for i, arg := range fnType.Arguments {
+					fnArguments[i] = ast.FunctionArgument{
+						Name: string(i),
+						Type: arg,
+					}
+				}
+
+				function = &ast.FunctionDeclaration{
+					Name:       name,
+					Arguments:  fnArguments,
+					ReturnType: fnType.ReturnType,
+				}
+			}
 		}
 	}
 
-	if !function.IsNative() && len(function.Arguments) != len(call.Parameters) {
+	if !function.IsNative() && !skipChecking && len(function.Arguments) != len(call.Parameters) {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
 			fmt.Sprintf(
@@ -112,7 +144,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 	for i, param := range call.Parameters {
 		paramType := paramTypes[i]
 
-		if !function.IsNative() && paramType != function.Arguments[i].Type && !a.canBeImplicitlyCast(paramType, function.Arguments[i].Type) {
+		if !function.IsNative() && !skipChecking && !paramType.Equal(function.Arguments[i].Type) && !a.canBeImplicitlyCast(paramType, function.Arguments[i].Type) {
 			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)
 			dbg.ThrowError(
 				fmt.Sprintf(

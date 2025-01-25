@@ -21,10 +21,10 @@ func (a *TypeAnalyzer) analyzeUnaryExpression(expression *ast.UnaryExpression) a
 		expectsType(a, expression, operand, "an integer", isInteger)
 		return operand
 	case tokens.Ampersand: // address of
-		return ast.NewPointerType(operand)
+		return ast.NewPointer(operand)
 	case tokens.Asterisk: // dereference
 		expectsType(a, expression, operand, "a pointer", isPointer)
-		return operand.Dereference()
+		return operand.(ast.PointerType).Dereference()
 	}
 
 	return ast.Void

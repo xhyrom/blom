@@ -8,6 +8,19 @@ import (
 
 func (t *Interpreter) interpretFunctionCall(call *ast.FunctionCall, currentFunction *ast.FunctionDeclaration, vtype *ast.Type) objects.Object {
 	function := t.Functions[call.Name]
+	if function == nil {
+		// lambda
+		lambda, exists := t.Scopes.GetValue(call.Name)
+		if !exists {
+			panic("missing function")
+		}
+
+		if lambda.Type().IsPointer() {
+			function = lambda.(*objects.PointerObject).Value().(*objects.LambdaObject).AsFunction()
+		} else {
+			function = lambda.(*objects.LambdaObject).AsFunction()
+		}
+	}
 
 	if function.IsNative() {
 		objects := make([]objects.Object, len(call.Parameters))

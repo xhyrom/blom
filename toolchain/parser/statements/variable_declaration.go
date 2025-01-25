@@ -24,7 +24,7 @@ func ParseVariableDeclaration(p Parser) *ast.VariableDeclarationStatement {
 		dbg.ThrowError("Expected type identifier", true)
 	}
 
-	valueType, err := ast.ParseType(typeStr)
+	valueType, err := ast.ParseType(typeStr, p.CustomTypes())
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), valueTypeToken.Location.Row, valueTypeToken.Location.Column)
 		dbg.ThrowError(err.Error(), true)

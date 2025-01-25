@@ -42,6 +42,10 @@ func (p PointerBox) IsPointer() bool {
 	return true
 }
 
+func (p PointerBox) IsFunction() bool {
+	return false
+}
+
 func (p PointerBox) IsMapToInt() bool {
 	return Pointer.IsMapToInt()
 }

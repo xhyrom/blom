@@ -26,7 +26,7 @@ func (t *Interpreter) interpretAssignment(statement *ast.Assignment, function *a
 	ty := target.Type()
 	value := t.interpretStatement(statement.Right, function, &ty, isReturn)
 
-	if ty != value.Type() {
+	if !ty.Equal(value.Type()) {
 		value = t.convertToType(value.Type(), ty, value)
 	}
 

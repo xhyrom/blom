@@ -25,7 +25,7 @@ func interpretCastFunctionCall(t *Interpreter, call *ast.BuiltinFunctionCall, fu
 	}
 
 	typeName := firstParam.(*ast.IdentifierLiteral).Value
-	astType, err := ast.ParseType(typeName)
+	astType, err := ast.ParseType(typeName, map[string]ast.Type{})
 	if err != nil {
 		panic("Invalid type name")
 	}

@@ -10,7 +10,10 @@ import (
 func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclarationStatement, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	t := qbe.RemapAstType(statement.Type)
 
-	value := c.compileStatement(statement.Value, function, &t, isReturn)
+	value := c.compileStatement(statement.Value, function, t, isReturn)
+	if value.Type.IsFunction() {
+		t = value.Type
+	}
 
 	c.createVariable(t, statement.Name)
 	address := c.createVariable(t, fmt.Sprintf("%s.addr", statement.Name))
@@ -23,7 +26,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 		},
 	)
 
-	if t != value.Type {
+	if !value.Type.IsFunction() && t != value.Type {
 		value = c.convertToType(value.Type, t, value.Value, function)
 		t = value.Type
 	}
@@ -38,10 +41,10 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	address := evaluateLeftSide(c, statement.Left, function)
 
-	value := c.compileStatement(statement.Right, function, &address.Type, isReturn)
+	value := c.compileStatement(statement.Right, function, address.Type, isReturn)
 
 	t := address.Type
-	if t != value.Type {
+	if !value.Type.IsFunction() && t != value.Type {
 		value = c.convertToType(value.Type, t, value.Value, function)
 		t = value.Type
 	}

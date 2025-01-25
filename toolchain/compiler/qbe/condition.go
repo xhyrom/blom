@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileCondition(conditionStatement *ast.If, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileCondition(conditionStatement *ast.If, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	c.Scopes.Append()
 
 	c.TempCounter += 1

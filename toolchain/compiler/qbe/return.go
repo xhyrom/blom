@@ -5,7 +5,7 @@ import (
 	"blom/qbe"
 )
 
-func (c *Compiler) compileReturnStatement(statement *ast.ReturnStatement, function *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
+func (c *Compiler) compileReturnStatement(statement *ast.ReturnStatement, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	returnStatement := c.compileStatement(statement.Value, function, vtype, true)
 
 	if returnStatement == nil {

@@ -9,7 +9,7 @@ import (
 func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
 	a.Scopes.Append()
 
-	lastReturnType := ast.Void
+	var lastReturnType ast.Type = ast.Void
 
 	for _, statement := range block.Body {
 		if statement.Kind() == ast.ReturnNode {

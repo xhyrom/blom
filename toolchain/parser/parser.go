@@ -10,14 +10,16 @@ import (
 )
 
 type Parser struct {
-	tokens []tokens.Token
-	source string
+	tokens      []tokens.Token
+	source      string
+	customTypes map[string]ast.Type
 }
 
 func New(file string) *Parser {
 	return &Parser{
-		tokens: make([]tokens.Token, 0),
-		source: file,
+		tokens:      make([]tokens.Token, 0),
+		source:      file,
+		customTypes: make(map[string]ast.Type),
 	}
 }
 
@@ -86,12 +88,22 @@ func (p *Parser) Advance() {
 	p.tokens = p.tokens[1:]
 }
 
+func (p *Parser) CustomTypes() map[string]ast.Type {
+	return p.customTypes
+}
+
+func (p *Parser) AddCustomType(name string, ty ast.Type) {
+	p.customTypes[name] = ty
+}
+
 func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 	switch p.Current().Kind {
 	case tokens.Fun:
 		return []ast.Statement{statements.ParseFunction(p)}, nil
 	case tokens.Return:
 		return []ast.Statement{statements.ParseReturn(p)}, nil
+	case tokens.Type:
+		return []ast.Statement{statements.ParseTypeDefinition(p)}, nil
 	case tokens.For:
 		decl, while := statements.ParseForLoop(p)
 		if decl != nil {
@@ -215,6 +227,8 @@ func (p *Parser) parseSingleExpression() (ast.Expression, error) {
 		exp = expressions.ParseCompileTimeFunctionCall(p)
 	case tokens.Plus, tokens.Minus, tokens.Tilde, tokens.Ampersand, tokens.Asterisk:
 		exp = expressions.ParseUnary(p)
+	case tokens.Fun:
+		exp = expressions.ParseLambda(p)
 	}
 
 	if p.Current().Kind == tokens.Dot {
