@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func (c *Compiler) compileBinaryExpression(expression *ast.BinaryExpression, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileBinaryExpression(expression *ast.BinaryExpression, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	typedLeft := c.compileStatement(expression.Left, function, vtype, isReturn)
 	typedRight := c.compileStatement(expression.Right, function, vtype, isReturn)
 

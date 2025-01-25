@@ -5,7 +5,7 @@ import (
 	"blom/qbe"
 )
 
-func (c *Compiler) compileBuiltinFunctionCall(call *ast.BuiltinFunctionCall, function *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
+func (c *Compiler) compileBuiltinFunctionCall(call *ast.BuiltinFunctionCall, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	switch call.Name {
 	case "cast":
 		return compileCastFunctionCall(c, call, function, vtype)
@@ -14,7 +14,7 @@ func (c *Compiler) compileBuiltinFunctionCall(call *ast.BuiltinFunctionCall, fun
 	panic("Unknown builtin function call")
 }
 
-func compileCastFunctionCall(c *Compiler, call *ast.BuiltinFunctionCall, function *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
+func compileCastFunctionCall(c *Compiler, call *ast.BuiltinFunctionCall, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	if len(call.Parameters) < 2 {
 		panic("Cast function requires at least two parameters")
 	}
@@ -25,7 +25,7 @@ func compileCastFunctionCall(c *Compiler, call *ast.BuiltinFunctionCall, functio
 	}
 
 	typeName := firstParam.(*ast.IdentifierLiteral).Value
-	astType, err := ast.ParseType(typeName)
+	astType, err := ast.ParseType(typeName, map[string]ast.Type{})
 	if err != nil {
 		panic("Invalid type name")
 	}

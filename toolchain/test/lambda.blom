@@ -1,21 +1,23 @@
 fun @native printf(format: string, ...) -> i32;
 
-type adder = fun(i32) -> i32;
+type ainner = fun(i32) -> i32;
+type adder = fun(i32) -> ainner;
 
-fun @public caller(a: i32, callback: void*) -> i32 {
-  return 5 + callback(a);
+fun @public caller(a: i32, callback: ainner) -> i32 {
+  void* g = @cast("void*", callback);
+  return 5 + g(a);
 }
 
 fun @public main() -> i32 {
-  void* x = fun(a: i32) -> i32 {
-    return a * 9;
+  adder x = fun(a: i32) -> ainner {
+    return fun(b: i32) -> i32 {
+      return 5 + b;
+    };
   };
 
-  x = fun(a: i32) -> i32 {
-    return a * 10;
-  };
+  ainner c = x(5);
+  printf("%d\n", caller(55, c));
 
-  printf("%d\n", caller(55, x));
-  printf("%d\n", x(19));
+  printf("%d\n", c(15));
   return 0;
 }

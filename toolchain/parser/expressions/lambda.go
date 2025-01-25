@@ -79,7 +79,7 @@ func ParseLambda(p Parser) *ast.LambdaDeclaration {
 		}
 
 		var err error
-		returnType, err = ast.ParseType(returnTypeToken.Value)
+		returnType, err = ast.ParseType(returnTypeToken.Value, p.CustomTypes())
 
 		if err != nil {
 			dbg := debug.NewSourceLocation(p.Source(), returnTypeToken.Location.Row, returnTypeToken.Location.Column)
@@ -151,7 +151,7 @@ func parseArgument(p Parser, fun *ast.LambdaDeclaration) (*ast.FunctionArgument,
 		typToken = p.Consume()
 	}
 
-	typ, err := ast.ParseType(typStr)
+	typ, err := ast.ParseType(typStr, p.CustomTypes())
 
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), typToken.Location.Row, typToken.Location.Column)

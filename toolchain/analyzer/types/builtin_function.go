@@ -31,6 +31,15 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.BuiltinFunctionCall) ast
 	}
 
 	firstParam := call.Parameters[0]
+	if firstParam.Kind() == ast.StringLiteralNode {
+		call.Parameters[0] = &ast.IdentifierLiteral{
+			Value: firstParam.(*ast.StringLiteral).Value,
+			Loc:   firstParam.Location(),
+		}
+
+		firstParam = call.Parameters[0]
+	}
+
 	if firstParam.Kind() != ast.IdentifierLiteralNode {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
@@ -40,7 +49,7 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.BuiltinFunctionCall) ast
 	}
 
 	typeName := firstParam.(*ast.IdentifierLiteral).Value
-	castType, err := ast.ParseType(typeName)
+	castType, err := ast.ParseType(typeName, a.TypeManager.Types())
 	if err != nil {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(

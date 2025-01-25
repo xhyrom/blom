@@ -5,7 +5,7 @@ import (
 	"blom/qbe"
 )
 
-func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	switch statement := statement.(type) {
 	case *ast.VariableDeclarationStatement:
 		return c.compileVariableDeclaration(statement, function, isReturn)

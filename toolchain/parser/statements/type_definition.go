@@ -30,7 +30,7 @@ func ParseTypeDefinition(p Parser) *ast.TypeDefinition {
 	if p.Current().Kind == tokens.Fun {
 		ty = parseFunctionSignature(p)
 	} else {
-		t, err := ast.ParseType(p.Current().Value)
+		t, err := ast.ParseType(p.Current().Value, p.CustomTypes())
 
 		if err != nil {
 			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
@@ -55,6 +55,8 @@ func ParseTypeDefinition(p Parser) *ast.TypeDefinition {
 
 	p.Consume()
 
+	p.AddCustomType(name.Value, ty)
+
 	return &ast.TypeDefinition{
 		Name: name.Value,
 		Type: ty,
@@ -76,7 +78,7 @@ func parseFunctionSignature(p Parser) ast.Type {
 
 	for current.Kind != tokens.RightParenthesis && p.Current().Kind != tokens.RightParenthesis {
 		token := p.Consume()
-		ty, err := ast.ParseType(token.Value)
+		ty, err := ast.ParseType(token.Value, p.CustomTypes())
 
 		if err != nil {
 			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
@@ -122,7 +124,7 @@ func parseFunctionSignature(p Parser) ast.Type {
 		}
 
 		var err error
-		returnType, err = ast.ParseType(returnTypeToken.Value)
+		returnType, err = ast.ParseType(returnTypeToken.Value, p.CustomTypes())
 
 		if err != nil {
 			dbg := debug.NewSourceLocation(p.Source(), returnTypeToken.Location.Row, returnTypeToken.Location.Column)

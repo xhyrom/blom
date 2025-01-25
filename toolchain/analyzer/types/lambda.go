@@ -9,8 +9,11 @@ import (
 func (a *TypeAnalyzer) analyzeLambdaDeclaration(lambda *ast.LambdaDeclaration) ast.Type {
 	a.Scopes.Append()
 
-	for _, arg := range lambda.Arguments {
+	argTypes := make([]ast.Type, len(lambda.Arguments))
+
+	for i, arg := range lambda.Arguments {
 		a.Scopes.Set(arg.Name, &Variable{Type: arg.Type})
+		argTypes[i] = arg.Type
 	}
 
 	for _, statement := range lambda.Body {
@@ -18,7 +21,7 @@ func (a *TypeAnalyzer) analyzeLambdaDeclaration(lambda *ast.LambdaDeclaration) a
 			ret := statement.(*ast.ReturnStatement)
 			returnType := a.analyzeExpression(ret.Value)
 
-			if returnType != lambda.ReturnType && (ret.Value.Kind() != ast.IntLiteralNode && !a.canBeImplicitlyCast(returnType, lambda.ReturnType)) {
+			if !returnType.Equal(lambda.ReturnType) && (ret.Value.Kind() != ast.IntLiteralNode && !a.canBeImplicitlyCast(returnType, lambda.ReturnType)) {
 				dbg := debug.NewSourceLocationFromExpression(a.Source, ret)
 				dbg.ThrowError(
 					fmt.Sprintf(
@@ -36,5 +39,5 @@ func (a *TypeAnalyzer) analyzeLambdaDeclaration(lambda *ast.LambdaDeclaration) a
 
 	a.Scopes.Pop()
 
-	return ast.NewFunctionType(*lambda)
+	return ast.NewFunctionType(argTypes, lambda.ReturnType)
 }

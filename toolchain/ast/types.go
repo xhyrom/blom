@@ -1,12 +1,12 @@
 package ast
 
 import (
-	"errors"
 	"fmt"
 	"slices"
 )
 
 type Type interface {
+	Equal(other Type) bool
 	String() string
 	IsPointer() bool
 	IsFunction() bool
@@ -60,22 +60,29 @@ var types = []string{
 	Function:      "fun",
 }
 
-func ParseType(str string) (Type, error) {
+func ParseType(str string, additionalTypes map[string]Type) (Type, error) {
 	if len(str) > 1 && str[len(str)-1] == '*' {
-		baseType, err := ParseType(str[:len(str)-1])
+		baseType, err := ParseType(str[:len(str)-1], additionalTypes)
 		if err != nil {
 			return nil, err
 		}
-
 		return NewPointer(baseType), nil
 	}
 
 	index := slices.Index(types, str)
-	if index == -1 {
-		return nil, errors.New(fmt.Sprintf("Unknown type '%s'", str))
+	if index != -1 {
+		return TypeId(index), nil
 	}
 
-	return TypeId(index), nil
+	if t, exists := additionalTypes[str]; exists {
+		return t, nil
+	}
+
+	return nil, fmt.Errorf("unknown type '%s'", str)
+}
+
+func (t TypeId) Equal(other Type) bool {
+	return t == other
 }
 
 func (t TypeId) String() string {
@@ -140,6 +147,14 @@ func NewPointer(inner Type) PointerType {
 	return PointerType{Inner: inner}
 }
 
+func (p PointerType) Equal(other Type) bool {
+	if otherPointer, ok := other.(PointerType); ok {
+		return p.Inner == otherPointer.Inner
+	}
+
+	return false
+}
+
 func (p PointerType) String() string {
 	return fmt.Sprintf("*%s", p.Inner.String())
 }
@@ -158,6 +173,10 @@ func (p PointerType) IsFloatingPoint() bool {
 
 func (p PointerType) IsPointer() bool {
 	return true
+}
+
+func (p PointerType) IsVoidPointer() bool {
+	return p.Inner == Void
 }
 
 func (p PointerType) IsFunction() bool {
@@ -185,6 +204,24 @@ type FunctionType struct {
 
 func NewFunctionType(args []Type, returnType Type) FunctionType {
 	return FunctionType{Arguments: args, ReturnType: returnType}
+}
+
+func (f FunctionType) Equal(other Type) bool {
+	if otherFunction, ok := other.(FunctionType); ok {
+		if len(f.Arguments) != len(otherFunction.Arguments) {
+			return false
+		}
+
+		for i, arg := range f.Arguments {
+			if !arg.Equal(otherFunction.Arguments[i]) {
+				return false
+			}
+		}
+
+		return f.ReturnType.Equal(otherFunction.ReturnType)
+	}
+
+	return false
 }
 
 func (f FunctionType) String() string {

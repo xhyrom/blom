@@ -29,7 +29,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 	}
 
 	if p.Current().Kind == tokens.DoubleColon {
-		_, err := ast.ParseType(name.Value)
+		_, err := ast.ParseType(name.Value, p.CustomTypes())
 		if err != nil {
 			dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
 			dbg.ThrowError(
@@ -123,7 +123,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 		}
 
 		var err error
-		returnType, err = ast.ParseType(returnTypeToken.Value)
+		returnType, err = ast.ParseType(returnTypeToken.Value, p.CustomTypes())
 
 		if err != nil {
 			dbg := debug.NewSourceLocation(p.Source(), returnTypeToken.Location.Row, returnTypeToken.Location.Column)
@@ -228,7 +228,7 @@ func parseArgument(p Parser, fun *ast.FunctionDeclaration) (*ast.FunctionArgumen
 		typToken = p.Consume()
 	}
 
-	typ, err := ast.ParseType(typStr)
+	typ, err := ast.ParseType(typStr, p.CustomTypes())
 
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), typToken.Location.Row, typToken.Location.Column)

@@ -13,18 +13,20 @@ type TypeAnalyzer struct {
 	Program         *ast.Program
 	Scopes          *scope.Scopes[*Variable]
 	FunctionManager *manager.FunctionManager
+	TypeManager     *manager.TypeManager
 }
 
 type Variable struct {
 	Type ast.Type
 }
 
-func New(file string, program *ast.Program, functionManager *manager.FunctionManager) *TypeAnalyzer {
+func New(file string, program *ast.Program, functionManager *manager.FunctionManager, typeManager *manager.TypeManager) *TypeAnalyzer {
 	return &TypeAnalyzer{
 		Source:          file,
 		Program:         program,
 		Scopes:          scope.NewScopes[*Variable](),
 		FunctionManager: functionManager,
+		TypeManager:     typeManager,
 	}
 }
 
@@ -111,17 +113,59 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 }
 
 func (a *TypeAnalyzer) canBeImplicitlyCast(from ast.Type, to ast.Type) bool {
-	if from.AsId() == to.AsId() {
+	if from.IsFunction() && to.IsPointer() && to.(ast.PointerType).Dereference() == ast.Void {
 		return true
 	}
 
-	if from.IsPointer() && from.Dereference() == ast.Void {
+	if from.IsPointer() && from.(ast.PointerType).Dereference() == ast.Void && to.IsFunction() {
 		return true
 	}
 
-	if to.IsPointer() && to.Dereference() == ast.Void {
+	if from.IsFunction() && to.IsFunction() {
+		fromFunction := from.(ast.FunctionType)
+		toFunction := to.(ast.FunctionType)
+
+		if fromFunction.ReturnType != toFunction.ReturnType {
+			return false
+		}
+
+		if len(fromFunction.Arguments) != len(toFunction.Arguments) {
+			return false
+		}
+
+		for i, fromArg := range fromFunction.Arguments {
+			toArg := toFunction.Arguments[i]
+
+			if fromArg != toArg {
+				return false
+			}
+		}
+
 		return true
 	}
 
-	return from.AsId() < to.AsId() && from.AsId() <= ast.Float64 && to.AsId() <= ast.Float64
+	if (from.IsFunction() && !to.IsFunction()) || (!from.IsFunction() && to.IsFunction()) {
+		return false
+	}
+
+	if from.IsPointer() && from.(ast.PointerType).Dereference() == ast.Void {
+		return true
+	}
+
+	if to.IsPointer() && to.(ast.PointerType).Dereference() == ast.Void {
+		return true
+	}
+
+	if from == to {
+		return true
+	}
+
+	if from.IsNumeric() && to.IsNumeric() {
+		fromWeight := from.Weight()
+		toWeight := to.Weight()
+
+		return fromWeight <= toWeight && fromWeight <= uint8(ast.Float64) && to.Weight() <= uint8(ast.Float64)
+	}
+
+	return false
 }

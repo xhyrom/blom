@@ -57,8 +57,9 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 		name = paramTypes[0].String() + "." + name
 	}
 
-	callback := false
 	function, exists := a.FunctionManager.Get(name, paramTypes)
+	skipChecking := false
+
 	if !exists {
 		variable, exists := a.Scopes.GetValue(name)
 		if !exists {
@@ -97,15 +98,36 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 				)
 			}
 		} else {
-			callback = true
-			function = &ast.FunctionDeclaration{
-				Name:       name,
-				ReturnType: variable.Type,
+			if variable.Type.IsPointer() && variable.Type.(ast.PointerType).Dereference() == ast.Void {
+				skipChecking = true
+
+				function = &ast.FunctionDeclaration{
+					Name:        name,
+					Arguments:   []ast.FunctionArgument{},
+					ReturnType:  variable.Type,
+					Annotations: []ast.Annotation{},
+				}
+			} else {
+				fnType := variable.Type.(ast.FunctionType)
+				fnArguments := make([]ast.FunctionArgument, len(fnType.Arguments))
+
+				for i, arg := range fnType.Arguments {
+					fnArguments[i] = ast.FunctionArgument{
+						Name: string(i),
+						Type: arg,
+					}
+				}
+
+				function = &ast.FunctionDeclaration{
+					Name:       name,
+					Arguments:  fnArguments,
+					ReturnType: fnType.ReturnType,
+				}
 			}
 		}
 	}
 
-	if !function.IsNative() && !callback && len(function.Arguments) != len(call.Parameters) {
+	if !function.IsNative() && !skipChecking && len(function.Arguments) != len(call.Parameters) {
 		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
 		dbg.ThrowError(
 			fmt.Sprintf(
@@ -119,24 +141,22 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 		)
 	}
 
-	if !callback {
-		for i, param := range call.Parameters {
-			paramType := paramTypes[i]
+	for i, param := range call.Parameters {
+		paramType := paramTypes[i]
 
-			if !function.IsNative() && paramType != function.Arguments[i].Type && !a.canBeImplicitlyCast(paramType, function.Arguments[i].Type) {
-				dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)
-				dbg.ThrowError(
-					fmt.Sprintf(
-						"Function '%s' (%s) expects argument %d to be of type '%s', but got '%s'.",
-						call.PrettyName(),
-						formatFunctionSignature(function),
-						i+1,
-						function.Arguments[i].Type,
-						paramType,
-					),
-					true,
-				)
-			}
+		if !function.IsNative() && !skipChecking && !paramType.Equal(function.Arguments[i].Type) && !a.canBeImplicitlyCast(paramType, function.Arguments[i].Type) {
+			dbg := debug.NewSourceLocation(a.Source, param.Location().Row, param.Location().Column)
+			dbg.ThrowError(
+				fmt.Sprintf(
+					"Function '%s' (%s) expects argument %d to be of type '%s', but got '%s'.",
+					call.PrettyName(),
+					formatFunctionSignature(function),
+					i+1,
+					function.Arguments[i].Type,
+					paramType,
+				),
+				true,
+			)
 		}
 	}
 

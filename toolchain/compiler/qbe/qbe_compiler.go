@@ -43,6 +43,7 @@ func (c *Compiler) compilePrimitive(primitive ast.Statement, populate bool) {
 		} else {
 			c.compileFunction(primitive)
 		}
+	case *ast.TypeDefinition:
 	default:
 		panic(fmt.Sprintf("'%T' is not a valid primitive", primitive))
 	}

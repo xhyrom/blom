@@ -5,7 +5,7 @@ import (
 	"blom/qbe"
 )
 
-func (c *Compiler) compileLambda(declaration *ast.LambdaDeclaration, function *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
+func (c *Compiler) compileLambda(declaration *ast.LambdaDeclaration, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	c.Scopes.Append()
 
 	arguments := make([]qbe.TypedValue, len(declaration.Arguments))

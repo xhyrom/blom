@@ -10,14 +10,16 @@ import (
 )
 
 type Parser struct {
-	tokens []tokens.Token
-	source string
+	tokens      []tokens.Token
+	source      string
+	customTypes map[string]ast.Type
 }
 
 func New(file string) *Parser {
 	return &Parser{
-		tokens: make([]tokens.Token, 0),
-		source: file,
+		tokens:      make([]tokens.Token, 0),
+		source:      file,
+		customTypes: make(map[string]ast.Type),
 	}
 }
 
@@ -84,6 +86,14 @@ func (p *Parser) Consume() tokens.Token {
 
 func (p *Parser) Advance() {
 	p.tokens = p.tokens[1:]
+}
+
+func (p *Parser) CustomTypes() map[string]ast.Type {
+	return p.customTypes
+}
+
+func (p *Parser) AddCustomType(name string, ty ast.Type) {
+	p.customTypes[name] = ty
 }
 
 func (p *Parser) ParseStatement() ([]ast.Statement, error) {

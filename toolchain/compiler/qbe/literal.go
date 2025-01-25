@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileLiteral(literal ast.Statement, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileLiteral(literal ast.Statement, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	switch literal := literal.(type) {
 	case *ast.IdentifierLiteral:
 		return compileIdentifierLiteral(c, literal, function)
@@ -45,12 +45,12 @@ func compileIdentifierLiteral(c *Compiler, literal *ast.IdentifierLiteral, funct
 	return variable
 }
 
-func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	prefix := ""
 
 	var t qbe.Type = qbe.Word
 	if vtype != nil {
-		t = *vtype
+		t = vtype
 	}
 
 	// compile time casting (int to float)
@@ -74,12 +74,12 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype *q
 	}
 }
 
-func compileFloatLiteral(literal *ast.FloatLiteral, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func compileFloatLiteral(literal *ast.FloatLiteral, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	prefix := ""
 
 	var t qbe.Type = qbe.Single
 	if vtype != nil {
-		t = *vtype
+		t = vtype
 	}
 
 	// compile time casting (float to int)
@@ -145,7 +145,7 @@ func boolToInt(value bool) int64 {
 	return 0
 }
 
-func compileBooleanLiteral(literal *ast.BooleanLiteral, function *qbe.Function, vtype *qbe.Type, isReturn bool) *qbe.TypedValue {
+func compileBooleanLiteral(literal *ast.BooleanLiteral, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	return compileIntLiteral(&ast.IntLiteral{
 		Value: boolToInt(literal.Value),
 		Loc:   literal.Loc,

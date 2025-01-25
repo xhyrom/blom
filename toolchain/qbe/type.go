@@ -99,7 +99,19 @@ func RemapAstType(t ast.Type) Type {
 	}
 
 	if t.IsPointer() {
-		return PointerBox{Inner: RemapAstType(t.(*ast.PointerType).Inner)}
+		return PointerBox{Inner: RemapAstType(t.(ast.PointerType).Inner)}
+	}
+
+	if t.IsFunction() {
+		fnType := t.(ast.FunctionType)
+
+		lambda := Function{
+			Linkage:    NewLinkage(false),
+			Arguments:  make([]TypedValue, len(fnType.Arguments)),
+			ReturnType: RemapAstType(fnType.ReturnType),
+		}
+
+		return FunctionBox{Inner: lambda}
 	}
 
 	panic(fmt.Sprintf("Unknown type '%s'", t))

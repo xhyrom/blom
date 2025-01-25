@@ -51,7 +51,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	c.Module.SetFunctionByName(declaration.Name, function)
 }
 
-func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype *qbe.Type) *qbe.TypedValue {
+func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	function := c.Module.GetFunctionByName(call.Name)
 	var name qbe.Value
 
@@ -91,9 +91,9 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 
 	parameters := make([]qbe.TypedValue, 0)
 	for i, parameter := range call.Parameters {
-		var argType *qbe.Type
+		var argType qbe.Type
 		if i < len(function.Arguments) {
-			argType = &function.Arguments[i].Type
+			argType = function.Arguments[i].Type
 		} else {
 			argType = vtype
 		}
