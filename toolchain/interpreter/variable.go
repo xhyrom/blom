@@ -12,7 +12,7 @@ func (t *Interpreter) interpretVariableDeclaration(statement *ast.VariableDeclar
 
 	value := t.interpretStatement(statement.Value, function, &ty, isReturn)
 
-	if !value.Type().IsFunction() && ty != value.Type() {
+	if ty != value.Type() {
 		cnv := t.convertToType(value.Type(), ty, value)
 		value = cnv
 	}
@@ -26,7 +26,7 @@ func (t *Interpreter) interpretAssignment(statement *ast.Assignment, function *a
 	ty := target.Type()
 	value := t.interpretStatement(statement.Right, function, &ty, isReturn)
 
-	if ty != value.Type() {
+	if !ty.Equal(value.Type()) {
 		value = t.convertToType(value.Type(), ty, value)
 	}
 
