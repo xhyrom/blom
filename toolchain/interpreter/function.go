@@ -15,7 +15,11 @@ func (t *Interpreter) interpretFunctionCall(call *ast.FunctionCall, currentFunct
 			panic("missing function")
 		}
 
-		function = lambda.(*objects.LambdaObject).AsFunction()
+		if lambda.Type().IsPointer() {
+			function = lambda.(*objects.PointerObject).Value().(*objects.LambdaObject).AsFunction()
+		} else {
+			function = lambda.(*objects.LambdaObject).AsFunction()
+		}
 	}
 
 	if function.IsNative() {

@@ -1,6 +1,8 @@
 package objects
 
-import "blom/ast"
+import (
+	"blom/ast"
+)
 
 type Object interface {
 	Type() ast.Type
@@ -55,7 +57,7 @@ func FromType(t ast.Type) Object {
 	}
 
 	if t.IsPointer() {
-		target := FromType(t.Dereference())
+		target := FromType(t.(ast.PointerType).Dereference())
 		return &PointerObject{
 			target: &target,
 		}
