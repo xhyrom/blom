@@ -66,6 +66,7 @@ const (
 	Fun
 	Return
 	Type
+	Entity
 )
 
 var tokens = []string{
@@ -117,6 +118,7 @@ var tokens = []string{
 	Fun:                "fun",
 	Return:             "return",
 	Type:               "type",
+	Entity:             "entity",
 }
 
 var reserved = []string{
@@ -127,6 +129,7 @@ var reserved = []string{
 	Fun:    "fun",
 	Return: "return",
 	Type:   "type",
+	Entity: "entity",
 }
 
 func (t TokenKind) String() string {

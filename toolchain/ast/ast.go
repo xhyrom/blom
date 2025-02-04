@@ -26,6 +26,9 @@ const (
 	FunctionCallNode
 	CompileTimeFunctionCallNode
 	TypeDefinitionNode
+
+	EntityNode
+	EntityConstructionNode
 )
 
 type Statement interface {

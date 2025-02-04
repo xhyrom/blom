@@ -101,6 +101,9 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 	case *ast.BuiltinFunctionCall:
 		compileTimeFunctionCall := expression.(*ast.BuiltinFunctionCall)
 		return a.analyzeBuiltinFunctionCall(compileTimeFunctionCall)
+	case *ast.EntityConstruction:
+		entityConstruction := expression.(*ast.EntityConstruction)
+		return a.analyzeEntityConstruction(entityConstruction)
 	case *ast.LambdaDeclaration:
 		lambdaDeclaration := expression.(*ast.LambdaDeclaration)
 		return a.analyzeLambdaDeclaration(lambdaDeclaration)
