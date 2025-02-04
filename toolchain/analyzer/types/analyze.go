@@ -47,7 +47,7 @@ func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement) (ast.Type, bool
 	case *ast.FunctionCall:
 		a.analyzeFunctionCall(statement)
 	default:
-		if statement.Kind() != ast.IfNode && statement.Kind() != ast.AssignmentNode {
+		if statement.Kind() != ast.IfNode && statement.Kind() != ast.AssignmentNode && statement.Kind() != ast.BlockNode && statement.Kind() != ast.TypeDefinitionNode {
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 			dbg.ThrowWarning(
 				fmt.Sprintf(
