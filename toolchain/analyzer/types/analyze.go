@@ -89,6 +89,9 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 	case *ast.UnaryExpression:
 		unaryExpression := expression.(*ast.UnaryExpression)
 		return a.analyzeUnaryExpression(unaryExpression)
+	case *ast.MemberAccess:
+		memberAccess := expression.(*ast.MemberAccess)
+		return a.analyzeMemberAccess(memberAccess)
 	case *ast.If: // if is statement but also an expression
 		ifExpression := expression.(*ast.If)
 		return a.analyzeIf(ifExpression)

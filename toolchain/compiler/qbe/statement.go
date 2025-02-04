@@ -19,6 +19,8 @@ func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Funct
 		return c.compileBuiltinFunctionCall(statement, function, vtype)
 	case *ast.LambdaDeclaration:
 		return c.compileLambda(statement, function, vtype)
+	case *ast.EntityConstruction:
+		return c.compileEntityConstruction(statement, function, vtype)
 	case *ast.If:
 		return c.compileCondition(statement, function, vtype, isReturn)
 	case *ast.WhileLoopStatement:

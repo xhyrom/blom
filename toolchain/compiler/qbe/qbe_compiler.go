@@ -45,6 +45,9 @@ func (c *Compiler) compilePrimitive(primitive ast.Statement, populate bool) {
 		}
 	case *ast.TypeDefinition:
 	case *ast.Entity:
+		if populate {
+			c.Module.AddType(c.compileEntity(*primitive))
+		}
 	default:
 		panic(fmt.Sprintf("'%T' is not a valid primitive", primitive))
 	}

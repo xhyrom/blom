@@ -37,6 +37,7 @@ const (
 	Double
 	// Custom
 	Pointer
+	Struct
 	Char
 	Boolean
 	Void
@@ -58,6 +59,7 @@ var types = []string{
 	Double:           "d",
 	// Custom
 	Pointer: "l",
+	Struct:  "l",
 	Boolean: "w",
 	Void:    "w",
 	Null:    "",
@@ -112,6 +114,10 @@ func RemapAstType(t ast.Type) Type {
 		}
 
 		return FunctionBox{Inner: lambda}
+	}
+
+	if t.IsEntity() {
+		return StructBox{Name: t.(*ast.Entity).Name}
 	}
 
 	panic(fmt.Sprintf("Unknown type '%s'", t))
@@ -189,7 +195,7 @@ func (t TypeId) Size() uint64 {
 	case Double:
 		return 8
 	// Returns 8 on 64-bit systems and 4 on 32-bit systems
-	case UnsignedLong, Long, Pointer, Func:
+	case UnsignedLong, Long, Pointer, Func, Struct:
 		return uint64(unsafe.Sizeof(uintptr(0)))
 	default:
 		panic(fmt.Sprintf("Unknown type '%s'", t))

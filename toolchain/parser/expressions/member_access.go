@@ -21,6 +21,9 @@ func ParseMemberAccess(p Parser, left ast.Expression) ast.Expression {
 		return exp
 	}
 
-	// todo: member access
-	return left
+	return &ast.MemberAccess{
+		Left:  left,
+		Right: right,
+		Loc:   left.Location(),
+	}
 }

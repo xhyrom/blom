@@ -51,6 +51,10 @@ func (e Entity) IsFunction() bool {
 	return false
 }
 
+func (e Entity) IsEntity() bool {
+	return true
+}
+
 func (e Entity) IsNumeric() bool {
 	return false
 }

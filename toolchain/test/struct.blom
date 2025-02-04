@@ -1,13 +1,11 @@
 fun @native printf(format: string, ...) -> i32;
 
 entity Person {
-  string name;
   i32 age;
 }
 
-fun Person::new(name: string, age: i32) -> Person {
+fun Person::new(age: i32) -> Person {
   return Person {
-    name = name,
     age = age
   };
 }
@@ -17,9 +15,6 @@ fun Person::extend(self: Person) {
 }
 
 fun @public main() -> i32 {
-  Person p1 = Person::new("John Doe", 42);
-  printf("a");
-  p1.extend()
-
-  return 0;
+  Person p1 = Person::new(42);
+  return p1.age;
 }

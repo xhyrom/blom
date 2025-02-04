@@ -29,6 +29,7 @@ const (
 
 	EntityNode
 	EntityConstructionNode
+	MemberAccessNode
 )
 
 type Statement interface {

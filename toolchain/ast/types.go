@@ -10,6 +10,7 @@ type Type interface {
 	String() string
 	IsPointer() bool
 	IsFunction() bool
+	IsEntity() bool
 	IsNumeric() bool
 	IsInteger() bool
 	IsFloatingPoint() bool
@@ -95,6 +96,10 @@ func (t TypeId) IsPointer() bool {
 
 func (t TypeId) IsFunction() bool {
 	return t == Function
+}
+
+func (t TypeId) IsEntity() bool {
+	return false
 }
 
 func (t TypeId) IsNumeric() bool {
@@ -183,6 +188,10 @@ func (p PointerType) IsFunction() bool {
 	return p.Inner.IsFunction()
 }
 
+func (p PointerType) IsEntity() bool {
+	return p.Inner.IsEntity()
+}
+
 func (p PointerType) IsMapToInt() bool {
 	return Pointer.IsMapToInt()
 }
@@ -234,6 +243,10 @@ func (f FunctionType) IsPointer() bool {
 
 func (f FunctionType) IsFunction() bool {
 	return true
+}
+
+func (f FunctionType) IsEntity() bool {
+	return Function.IsEntity()
 }
 
 func (f FunctionType) IsNumeric() bool {
