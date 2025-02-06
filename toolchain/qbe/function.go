@@ -150,6 +150,10 @@ func (f FunctionBox) IsFunction() bool {
 	return Func.IsFunction()
 }
 
+func (f FunctionBox) IsStruct() bool {
+	return Func.IsStruct()
+}
+
 func (f FunctionBox) IsMapToInt() bool {
 	return Func.IsMapToInt()
 }
@@ -163,5 +167,9 @@ func (f FunctionBox) Size() uint64 {
 }
 
 func (f FunctionBox) IntoAbi() Type {
-	return Func
+	return Func.IntoAbi()
+}
+
+func (f FunctionBox) IntoBase() Type {
+	return Func.IntoBase()
 }

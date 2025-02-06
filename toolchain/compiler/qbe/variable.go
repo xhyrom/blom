@@ -32,7 +32,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	}
 
 	function.LastBlock().AddInstruction(
-		qbe.NewStoreInstruction(t, value.Value, address),
+		qbe.NewStoreInstruction(t.IntoBase(), value.Value, address),
 	)
 
 	return value

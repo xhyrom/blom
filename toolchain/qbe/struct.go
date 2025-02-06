@@ -1,5 +1,7 @@
 package qbe
 
+import "fmt"
+
 type StructBox struct {
 	Name string
 }
@@ -9,7 +11,7 @@ func NewStruct(name string) StructBox {
 }
 
 func (s StructBox) String() string {
-	return Struct.String()
+	return fmt.Sprintf(":%s", s.Name)
 }
 
 func (s StructBox) IsNumeric() bool {
@@ -40,6 +42,10 @@ func (s StructBox) IsFunction() bool {
 	return Struct.IsFunction()
 }
 
+func (s StructBox) IsStruct() bool {
+	return Struct.IsStruct()
+}
+
 func (s StructBox) IsMapToInt() bool {
 	return Struct.IsMapToInt()
 }
@@ -53,5 +59,9 @@ func (s StructBox) Size() uint64 {
 }
 
 func (s StructBox) IntoAbi() Type {
-	return Struct
+	return s
+}
+
+func (s StructBox) IntoBase() Type {
+	return Struct.IntoBase()
 }

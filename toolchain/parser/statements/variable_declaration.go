@@ -43,15 +43,15 @@ func ParseVariableDeclaration(p Parser) *ast.VariableDeclarationStatement {
 	if right.Kind == tokens.Assign {
 		exp, _ := p.ParseExpression()
 		value = exp
-	} else if right.Kind != tokens.Semicolon {
-		if p.Consume().Kind != tokens.Semicolon {
-			if value != nil {
-				dbg := debug.NewSourceLocationFromExpression(p.Source(), value)
-				dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
-			} else {
-				dbg := debug.NewSourceLocation(p.Source(), right.Location.Row, right.Location.Column+1)
-				dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
-			}
+	}
+
+	if right.Kind != tokens.Semicolon && p.Consume().Kind != tokens.Semicolon {
+		if value != nil {
+			dbg := debug.NewSourceLocationFromExpression(p.Source(), value)
+			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
+		} else {
+			dbg := debug.NewSourceLocation(p.Source(), right.Location.Row, right.Location.Column+1)
+			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 		}
 	}
 

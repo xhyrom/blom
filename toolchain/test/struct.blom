@@ -11,10 +11,17 @@ fun Person::new(age: i32) -> Person {
 }
 
 fun Person::extend(self: Person) {
-  printf("extended");
+  printf("extended %d\n", self.age - 5);
+}
+
+fun Person::person(self: Person) -> Person {
+  return self;
 }
 
 fun @public main() -> i32 {
-  Person p1 = Person::new(42);
-  return p1.age;
+  Person p1 = Person::new(420);
+  printf("age: %d\n", p1.age);
+  printf("age: %d\n", p1.age);
+
+  p1.person().person().person().person().person().person().person().extend()
 }

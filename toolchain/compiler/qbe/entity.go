@@ -23,17 +23,40 @@ func (c *Compiler) compileEntity(entity ast.Entity) qbe.TypeDefinition {
 }
 
 func (c *Compiler) compileEntityConstruction(construction *ast.EntityConstruction, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+	entity := c.Entities[construction.Name]
+	structType := c.Module.GetTypeByName(construction.Name)
+
 	alloc := c.createVariable(qbe.Long, construction.Name)
 
 	function.LastBlock().AddAssign(alloc, qbe.Long, qbe.NewAlloc8Instruction(qbe.NewConstantValue(4)))
 
-	offset := c.createVariable(qbe.Long, "offset")
-	function.LastBlock().AddAssign(offset, qbe.Long, qbe.NewAddInstruction(alloc, qbe.NewConstantValue(0)))
+	for name, exp := range construction.Values {
+		offset, ty := memberToOffset(entity, structType, name)
 
-	function.LastBlock().AddInstruction(qbe.NewStoreInstruction(qbe.Word, qbe.NewConstantValue(100), offset))
+		value := c.compileStatement(exp, function, ty, false)
+
+		offsetTmp := c.createVariable(qbe.Long, "offset")
+		function.LastBlock().AddAssign(offsetTmp, qbe.Long, qbe.NewAddInstruction(alloc, qbe.NewConstantValue(offset)))
+
+		function.LastBlock().AddInstruction(qbe.NewStoreInstruction(qbe.Word, value.Value, offsetTmp))
+	}
 
 	return &qbe.TypedValue{
 		Type:  vtype,
 		Value: alloc,
 	}
+}
+
+func memberToOffset(entity *ast.Entity, structType *qbe.TypeDefinition, field string) (int64, qbe.Type) {
+	var offset int64
+	var fieldType qbe.Type
+	for i, item := range entity.Fields {
+		if item.Name == field {
+			offset = int64(i)
+			fieldType = structType.Items[i].Type
+			break
+		}
+	}
+
+	return offset, fieldType
 }

@@ -21,6 +21,8 @@ func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Funct
 		return c.compileLambda(statement, function, vtype)
 	case *ast.EntityConstruction:
 		return c.compileEntityConstruction(statement, function, vtype)
+	case *ast.MemberAccess:
+		return c.compileMemberAccess(statement, function, vtype, isReturn)
 	case *ast.If:
 		return c.compileCondition(statement, function, vtype, isReturn)
 	case *ast.WhileLoopStatement:
