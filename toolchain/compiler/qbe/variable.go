@@ -74,6 +74,12 @@ func evaluateLeftSide(c *Compiler, left ast.Expression, function *qbe.Function) 
 		operand := c.compileStatement(expr.Operand, function, nil, false)
 		return operand
 
+	case *ast.MemberAccess:
+		left := c.compileStatement(expr.Left, function, nil, false)
+		_, offset := processMemberAccess(c, left, expr.Right, function)
+
+		return offset
+
 	default:
 		panic("unsupported left expression")
 	}

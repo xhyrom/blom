@@ -8,11 +8,12 @@ import (
 
 func (c *Compiler) compileMemberAccess(access *ast.MemberAccess, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	left := c.compileStatement(access.Left, function, vtype, isReturn)
+	value, _ := processMemberAccess(c, left, access.Right, function)
 
-	return processMemberAccess(c, left, access.Right, function)
+	return value
 }
 
-func processMemberAccess(c *Compiler, left *qbe.TypedValue, right ast.Expression, function *qbe.Function) *qbe.TypedValue {
+func processMemberAccess(c *Compiler, left *qbe.TypedValue, right ast.Expression, function *qbe.Function) (*qbe.TypedValue, *qbe.TypedValue) {
 	for {
 		switch right := right.(type) {
 		case *ast.IdentifierLiteral:
@@ -20,7 +21,7 @@ func processMemberAccess(c *Compiler, left *qbe.TypedValue, right ast.Expression
 			ty := left.Type
 
 			// Handle pointer automatic dereferencing
-			if ty.IsPointer() && ty.(qbe.PointerBox).Inner.(*qbe.StructBox) != nil {
+			if ty.IsPointer() {
 				ty = ty.(qbe.PointerBox).Inner
 			}
 
@@ -52,12 +53,12 @@ func processMemberAccess(c *Compiler, left *qbe.TypedValue, right ast.Expression
 					qbe.NewLoadInstruction(fieldType, offsetTmp),
 				)
 
-				return &qbe.TypedValue{Type: fieldType, Value: tmp}
+				return &qbe.TypedValue{Type: fieldType, Value: tmp}, &qbe.TypedValue{Type: qbe.Long, Value: offsetTmp}
 			}
 
-			return &qbe.TypedValue{Type: fieldType, Value: offsetTmp}
+			return &qbe.TypedValue{Type: fieldType, Value: offsetTmp}, &qbe.TypedValue{Type: qbe.Long, Value: offsetTmp}
 		case *ast.MemberAccess:
-			nestedLeft := processMemberAccess(c, left, right.Left, function)
+			nestedLeft, _ := processMemberAccess(c, left, right.Left, function)
 			left = nestedLeft
 			right = right.Right.(*ast.MemberAccess)
 

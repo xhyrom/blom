@@ -55,7 +55,7 @@ func (s StructBox) Weight() uint8 {
 }
 
 func (s StructBox) Size() uint64 {
-	return Struct.Size()
+	return 4 // todo: implement
 }
 
 func (s StructBox) IntoAbi() Type {
