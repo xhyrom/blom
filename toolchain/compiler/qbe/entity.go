@@ -26,7 +26,7 @@ func (c *Compiler) compileEntityConstruction(construction *ast.EntityConstructio
 	entity := c.Entities[construction.Name]
 	structType := c.Module.GetTypeByName(construction.Name)
 
-	alloc := c.createVariable(qbe.Long, construction.Name)
+	alloc := c.getTemporaryValue(&construction.Name)
 
 	function.LastBlock().AddAssign(alloc, qbe.Long, qbe.NewAlloc8Instruction(qbe.NewConstantValue(structType.Size(c.Module))))
 
