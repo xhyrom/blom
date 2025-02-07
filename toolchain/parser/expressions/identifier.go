@@ -11,7 +11,7 @@ func ParseIdentifier(p Parser) ast.Statement {
 	token := p.Consume()
 
 	if p.Current().Kind == tokens.LeftParenthesis {
-		return ParseFunctionCall(p, token, false)
+		return ParseFunctionCall(p, token, true)
 	}
 
 	if p.Current().Kind == tokens.DoubleColon {

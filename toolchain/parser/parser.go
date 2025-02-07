@@ -192,12 +192,13 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		return expressions.ParseAssignment(p, left), nil
 	}
 
-	if !p.IsEof() && p.Current().Kind == tokens.Identifier {
+	if !p.IsEof() && p.Current().Kind == tokens.Identifier && p.Next().Kind != tokens.Asterisk {
 		op := p.Current()
 
 		p.Consume()
 		if !p.IsEof() && p.Current().Kind != tokens.LeftCurlyBracket && p.Current().Kind != tokens.Dot &&
 			p.Current().Kind != tokens.If && p.Current().Kind != tokens.LeftParenthesis {
+
 			right, err := p.ParsePrimaryExpression()
 
 			if err == nil {

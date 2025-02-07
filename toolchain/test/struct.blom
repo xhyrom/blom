@@ -36,8 +36,11 @@ fun @public main() -> i32 {
   printf("age: %d\nheight: %d\nname: %s\n", p.age, p.height, p.name);
 
   printf("\n");
-  p.asd()
-  p.gum(69)
+  p.asd();
+  p.gum(69);
+
+  void* lmao = p.cucum;
+  lmao("ahoj");
 
   printf("age: %d\nheight: %d\nname: %s\ncucum: %p\n", p.age, p.height, p.name, p.cucum);
 }
