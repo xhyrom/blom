@@ -14,7 +14,24 @@ fun Person::new(age: i32, height: i32, name: string) -> Person {
   };
 }
 
+fun Person::asd(self: Person*) {
+  (*self).age = (*self).age + 1;
+  (*self).height = (*self).height + 1;
+  (*self).name = "hylík";
+}
+
+fun Person::gum(self: Person*, age: i32) {
+  (*self).age = age;
+}
+
 fun @public main() -> i32 {
-  Person p = Person::new(420, 55, "ahoj");;
+  Person p = Person::new(420, 55, "initial");;
+
+  printf("age: %d\nheight: %d\nname: %s\n", p.age, p.height, p.name);
+
+  printf("\n");
+  p.asd()
+  p.gum(69)
+
   printf("age: %d\nheight: %d\nname: %s\n", p.age, p.height, p.name);
 }

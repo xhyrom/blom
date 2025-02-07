@@ -38,7 +38,7 @@ func processMemberAccess(c *Compiler, left *qbe.TypedValue, right ast.Expression
 			)
 
 			if !load {
-				return &qbe.TypedValue{Type: qbe.Long, Value: offsetTmp}
+				return &qbe.TypedValue{Type: fieldType, Value: offsetTmp}
 			}
 
 			if !fieldType.IsStruct() {

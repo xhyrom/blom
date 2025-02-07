@@ -40,7 +40,6 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 
 func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	address := evaluateLeftSide(c, statement.Left, function)
-
 	value := c.compileStatement(statement.Right, function, address.Type, isReturn)
 
 	t := address.Type

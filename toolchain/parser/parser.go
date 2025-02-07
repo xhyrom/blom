@@ -196,9 +196,10 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		op := p.Current()
 
 		p.Consume()
-		if !p.IsEof() && p.Current().Kind != tokens.LeftCurlyBracket &&
+		if !p.IsEof() && p.Current().Kind != tokens.LeftCurlyBracket && p.Current().Kind != tokens.Dot &&
 			p.Current().Kind != tokens.If && p.Current().Kind != tokens.LeftParenthesis {
 			right, err := p.ParsePrimaryExpression()
+
 			if err == nil {
 				return &ast.FunctionCall{
 					Name: op.Value,
