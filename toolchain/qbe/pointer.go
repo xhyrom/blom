@@ -58,7 +58,7 @@ func (p PointerBox) Weight() uint8 {
 	return Pointer.Weight()
 }
 
-func (p PointerBox) Size() uint64 {
+func (p PointerBox) Size(module Module) uint64 {
 	return uint64(unsafe.Sizeof(uintptr(0)))
 }
 

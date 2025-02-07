@@ -2,19 +2,19 @@ fun @native printf(format: string, ...) -> i32;
 
 entity Person {
   i32 age;
+  i32 height;
+  string name;
 }
 
-fun Person::new(age: i32) -> Person {
+fun Person::new(age: i32, height: i32, name: string) -> Person {
   return Person {
-    age = age
+    age = age,
+    height = height,
+    name = name
   };
 }
 
 fun @public main() -> i32 {
-  Person p1 = Person::new(420);
-  Person* p2 = &p1;
-  (*p2).age = 985;
-
-  printf("age p1: %d\n", p1.age);
-  printf("age p2: %d\n", (*p2).age);
+  Person p = Person::new(420, 55, "ahoj");;
+  printf("age: %d\nheight: %d\nname: %s\n", p.age, p.height, p.name);
 }

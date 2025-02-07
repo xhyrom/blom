@@ -23,7 +23,7 @@ func processMemberAccess(c *Compiler, left *qbe.TypedValue, right ast.Expression
 
 			entity := c.Entities[structName]
 
-			offset, fieldType := memberToOffset(entity, structType, field)
+			offset, fieldType := memberToOffset(c, entity, structType, field)
 
 			if fieldType == nil {
 				panic(fmt.Sprintf("Unknown field '%s' in struct '%s'", field, structName))

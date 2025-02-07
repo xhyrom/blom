@@ -1,6 +1,8 @@
 package qbe
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type StructBox struct {
 	Name string
@@ -54,8 +56,8 @@ func (s StructBox) Weight() uint8 {
 	return Struct.Weight()
 }
 
-func (s StructBox) Size() uint64 {
-	return 4 // todo: implement
+func (s StructBox) Size(module Module) uint64 {
+	return module.GetTypeByName(s.Name).Size(module)
 }
 
 func (s StructBox) IntoAbi() Type {

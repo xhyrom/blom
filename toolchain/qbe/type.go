@@ -19,7 +19,7 @@ type Type interface {
 	IsStruct() bool
 	IsMapToInt() bool
 	Weight() uint8
-	Size() uint64
+	Size(module Module) uint64
 	IntoAbi() Type
 	IntoBase() Type
 }
@@ -61,7 +61,6 @@ var types = []string{
 	Double:           "d",
 	// Custom
 	Pointer: "l",
-	Struct:  "l",
 	Boolean: "w",
 	Void:    "w",
 	Null:    "",
@@ -190,7 +189,7 @@ func (t TypeId) Weight() uint8 {
 }
 
 // Return the size of a type in bytes
-func (t TypeId) Size() uint64 {
+func (t TypeId) Size(m Module) uint64 {
 	switch t {
 	case UnsignedByte, Byte, Char:
 		return 1
@@ -262,4 +261,13 @@ func (t TypeDefinition) String() string {
 	result += fmt.Sprintf("{ %s }", strings.Join(parts, ", "))
 
 	return result
+}
+
+func (t TypeDefinition) Size(module Module) uint64 {
+	var size uint64 = 0
+	for _, field := range t.Items {
+		size += field.Type.Size(module) * uint64(field.Count)
+	}
+
+	return size
 }

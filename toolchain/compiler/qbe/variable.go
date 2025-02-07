@@ -22,7 +22,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 		address,
 		qbe.NewPointer(t),
 		qbe.Alloc8Instruction{
-			Value: qbe.NewConstantValue(int64(t.Size())),
+			Value: qbe.NewConstantValue(int64(t.Size(c.Module))),
 		},
 	)
 

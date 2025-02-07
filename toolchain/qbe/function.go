@@ -162,8 +162,8 @@ func (f FunctionBox) Weight() uint8 {
 	return Func.Weight()
 }
 
-func (f FunctionBox) Size() uint64 {
-	return Func.Size()
+func (f FunctionBox) Size(module Module) uint64 {
+	return Func.Size(module)
 }
 
 func (f FunctionBox) IntoAbi() Type {
