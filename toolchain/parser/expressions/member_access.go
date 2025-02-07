@@ -21,9 +21,15 @@ func ParseMemberAccess(p Parser, left ast.Expression) ast.Expression {
 		return exp
 	}
 
-	return &ast.MemberAccess{
+	exp := &ast.MemberAccess{
 		Left:  left,
 		Right: right,
 		Loc:   left.Location(),
 	}
+
+	if p.Current().Kind == tokens.Assign {
+		return ParseAssignment(p, exp)
+	}
+
+	return exp
 }

@@ -26,11 +26,6 @@ func (a *TypeAnalyzer) analyzeMemberAccess(access *ast.MemberAccess) ast.Type {
 		)
 	}
 
-	// Handle pointer automatic dereferencing
-	if left.IsPointer() {
-		left = left.(ast.PointerType).Inner
-	}
-
 	var field *ast.VariableDeclarationStatement
 	for _, entityField := range left.(*ast.Entity).Fields {
 		if entityField.Name == right {

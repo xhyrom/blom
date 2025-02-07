@@ -93,9 +93,9 @@ func compileDereference(c *Compiler, expression ast.Expression, function *qbe.Fu
 
 	function.LastBlock().AddAssign(
 		tempValue,
-		val.Type.(qbe.PointerBox).Inner,
+		val.Type.(qbe.PointerBox).Inner.IntoBase(),
 		qbe.NewLoadInstruction(
-			val.Type.(qbe.PointerBox).Inner,
+			val.Type.(qbe.PointerBox).Inner.IntoBase(),
 			val.Value,
 		),
 	)

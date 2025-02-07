@@ -189,7 +189,7 @@ func (p PointerType) IsFunction() bool {
 }
 
 func (p PointerType) IsEntity() bool {
-	return p.Inner.IsEntity()
+	return Pointer.IsEntity()
 }
 
 func (p PointerType) IsMapToInt() bool {

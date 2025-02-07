@@ -175,6 +175,11 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		expr, err := p.ParseExpression()
 		p.Consume() // consume ')'
 		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
+
+		if p.Current().Kind == tokens.Dot {
+			expr = expressions.ParseMemberAccess(p, expr)
+		}
+
 		return expr, err
 	}
 
@@ -184,7 +189,7 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 	}
 
 	if !p.IsEof() && p.Current().Kind == tokens.Assign {
-		return statements.ParseAssignment(p, left), nil
+		return expressions.ParseAssignment(p, left), nil
 	}
 
 	if !p.IsEof() && p.Current().Kind == tokens.Identifier {
