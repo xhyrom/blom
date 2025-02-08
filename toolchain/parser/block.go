@@ -1,4 +1,4 @@
-package expressions
+package parser
 
 import (
 	"blom/ast"
@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseBlock(p Parser) *ast.BlockStatement {
+func (p *Parser) parseBlock() *ast.BlockStatement {
 	p.Consume()
 
 	current := p.Current()

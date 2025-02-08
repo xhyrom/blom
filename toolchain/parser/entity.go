@@ -1,4 +1,4 @@
-package statements
+package parser
 
 import (
 	"blom/ast"
@@ -12,7 +12,7 @@ import (
 //	   <variable_declaration>
 //	   <function_declaration>
 //	}
-func ParseEntity(p Parser) *ast.Entity {
+func (p *Parser) parseEntity() *ast.Entity {
 	p.Consume()
 
 	name := p.Consume()
@@ -29,7 +29,7 @@ func ParseEntity(p Parser) *ast.Entity {
 	fields := make([]*ast.VariableDeclarationStatement, 0)
 
 	for !p.IsEof() && p.Current().Kind == tokens.Identifier {
-		fields = append(fields, ParseVariableDeclaration(p))
+		fields = append(fields, p.parseVariableDeclaration())
 	}
 
 	token := p.Consume()
@@ -52,4 +52,57 @@ func ParseEntity(p Parser) *ast.Entity {
 	p.AddCustomType(name.Value, entity)
 
 	return entity
+}
+
+// Parses an entity construction that can have form:
+//
+//	<identifier> {
+//	 <identifier> = <expression>,
+//	 <identifier> = <expression>,
+//	 ...
+//	}
+func (p *Parser) parseEntityConstruction(identifier tokens.Token) ast.Statement {
+	p.Consume()
+
+	name := identifier.Value
+
+	values := make(map[string]ast.Expression)
+
+	for !p.IsEof() && p.Current().Kind != tokens.RightCurlyBracket {
+		key, value := parseEntityConstructionValue(p)
+
+		values[key] = value
+
+		if p.Current().Kind == tokens.Comma {
+			p.Consume()
+		}
+	}
+
+	p.Consume()
+
+	return &ast.EntityConstruction{
+		Name:   name,
+		Values: values,
+		Loc:    identifier.Location,
+	}
+}
+
+func parseEntityConstructionValue(p *Parser) (string, ast.Expression) {
+	name := p.Consume()
+
+	if name.Kind != tokens.Identifier {
+		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
+		dbg.ThrowError("Expected identifier", true)
+	}
+
+	if p.Current().Kind != tokens.Assign {
+		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
+		dbg.ThrowError("Expected assignment", true)
+	}
+
+	p.Consume()
+
+	value, _ := p.ParseExpression()
+
+	return name.Value, value
 }

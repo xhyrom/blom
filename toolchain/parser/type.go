@@ -1,4 +1,4 @@
-package statements
+package parser
 
 import (
 	"blom/ast"
@@ -10,7 +10,7 @@ import (
 // Parses a type definition statement that can have form:
 // type <identifier> = <primitive type>
 // type <identifier> = <function signature>
-func ParseTypeDefinition(p Parser) *ast.TypeDefinition {
+func (p *Parser) parseTypeDefinition() *ast.TypeDefinition {
 	p.Consume()
 
 	name := p.Consume()
@@ -64,7 +64,7 @@ func ParseTypeDefinition(p Parser) *ast.TypeDefinition {
 	}
 }
 
-func parseFunctionSignature(p Parser) ast.Type {
+func parseFunctionSignature(p *Parser) ast.Type {
 	p.Consume()
 
 	current := p.Consume()

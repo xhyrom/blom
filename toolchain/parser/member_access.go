@@ -1,21 +1,21 @@
-package expressions
+package parser
 
 import (
 	"blom/ast"
 	"blom/tokens"
 )
 
-func ParseMemberAccess(p Parser, left ast.Expression) ast.Expression {
+func (p *Parser) parseMemberAccess(left ast.Expression) ast.Expression {
 	p.Consume()
 
-	right := ParseIdentifier(p)
+	right := p.parseLiteral()
 	if right, ok := right.(*ast.FunctionCall); ok {
 		right.MemberAccess = true
 		right.Parameters = append([]ast.Expression{left}, right.Parameters...)
 
 		var exp ast.Expression = right
 		if p.Current().Kind == tokens.Dot {
-			exp = ParseMemberAccess(p, exp)
+			exp = p.parseMemberAccess(exp)
 		}
 
 		return exp
@@ -28,7 +28,7 @@ func ParseMemberAccess(p Parser, left ast.Expression) ast.Expression {
 	}
 
 	if p.Current().Kind == tokens.Assign {
-		return ParseAssignment(p, exp)
+		return p.parseAssignment(exp)
 	}
 
 	return exp

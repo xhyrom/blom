@@ -1,4 +1,4 @@
-package statements
+package parser
 
 import (
 	"blom/ast"
@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseReturn(p Parser) *ast.ReturnStatement {
+func (p *Parser) parseReturn() *ast.ReturnStatement {
 	returnLoc := p.Consume().Location
 
 	current := p.Current()

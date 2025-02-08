@@ -1,9 +1,8 @@
-package statements
+package parser
 
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/parser/expressions"
 	"blom/tokens"
 	"fmt"
 )
@@ -14,7 +13,7 @@ import (
 // fun <identifier>() -> <type> { <body> }
 // fun <identifier>(<identifier>: <type>) -> <type> { <body> }
 // there can be any number of arguments inside ()
-func ParseFunction(p Parser) *ast.FunctionDeclaration {
+func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	p.Consume()
 
 	annotations := make([]ast.Annotation, 0)
@@ -72,7 +71,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 	}
 
 	for current.Kind != tokens.RightParenthesis && p.Current().Kind != tokens.RightParenthesis {
-		arg, location := parseArgument(p, &fn)
+		arg, location := parseFunctionArgument(p, &fn)
 		if arg == nil {
 			p.Consume()
 			break
@@ -157,7 +156,7 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 		dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
 	}
 
-	block := expressions.ParseBlock(p)
+	block := p.parseBlock()
 
 	// TOOD: move to analyzer
 	hasReturn := false
@@ -181,24 +180,9 @@ func ParseFunction(p Parser) *ast.FunctionDeclaration {
 	return &fn
 }
 
-func parseAnnotation(p Parser) ast.Annotation {
-	p.Consume()
-
-	name := p.Consume()
-	typ := ast.ParseAnnotation(name.Value)
-
-	if typ == -1 {
-		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
-		dbg.ThrowError(fmt.Sprintf("Annotation \"%s\" is not recognized", name.Value), true)
-	}
-
-	return ast.Annotation{
-		Type: typ,
-		Loc:  name.Location,
-	}
-}
-
-func parseArgument(p Parser, fun *ast.FunctionDeclaration) (*ast.FunctionArgument, *tokens.Location) {
+// Parses an function argument that can have form:
+// <identifier>: <type>
+func parseFunctionArgument(p *Parser, fun *ast.FunctionDeclaration) (*ast.FunctionArgument, *tokens.Location) {
 	name := p.Consume()
 	if name.Kind == tokens.Ellipsis {
 		fun.Variadic = true
@@ -239,4 +223,64 @@ func parseArgument(p Parser, fun *ast.FunctionDeclaration) (*ast.FunctionArgumen
 		Name: name.Value,
 		Type: typ,
 	}, &typToken.Location
+}
+
+// Parses a function call that can have form:
+// <identifier>(<expression>, <expression>, ...)
+func (p *Parser) parseFunctionCall(identifier tokens.Token, requiresSemicolon bool) *ast.FunctionCall {
+	p.Consume()
+
+	name := identifier.Value
+	parameters := make([]ast.Expression, 0)
+
+	for p.Current().Kind != tokens.RightParenthesis {
+		exp, err := p.ParseExpression()
+		if err != nil {
+			dbg := debug.NewSourceLocation(p.Source(), identifier.Location.Row, identifier.Location.Column+2)
+			dbg.ThrowError(
+				err.Error(),
+				true,
+				debug.NewHint("Did you forget to close a function call?", ")"),
+			)
+		}
+
+		parameters = append(parameters, exp)
+
+		if p.Current().Kind != tokens.Comma {
+			if p.Current().Kind != tokens.RightParenthesis {
+				dbg := debug.NewSourceLocationFromExpression(p.Source(), parameters[len(parameters)-1])
+				dbg.ThrowError(
+					"Expected comma or right parenthesis",
+					true,
+					debug.NewHint("Add comma for more parameters", ","),
+					debug.NewHint("Add closing parenthesis to end function call", ")"),
+				)
+			}
+
+			break
+		}
+
+		p.Consume()
+	}
+
+	last := p.Consume()
+
+	if requiresSemicolon {
+		if p.Consume().Kind != tokens.Semicolon {
+			dbg := debug.NewSourceLocation(p.Source(), last.Location.Row, last.Location.Column+1)
+			dbg.ThrowError(
+				"Expected semicolon",
+				true,
+				debug.NewHint("Did you forget to add a semicolon?", ";"),
+			)
+		} else {
+			last = p.Current()
+		}
+	}
+
+	return &ast.FunctionCall{
+		Name:       name,
+		Parameters: parameters,
+		Loc:        last.Location,
+	}
 }

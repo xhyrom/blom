@@ -4,8 +4,6 @@ import (
 	"blom/ast"
 	"blom/debug"
 	"blom/lexer"
-	"blom/parser/expressions"
-	"blom/parser/statements"
 	"blom/tokens"
 	"errors"
 	"fmt"
@@ -101,30 +99,30 @@ func (p *Parser) AddCustomType(name string, ty ast.Type) {
 func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 	switch p.Current().Kind {
 	case tokens.Fun:
-		return []ast.Statement{statements.ParseFunction(p)}, nil
+		return []ast.Statement{p.parseFunction()}, nil
 	case tokens.Return:
-		return []ast.Statement{statements.ParseReturn(p)}, nil
+		return []ast.Statement{p.parseReturn()}, nil
 	case tokens.Type:
-		return []ast.Statement{statements.ParseTypeDefinition(p)}, nil
+		return []ast.Statement{p.parseTypeDefinition()}, nil
 	case tokens.Entity:
-		return []ast.Statement{statements.ParseEntity(p)}, nil
+		return []ast.Statement{p.parseEntity()}, nil
 	case tokens.For:
-		decl, while := statements.ParseForLoop(p)
+		decl, while := p.ParseForLoop()
 		if decl != nil {
 			return []ast.Statement{decl, while}, nil
 		}
 
 		return []ast.Statement{while}, nil
 	case tokens.While:
-		return []ast.Statement{statements.ParseWhileLoop(p)}, nil
+		return []ast.Statement{p.ParseWhileLoop()}, nil
 	case tokens.Identifier:
 		if p.Next().Kind == tokens.Identifier ||
 			(p.Next().Kind == tokens.Asterisk && p.Peek(2).Kind == tokens.Identifier) {
-			return []ast.Statement{statements.ParseVariableDeclaration(p)}, nil
+			return []ast.Statement{p.parseVariableDeclaration()}, nil
 		}
 
 		if p.Next().Kind == tokens.LeftParenthesis {
-			return []ast.Statement{expressions.ParseFunctionCall(p, p.Consume(), true)}, nil
+			return []ast.Statement{p.parseFunctionCall(p.Consume(), true)}, nil
 		}
 
 		if p.Next().Kind == tokens.DoubleColon {
@@ -155,11 +153,11 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 				Value:    token.Value + "." + identifier.Value,
 			}
 
-			return []ast.Statement{expressions.ParseFunctionCall(p, token, true)}, nil
+			return []ast.Statement{p.parseFunctionCall(token, true)}, nil
 		}
 
 		if p.Next().Kind == tokens.Dot {
-			exp := expressions.ParseMemberAccess(p, expressions.ParseIdentifier(p))
+			exp := p.parseMemberAccess(p.parseLiteral())
 
 			if p.Consume().Kind != tokens.Semicolon {
 				dbg := debug.NewSourceLocation(p.Source(), exp.Location().Row, exp.Location().Column+1)
@@ -209,11 +207,11 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 	// parse cases that can't be infix
 	switch p.Current().Kind {
 	case tokens.LeftCurlyBracket:
-		return expressions.ParseBlock(p), nil
+		return p.parseBlock(), nil
 	case tokens.If:
-		return expressions.ParseIf(p), nil
+		return p.parseCondition(), nil
 	case tokens.AtMark:
-		return expressions.ParseCompileTimeFunctionCall(p), nil
+		return p.parseBuiltinFunctionCall(), nil
 	case tokens.LeftParenthesis:
 		p.Consume() // consume '('
 		expr, err := p.ParseExpression()
@@ -221,7 +219,7 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
 
 		if p.Current().Kind == tokens.Dot {
-			expr = expressions.ParseMemberAccess(p, expr)
+			expr = p.parseMemberAccess(expr)
 		}
 
 		return expr, err
@@ -233,7 +231,7 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 	}
 
 	if !p.IsEof() && p.Current().Kind == tokens.Assign {
-		return expressions.ParseAssignment(p, left), nil
+		return p.parseAssignment(left), nil
 	}
 
 	if !p.IsEof() && p.Current().Kind == tokens.Identifier && p.Next().Kind != tokens.Asterisk {
@@ -275,17 +273,17 @@ func (p *Parser) parseSingleExpression() (ast.Expression, error) {
 		tokens.FloatLiteral,
 		tokens.BooleanLiteral,
 		tokens.Identifier:
-		exp, _ = expressions.ParseLiteral(p)
+		exp = p.parseLiteral()
 	case tokens.AtMark:
-		exp = expressions.ParseCompileTimeFunctionCall(p)
+		exp = p.parseBuiltinFunctionCall()
 	case tokens.Plus, tokens.Minus, tokens.Tilde, tokens.Ampersand, tokens.Asterisk:
-		exp = expressions.ParseUnary(p)
+		exp = p.parseUnaryExpression()
 	case tokens.Fun:
-		exp = expressions.ParseLambda(p)
+		exp = p.parseLambda()
 	}
 
 	if p.Current().Kind == tokens.Dot {
-		exp = expressions.ParseMemberAccess(p, exp)
+		exp = p.parseMemberAccess(exp)
 	}
 
 	if exp != nil {

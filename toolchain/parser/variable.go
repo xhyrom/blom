@@ -1,4 +1,4 @@
-package statements
+package parser
 
 import (
 	"blom/ast"
@@ -9,7 +9,7 @@ import (
 // Parses a variable declaration statement that can have form:
 // <type> <identifier> = <expression>;
 // <type> <identifier>;
-func ParseVariableDeclaration(p Parser) *ast.VariableDeclarationStatement {
+func (p *Parser) parseVariableDeclaration() *ast.VariableDeclarationStatement {
 	valueTypeToken := p.Consume()
 
 	var typeStr string
@@ -60,5 +60,28 @@ func ParseVariableDeclaration(p Parser) *ast.VariableDeclarationStatement {
 		Value: value,
 		Type:  valueType,
 		Loc:   right.Location,
+	}
+}
+
+// Parses an assignment statement that can have form:
+// <expression> = <expression>;
+func (p *Parser) parseAssignment(left ast.Expression) *ast.Assignment {
+	if left == nil {
+		left, _ = p.ParseExpression()
+	}
+
+	eq := p.Consume()
+
+	right, _ := p.ParseExpression()
+
+	if p.Consume().Kind != tokens.Semicolon {
+		dbg := debug.NewSourceLocationFromExpression(p.Source(), right)
+		dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
+	}
+
+	return &ast.Assignment{
+		Left:  left,
+		Right: right,
+		Loc:   eq.Location,
 	}
 }

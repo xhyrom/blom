@@ -1,4 +1,4 @@
-package expressions
+package parser
 
 import (
 	"blom/ast"
@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseCompileTimeFunctionCall(p Parser) *ast.BuiltinFunctionCall {
+func (p *Parser) parseBuiltinFunctionCall() *ast.BuiltinFunctionCall {
 	p.Consume()
 
 	identifier := p.Consume()

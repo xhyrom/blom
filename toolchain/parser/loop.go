@@ -1,9 +1,8 @@
-package statements
+package parser
 
 import (
 	"blom/ast"
 	"blom/debug"
-	"blom/parser/expressions"
 	"blom/tokens"
 	"fmt"
 )
@@ -11,7 +10,7 @@ import (
 // Parses a for loop statement that can have form:
 // for <declaration>; <condition>; <step>; { <body> }
 // for <condition>; <step>; { <body> }
-func ParseForLoop(p Parser) (*ast.VariableDeclarationStatement, *ast.WhileLoopStatement) {
+func (p *Parser) ParseForLoop() (*ast.VariableDeclarationStatement, *ast.WhileLoopStatement) {
 	p.Consume()
 
 	var declaration *ast.VariableDeclarationStatement
@@ -58,7 +57,7 @@ func ParseForLoop(p Parser) (*ast.VariableDeclarationStatement, *ast.WhileLoopSt
 		}
 	}
 
-	body := expressions.ParseBlock(p)
+	body := p.parseBlock()
 
 	body.Body = append(body.Body, step)
 
@@ -69,7 +68,7 @@ func ParseForLoop(p Parser) (*ast.VariableDeclarationStatement, *ast.WhileLoopSt
 	}
 }
 
-func ParseWhileLoop(p Parser) *ast.WhileLoopStatement {
+func (p *Parser) ParseWhileLoop() *ast.WhileLoopStatement {
 	p.Consume()
 
 	condition, err := p.ParseExpression()
@@ -83,7 +82,7 @@ func ParseWhileLoop(p Parser) *ast.WhileLoopStatement {
 		dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
 	}
 
-	body := expressions.ParseBlock(p)
+	body := p.parseBlock()
 
 	return &ast.WhileLoopStatement{
 		Condition: condition,

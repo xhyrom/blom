@@ -1,4 +1,4 @@
-package expressions
+package parser
 
 import (
 	"blom/ast"
@@ -11,7 +11,7 @@ import (
 // fun () { <body> }
 // fun (<identifier>: <type>) { <body> }
 // there can be any number of arguments inside ()
-func ParseLambda(p Parser) *ast.LambdaDeclaration {
+func (p *Parser) parseLambda() *ast.LambdaDeclaration {
 	fun := p.Consume()
 	current := p.Consume()
 
@@ -28,7 +28,7 @@ func ParseLambda(p Parser) *ast.LambdaDeclaration {
 	}
 
 	for current.Kind != tokens.RightParenthesis && p.Current().Kind != tokens.RightParenthesis {
-		arg, location := parseArgument(p, &lambda)
+		arg, location := parseLambdaArgument(p, &lambda)
 		if arg == nil {
 			p.Consume()
 			break
@@ -97,7 +97,7 @@ func ParseLambda(p Parser) *ast.LambdaDeclaration {
 		dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
 	}
 
-	block := ParseBlock(p)
+	block := p.parseBlock()
 	// TOOD: move to analyzer
 	hasReturn := false
 	for _, stmt := range block.Body {
@@ -121,7 +121,7 @@ func ParseLambda(p Parser) *ast.LambdaDeclaration {
 	return &lambda
 }
 
-func parseArgument(p Parser, fun *ast.LambdaDeclaration) (*ast.FunctionArgument, *tokens.Location) {
+func parseLambdaArgument(p *Parser, fun *ast.LambdaDeclaration) (*ast.FunctionArgument, *tokens.Location) {
 	name := p.Consume()
 	if name.Kind == tokens.Ellipsis {
 		fun.Variadic = true

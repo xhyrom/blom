@@ -1,11 +1,11 @@
-package expressions
+package parser
 
 import (
 	"blom/ast"
 	"blom/debug"
 )
 
-func ParseUnary(p Parser) ast.Expression {
+func (p *Parser) parseUnaryExpression() ast.Expression {
 	operator := p.Consume()
 	operand, err := p.ParsePrimaryExpression()
 

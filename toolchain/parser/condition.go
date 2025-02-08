@@ -1,4 +1,4 @@
-package expressions
+package parser
 
 import (
 	"blom/ast"
@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func ParseIf(p Parser) *ast.If {
+func (p *Parser) parseCondition() *ast.If {
 	p.Consume()
 
 	condition, err := p.ParseExpression()
@@ -20,7 +20,7 @@ func ParseIf(p Parser) *ast.If {
 		dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
 	}
 
-	thenBlock := ParseBlock(p)
+	thenBlock := p.parseBlock()
 	var elseBlock *ast.BlockStatement = &ast.BlockStatement{Body: []ast.Statement{}}
 
 	loc := thenBlock.Loc
@@ -34,7 +34,7 @@ func ParseIf(p Parser) *ast.If {
 			dbg.ThrowError("Missing block", true, debug.NewHint("Add '{'", " {"))
 		}
 
-		block := ParseBlock(p)
+		block := p.parseBlock()
 
 		elseBlock = block
 		loc = elseBlock.Loc
