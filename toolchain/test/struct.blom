@@ -5,7 +5,7 @@ entity Person {
   i32 height;
   string name;
   void* cucum;
-}
+};
 
 fun Person::new(age: i32, height: i32, name: string, asd: void*) -> Person {
   return Person {

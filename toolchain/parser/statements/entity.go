@@ -32,9 +32,15 @@ func ParseEntity(p Parser) *ast.Entity {
 		fields = append(fields, ParseVariableDeclaration(p))
 	}
 
-	if p.Consume().Kind != tokens.RightCurlyBracket {
+	token := p.Consume()
+	if token.Kind != tokens.RightCurlyBracket {
 		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
 		dbg.ThrowError("Expected '}'", true)
+	}
+
+	if p.Consume().Kind != tokens.Semicolon {
+		dbg := debug.NewSourceLocation(p.Source(), token.Location.Row, token.Location.Column+1)
+		dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 	}
 
 	entity := &ast.Entity{
