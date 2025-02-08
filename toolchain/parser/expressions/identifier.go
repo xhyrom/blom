@@ -40,7 +40,7 @@ func ParseIdentifier(p Parser) ast.Statement {
 			Value:    token.Value + "." + identifier.Value,
 		}
 
-		return ParseFunctionCall(p, token, true)
+		return ParseFunctionCall(p, token, false)
 	}
 
 	if p.Current().Kind == tokens.LeftCurlyBracket {

@@ -2,11 +2,13 @@ package parser
 
 import (
 	"blom/ast"
+	"blom/debug"
 	"blom/lexer"
 	"blom/parser/expressions"
 	"blom/parser/statements"
 	"blom/tokens"
 	"errors"
+	"fmt"
 )
 
 type Parser struct {
@@ -123,6 +125,48 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 
 		if p.Next().Kind == tokens.LeftParenthesis {
 			return []ast.Statement{expressions.ParseFunctionCall(p, p.Consume(), true)}, nil
+		}
+
+		if p.Next().Kind == tokens.DoubleColon {
+			token := p.Consume()
+
+			_, err := ast.ParseType(token.Value, p.CustomTypes())
+			if err != nil {
+				dbg := debug.NewSourceLocation(p.Source(), token.Location.Row, token.Location.Column)
+				dbg.ThrowError(
+					fmt.Sprintf(
+						"Cannot extend type \"%s\" because it isn't a primitive type",
+						token.Value,
+					),
+					true,
+				)
+			}
+
+			p.Consume()
+			identifier := p.Consume()
+			if identifier.Kind != tokens.Identifier {
+				dbg := debug.NewSourceLocation(p.Source(), identifier.Location.Row, identifier.Location.Column)
+				dbg.ThrowError(fmt.Sprintf("Function name must be valid identifier, got \"%s\"", token.Value), true)
+			}
+
+			token = tokens.Token{
+				Kind:     tokens.Identifier,
+				Location: token.Location,
+				Value:    token.Value + "." + identifier.Value,
+			}
+
+			return []ast.Statement{expressions.ParseFunctionCall(p, token, true)}, nil
+		}
+
+		if p.Next().Kind == tokens.Dot {
+			exp := expressions.ParseMemberAccess(p, expressions.ParseIdentifier(p))
+
+			if p.Consume().Kind != tokens.Semicolon {
+				dbg := debug.NewSourceLocation(p.Source(), exp.Location().Row, exp.Location().Column+1)
+				dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
+			}
+
+			return []ast.Statement{exp}, nil
 		}
 	}
 
