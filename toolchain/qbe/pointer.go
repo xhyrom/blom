@@ -46,6 +46,10 @@ func (p PointerBox) IsFunction() bool {
 	return false
 }
 
+func (p PointerBox) IsStruct() bool {
+	return false
+}
+
 func (p PointerBox) IsMapToInt() bool {
 	return Pointer.IsMapToInt()
 }
@@ -54,10 +58,14 @@ func (p PointerBox) Weight() uint8 {
 	return Pointer.Weight()
 }
 
-func (p PointerBox) Size() uint64 {
+func (p PointerBox) Size(module Module) uint64 {
 	return uint64(unsafe.Sizeof(uintptr(0)))
 }
 
 func (p PointerBox) IntoAbi() Type {
-	return Pointer
+	return Pointer.IntoAbi()
+}
+
+func (p PointerBox) IntoBase() Type {
+	return Pointer.IntoBase()
 }

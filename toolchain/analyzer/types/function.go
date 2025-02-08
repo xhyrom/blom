@@ -3,6 +3,7 @@ package types
 import (
 	"blom/ast"
 	"blom/debug"
+	"blom/tokens"
 	"fmt"
 	"strings"
 )
@@ -139,6 +140,16 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 			),
 			true,
 		)
+	}
+
+	if call.MemberAccess && len(function.Arguments) > 0 && function.Arguments[0].Type.IsPointer() {
+		call.Parameters[0] = &ast.UnaryExpression{
+			Operand:  call.Parameters[0],
+			Operator: tokens.Ampersand,
+			Loc:      call.Parameters[0].Location(),
+		}
+
+		paramTypes[0] = a.analyzeExpression(call.Parameters[0])
 	}
 
 	for i, param := range call.Parameters {

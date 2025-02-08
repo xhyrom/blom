@@ -1,0 +1,46 @@
+fun @native printf(format: string, ...) -> i32;
+
+entity Person {
+  i32 age;
+  i32 height;
+  string name;
+  void* cucum;
+}
+
+fun Person::new(age: i32, height: i32, name: string, asd: void*) -> Person {
+  return Person {
+    age = age,
+    height = height,
+    name = name,
+    cucum = asd,
+  };
+}
+
+fun Person::asd(self: Person*) {
+  (*self).age = (*self).age + 1;
+  (*self).height = (*self).height + 1;
+  (*self).name = "hylík";
+}
+
+fun Person::gum(self: Person*, age: i32) {
+  (*self).age = age;
+}
+
+fun @public main() -> i32 {
+  void* g = fun(l: string) {
+    printf("lambda g: %s\n", l);
+  };
+
+  Person p = Person::new(420, 55, "initial", g);;
+
+  printf("age: %d\nheight: %d\nname: %s\n", p.age, p.height, p.name);
+
+  printf("\n");
+  p.asd()
+  p.gum(69)
+
+  void* lmao = p.cucum;
+  lmao("ahoj");
+
+  printf("age: %d\nheight: %d\nname: %s\ncucum: %p\n", p.age, p.height, p.name, p.cucum);
+}

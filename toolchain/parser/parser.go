@@ -104,6 +104,8 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 		return []ast.Statement{statements.ParseReturn(p)}, nil
 	case tokens.Type:
 		return []ast.Statement{statements.ParseTypeDefinition(p)}, nil
+	case tokens.Entity:
+		return []ast.Statement{statements.ParseEntity(p)}, nil
 	case tokens.For:
 		decl, while := statements.ParseForLoop(p)
 		if decl != nil {
@@ -173,6 +175,11 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 		expr, err := p.ParseExpression()
 		p.Consume() // consume ')'
 		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
+
+		if p.Current().Kind == tokens.Dot {
+			expr = expressions.ParseMemberAccess(p, expr)
+		}
+
 		return expr, err
 	}
 
@@ -182,16 +189,18 @@ func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
 	}
 
 	if !p.IsEof() && p.Current().Kind == tokens.Assign {
-		return statements.ParseAssignment(p, left), nil
+		return expressions.ParseAssignment(p, left), nil
 	}
 
-	if !p.IsEof() && p.Current().Kind == tokens.Identifier {
+	if !p.IsEof() && p.Current().Kind == tokens.Identifier && p.Next().Kind != tokens.Asterisk {
 		op := p.Current()
 
 		p.Consume()
-		if !p.IsEof() && p.Current().Kind != tokens.LeftCurlyBracket &&
+		if !p.IsEof() && p.Current().Kind != tokens.LeftCurlyBracket && p.Current().Kind != tokens.Dot &&
 			p.Current().Kind != tokens.If && p.Current().Kind != tokens.LeftParenthesis {
+
 			right, err := p.ParsePrimaryExpression()
+
 			if err == nil {
 				return &ast.FunctionCall{
 					Name: op.Value,

@@ -13,6 +13,8 @@ func (a *Analyzer) populate() {
 			a.populateFunction(statement)
 		case *ast.TypeDefinition:
 			a.populateTypeDefinition(statement)
+		case *ast.Entity:
+			a.TypeManager.Register(statement.Name, statement)
 		default:
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 			dbg.ThrowError(

@@ -22,7 +22,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 		address,
 		qbe.NewPointer(t),
 		qbe.Alloc8Instruction{
-			Value: qbe.NewConstantValue(int64(t.Size())),
+			Value: qbe.NewConstantValue(int64(t.Size(c.Module))),
 		},
 	)
 
@@ -32,7 +32,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	}
 
 	function.LastBlock().AddInstruction(
-		qbe.NewStoreInstruction(t, value.Value, address),
+		qbe.NewStoreInstruction(t.IntoBase(), value.Value, address),
 	)
 
 	return value
@@ -40,7 +40,6 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 
 func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	address := evaluateLeftSide(c, statement.Left, function)
-
 	value := c.compileStatement(statement.Right, function, address.Type, isReturn)
 
 	t := address.Type
@@ -73,6 +72,10 @@ func evaluateLeftSide(c *Compiler, left ast.Expression, function *qbe.Function) 
 
 		operand := c.compileStatement(expr.Operand, function, nil, false)
 		return operand
+
+	case *ast.MemberAccess:
+		left := c.compileStatement(expr.Left, function, nil, false)
+		return processMemberAccess(c, left, expr.Right, function, false)
 
 	default:
 		panic("unsupported left expression")

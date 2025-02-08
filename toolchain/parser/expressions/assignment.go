@@ -1,4 +1,4 @@
-package statements
+package expressions
 
 import (
 	"blom/ast"

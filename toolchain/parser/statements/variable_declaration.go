@@ -45,7 +45,7 @@ func ParseVariableDeclaration(p Parser) *ast.VariableDeclarationStatement {
 		value = exp
 	}
 
-	if p.Consume().Kind != tokens.Semicolon {
+	if right.Kind != tokens.Semicolon && p.Consume().Kind != tokens.Semicolon {
 		if value != nil {
 			dbg := debug.NewSourceLocationFromExpression(p.Source(), value)
 			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))

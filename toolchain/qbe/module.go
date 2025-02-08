@@ -40,6 +40,16 @@ func (m *Module) SetFunctionByName(name string, function Function) {
 	}
 }
 
+func (m *Module) GetTypeByName(name string) *TypeDefinition {
+	for i, t := range m.Types {
+		if t.Name == name {
+			return &m.Types[i]
+		}
+	}
+
+	return nil
+}
+
 func (m *Module) AddType(t TypeDefinition) {
 	m.Types = append(m.Types, t)
 }

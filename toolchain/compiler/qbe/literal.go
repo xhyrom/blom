@@ -38,8 +38,8 @@ func compileIdentifierLiteral(c *Compiler, literal *ast.IdentifierLiteral, funct
 
 	function.LastBlock().AddAssign(
 		variable.Value,
-		variable.Type,
-		qbe.NewLoadInstruction(variable.Type, address.Value),
+		variable.Type.IntoBase(),
+		qbe.NewLoadInstruction(variable.Type.IntoBase(), address.Value),
 	)
 
 	return variable

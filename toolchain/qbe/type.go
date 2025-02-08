@@ -16,10 +16,12 @@ type Type interface {
 	IsUnsigned() bool
 	IsPointer() bool
 	IsFunction() bool
+	IsStruct() bool
 	IsMapToInt() bool
 	Weight() uint8
-	Size() uint64
+	Size(module Module) uint64
 	IntoAbi() Type
+	IntoBase() Type
 }
 
 type TypeId int
@@ -37,6 +39,7 @@ const (
 	Double
 	// Custom
 	Pointer
+	Struct
 	Char
 	Boolean
 	Void
@@ -114,6 +117,10 @@ func RemapAstType(t ast.Type) Type {
 		return FunctionBox{Inner: lambda}
 	}
 
+	if t.IsEntity() {
+		return StructBox{Name: t.(*ast.Entity).Name}
+	}
+
 	panic(fmt.Sprintf("Unknown type '%s'", t))
 }
 
@@ -149,6 +156,10 @@ func (t TypeId) IsFunction() bool {
 	return t == Func
 }
 
+func (t TypeId) IsStruct() bool {
+	return t == Struct
+}
+
 func (t TypeId) IsMapToInt() bool {
 	switch t {
 	case Byte, UnsignedByte, Halfword, UnsignedHalfword, UnsignedWord, Boolean, Char, Void:
@@ -178,7 +189,7 @@ func (t TypeId) Weight() uint8 {
 }
 
 // Return the size of a type in bytes
-func (t TypeId) Size() uint64 {
+func (t TypeId) Size(m Module) uint64 {
 	switch t {
 	case UnsignedByte, Byte, Char:
 		return 1
@@ -192,7 +203,7 @@ func (t TypeId) Size() uint64 {
 	case UnsignedLong, Long, Pointer, Func:
 		return uint64(unsafe.Sizeof(uintptr(0)))
 	default:
-		panic(fmt.Sprintf("Unknown type '%s'", t))
+		panic(fmt.Sprintf("No size for '%s'", t))
 	}
 }
 
@@ -201,6 +212,18 @@ func (t TypeId) IntoAbi() Type {
 	switch t {
 	case Byte, Char, UnsignedByte, Halfword, UnsignedHalfword, UnsignedWord:
 		return Word
+	}
+
+	return t
+}
+
+// Return the base type of a type
+func (t TypeId) IntoBase() Type {
+	switch t {
+	case Byte, Char, UnsignedByte, Halfword, UnsignedHalfword, UnsignedWord:
+		return Word
+	case Struct:
+		return Long
 	}
 
 	return t
@@ -238,4 +261,13 @@ func (t TypeDefinition) String() string {
 	result += fmt.Sprintf("{ %s }", strings.Join(parts, ", "))
 
 	return result
+}
+
+func (t TypeDefinition) Size(module Module) uint64 {
+	var size uint64 = 0
+	for _, field := range t.Items {
+		size += field.Type.Size(module) * uint64(field.Count)
+	}
+
+	return size
 }
