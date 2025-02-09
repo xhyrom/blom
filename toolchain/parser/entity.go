@@ -15,6 +15,8 @@ import (
 func (p *Parser) parseEntity() *ast.Entity {
 	p.Consume()
 
+	p.collectAnnotations()
+
 	name := p.Consume()
 	if name.Kind != tokens.Identifier {
 		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
@@ -26,10 +28,16 @@ func (p *Parser) parseEntity() *ast.Entity {
 		dbg.ThrowError("Expected '{'", true)
 	}
 
+	entityAnnotations := p.extractAnnotations()
+
 	fields := make([]*ast.VariableDeclarationStatement, 0)
+
+	p.collectAnnotations()
 
 	for !p.IsEof() && p.Current().Kind == tokens.Identifier {
 		fields = append(fields, p.parseVariableDeclaration())
+
+		p.collectAnnotations()
 	}
 
 	token := p.Consume()
@@ -44,9 +52,10 @@ func (p *Parser) parseEntity() *ast.Entity {
 	}
 
 	entity := &ast.Entity{
-		Name:   name.Value,
-		Fields: fields,
-		Loc:    name.Location,
+		Name:        name.Value,
+		Fields:      fields,
+		Annotations: entityAnnotations,
+		Loc:         name.Location,
 	}
 
 	p.AddCustomType(name.Value, entity)

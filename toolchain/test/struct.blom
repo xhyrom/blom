@@ -1,12 +1,12 @@
 fun @native printf(format: string, ...) -> i32;
 
-entity Person {
-  i32 age;
-  i32 height;
-  string name;
+entity @public Person {
+  @public i32 age;
+  @public i32 height;
+  @public string name;
   void* cucum;
-  string default_set = "a";
-  string default_set_overriden = "b";
+  @public string default_set = "a";
+  @public string default_set_overriden = "b";
 };
 
 fun Person::new(age: i32, height: i32, name: string, asd: void*) -> Person {

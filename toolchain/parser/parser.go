@@ -13,6 +13,7 @@ type Parser struct {
 	tokens      []tokens.Token
 	source      string
 	customTypes map[string]ast.Type
+	annotations []ast.Annotation
 }
 
 func New(file string) *Parser {
@@ -20,6 +21,7 @@ func New(file string) *Parser {
 		tokens:      make([]tokens.Token, 0),
 		source:      file,
 		customTypes: make(map[string]ast.Type),
+		annotations: make([]ast.Annotation, 0),
 	}
 }
 
@@ -97,6 +99,8 @@ func (p *Parser) AddCustomType(name string, ty ast.Type) {
 }
 
 func (p *Parser) ParseStatement() ([]ast.Statement, error) {
+	p.collectAnnotations()
+
 	switch p.Current().Kind {
 	case tokens.Fun:
 		return []ast.Statement{p.parseFunction()}, nil

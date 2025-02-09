@@ -5,9 +5,10 @@ import (
 )
 
 type Entity struct {
-	Name   string
-	Fields []*VariableDeclarationStatement
-	Loc    tokens.Location
+	Name        string
+	Fields      []*VariableDeclarationStatement
+	Annotations []Annotation
+	Loc         tokens.Location
 }
 
 func (e Entity) Kind() NodeKind {

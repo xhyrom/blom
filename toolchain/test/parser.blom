@@ -1,0 +1,7 @@
+@native fun printf(format: string, ...) -> i32;
+
+fun @public main() {
+  @public i32 age = 5;
+
+  printf("asd %f\n", @cast(f64, 5));
+}

@@ -56,10 +56,11 @@ func (p *Parser) parseVariableDeclaration() *ast.VariableDeclarationStatement {
 	}
 
 	return &ast.VariableDeclarationStatement{
-		Name:  name.Value,
-		Value: value,
-		Type:  valueType,
-		Loc:   right.Location,
+		Name:        name.Value,
+		Value:       value,
+		Type:        valueType,
+		Annotations: p.extractAnnotations(),
+		Loc:         right.Location,
 	}
 }
 

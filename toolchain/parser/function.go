@@ -16,10 +16,7 @@ import (
 func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	p.Consume()
 
-	annotations := make([]ast.Annotation, 0)
-	for p.Current().Kind == tokens.AtMark {
-		annotations = append(annotations, parseAnnotation(p))
-	}
+	p.collectAnnotations()
 
 	name := p.Consume()
 	if name.Kind != tokens.Identifier {
@@ -66,7 +63,7 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 
 	fn := ast.FunctionDeclaration{
 		Name:        name.Value,
-		Annotations: annotations,
+		Annotations: p.extractAnnotations(),
 		Loc:         name.Location,
 	}
 
