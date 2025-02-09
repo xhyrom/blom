@@ -5,6 +5,8 @@ entity Person {
   i32 height;
   string name;
   void* cucum;
+  string default_set = "a";
+  string default_set_overriden = "b";
 };
 
 fun Person::new(age: i32, height: i32, name: string, asd: void*) -> Person {
@@ -13,6 +15,7 @@ fun Person::new(age: i32, height: i32, name: string, asd: void*) -> Person {
     height = height,
     name = name,
     cucum = asd,
+    default_set_overriden = "c"
   };
 }
 
@@ -42,5 +45,6 @@ fun @public main() -> i32 {
   void* lmao = p.cucum;
   lmao("ahoj");
 
-  printf("age: %d\nheight: %d\nname: %s\ncucum: %p\n", p.age, p.height, p.name, p.cucum);
+  printf("age: %d\nheight: %d\nname: %s\ncucum: %p\ndefault_set: %s\n", p.age, p.height, p.name, p.cucum, p.default_set);
+  printf("default_set_overriden: %s\n", p.default_set_overriden);
 }
