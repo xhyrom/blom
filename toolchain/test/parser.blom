@@ -18,7 +18,6 @@ fun @public main() {
   //printf("asd %f\n", 5.4);
   //printf("g %d\n", (9).lol().lol());
 
-  Lol g = Lol { something = 9 };
-  Hello h = Hello { lol = g };
-  printf("lol %d\n", h.lol.something);
+  Hello h = Hello { lol = Lol { something = 9 } };
+  printf("lol %d\n", h.lol.something.lol());
 }
