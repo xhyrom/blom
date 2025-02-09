@@ -31,5 +31,9 @@ func (p *Parser) parseMemberAccess(left ast.Expression) ast.Expression {
 		return p.parseAssignment(exp)
 	}
 
+	if p.Current().Kind == tokens.Dot {
+		return p.parseMemberAccess(exp)
+	}
+
 	return exp
 }

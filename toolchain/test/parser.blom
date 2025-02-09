@@ -1,7 +1,11 @@
 @native fun printf(format: string, ...) -> i32;
 
+entity Lol {
+  i32 something;
+};
+
 entity @public Hello {
-  i32 lol;
+  Lol lol;
 };
 
 fun i32::lol(self: i32) {
@@ -9,12 +13,12 @@ fun i32::lol(self: i32) {
 }
 
 fun @public main() {
-  @public(lol = true) i32 age = 5;
+  //@public(lol = true) i32 age = 5;
 
-  printf("asd %f\n", 5.4);
-  printf("g %d\n", (9).lol().lol());
-  printf("f %d\n", ((Hello {lol = 5}).lol).lol());
+  //printf("asd %f\n", 5.4);
+  //printf("g %d\n", (9).lol().lol());
 
-  Hello h = Hello { lol = 5 };
-  printf("lol %d\n", h.lol);
+  Lol g = Lol { something = 9 };
+  Hello h = Hello { lol = g };
+  printf("lol %d\n", h.lol.something);
 }

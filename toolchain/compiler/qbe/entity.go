@@ -62,7 +62,18 @@ func setEntityField(c *Compiler, function *qbe.Function, entity *ast.Entity, all
 	offsetTmp := c.createVariable(qbe.Long, "offset")
 	function.LastBlock().AddAssign(offsetTmp, qbe.Long, qbe.NewAddInstruction(alloc, qbe.NewConstantValue(offset)))
 
-	function.LastBlock().AddInstruction(qbe.NewStoreInstruction(ty, value.Value, offsetTmp))
+	if ty.IsStruct() {
+		function.LastBlock().AddInstruction(
+			qbe.NewCallInstruction(
+				qbe.NewGlobalValue("memcpy"),
+				qbe.NewTypedValue(qbe.Long, offsetTmp),
+				qbe.NewTypedValue(qbe.Long, value.Value),
+				qbe.NewTypedValue(qbe.Word, qbe.NewConstantValue(ty.Size(c.Module))),
+			),
+		)
+	} else {
+		function.LastBlock().AddInstruction(qbe.NewStoreInstruction(ty.IntoBase(), value.Value, offsetTmp))
+	}
 }
 
 func memberToOffset(c *Compiler, entity *ast.Entity, structType *qbe.TypeDefinition, field string) (int64, qbe.Type) {
