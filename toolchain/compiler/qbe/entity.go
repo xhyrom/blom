@@ -47,7 +47,7 @@ func (c *Compiler) compileEntityConstruction(construction *ast.EntityConstructio
 	}
 
 	return &qbe.TypedValue{
-		Type:  vtype,
+		Type:  qbe.RemapAstType(entity),
 		Value: alloc,
 	}
 }

@@ -1,7 +1,20 @@
 @native fun printf(format: string, ...) -> i32;
 
-fun @public main() {
-  @public i32 age = 5;
+entity @public Hello {
+  i32 lol;
+};
 
-  printf("asd %f\n", @cast(f64, 5));
+fun i32::lol(self: i32) {
+  return self + 15;
+}
+
+fun @public main() {
+  @public(lol = true) i32 age = 5;
+
+  printf("asd %f\n", 5.4);
+  printf("g %d\n", (9).lol().lol());
+  printf("f %d\n", ((Hello {lol = 5}).lol).lol());
+
+  Hello h = Hello { lol = 5 };
+  printf("lol %d\n", h.lol);
 }

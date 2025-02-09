@@ -6,8 +6,42 @@ import (
 )
 
 type Annotation struct {
-	Type AnnotationType
-	Loc  tokens.Location
+	Type   AnnotationType
+	Values map[string]Expression
+	Loc    tokens.Location
+}
+
+func GetAnnotationValueOrDefault[T any](a *Annotation, key string, def T) T {
+	if a == nil {
+		return def
+	}
+
+	if val, ok := a.Values[key]; ok {
+		switch v := val.(type) {
+		case *StringLiteral:
+			if _, ok := any(def).(string); ok {
+				return any(v.Value).(T)
+			}
+		case *IntLiteral:
+			if _, ok := any(def).(int64); ok {
+				return any(v.Value).(T)
+			}
+		case *FloatLiteral:
+			if _, ok := any(def).(float64); ok {
+				return any(v.Value).(T)
+			}
+		case *BooleanLiteral:
+			if _, ok := any(def).(bool); ok {
+				return any(v.Value).(T)
+			}
+		case *IdentifierLiteral:
+			if _, ok := any(def).(string); ok {
+				return any(v.Value).(T)
+			}
+		}
+	}
+
+	return def
 }
 
 func (a Annotation) Kind() NodeKind {
