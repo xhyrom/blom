@@ -10,26 +10,24 @@ import (
 // Parses a for loop statement that can have form:
 // for <declaration>; <condition>; <step>; { <body> }
 // for <condition>; <step>; { <body> }
-func (p *Parser) ParseForLoop() (*ast.VariableDeclarationStatement, *ast.WhileLoopStatement) {
+func (p *Parser) ParseForLoop() *ast.BlockStatement {
 	p.Consume()
 
 	var declaration *ast.VariableDeclarationStatement
 	var condition *ast.BinaryExpression
 
 	if p.Current().Kind == tokens.Identifier {
-		stmts, _ := p.ParseStatement()
+		stmt, _ := p.ParseStatement()
 
-		for _, stmt := range stmts {
-			if decl, ok := stmt.(*ast.VariableDeclarationStatement); ok {
-				declaration = decl
-			} else if bin, ok := stmt.(*ast.BinaryExpression); ok {
-				condition = bin
+		if decl, ok := stmt.(*ast.VariableDeclarationStatement); ok {
+			declaration = decl
+		} else if bin, ok := stmt.(*ast.BinaryExpression); ok {
+			condition = bin
 
-				p.Consume() // consume the semicolon
-			} else {
-				dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
-				dbg.ThrowError(fmt.Sprintf("Expected declaration or binary expression, got %T", stmt), true)
-			}
+			p.Consume() // consume the semicolon
+		} else {
+			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
+			dbg.ThrowError(fmt.Sprintf("Expected declaration or binary expression, got %T", stmt), true)
 		}
 	}
 
@@ -47,24 +45,28 @@ func (p *Parser) ParseForLoop() (*ast.VariableDeclarationStatement, *ast.WhileLo
 
 	var step *ast.Assignment
 	location := p.Current().Location
-	stmts, _ := p.ParseStatement()
-	for _, stmt := range stmts {
-		if decl, ok := stmt.(*ast.Assignment); ok {
-			step = decl
-		} else {
-			dbg := debug.NewSourceLocation(p.Source(), location.Row, location.Column)
-			dbg.ThrowError(fmt.Sprintf("Expected assignment, got %T", stmt), true)
-		}
+	stmt, _ := p.ParseStatement()
+
+	if decl, ok := stmt.(*ast.Assignment); ok {
+		step = decl
+	} else {
+		dbg := debug.NewSourceLocation(p.Source(), location.Row, location.Column)
+		dbg.ThrowError(fmt.Sprintf("Expected assignment, got %T", stmt), true)
 	}
 
 	body := p.parseBlock()
 
 	body.Body = append(body.Body, step)
 
-	return declaration, &ast.WhileLoopStatement{
-		Condition: condition,
-		Body:      body.Body,
-		Loc:       condition.Location(),
+	return &ast.BlockStatement{
+		Body: []ast.Statement{
+			declaration,
+			&ast.WhileLoopStatement{
+				Condition: condition,
+				Body:      body.Body,
+				Loc:       condition.Location(),
+			},
+		},
 	}
 }
 

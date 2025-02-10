@@ -1,0 +1,15 @@
+fun @native printf(format: string, ...) -> i32;
+
+fun @public main() -> i32 {
+    i32 x = 75;
+
+    printf("x = %d\n", x); // x = 75
+
+    for i32 x = 0; x < 10; x = x + 1; {
+        printf("x = %d\n", x);
+    }
+
+    printf("x = %d\n", x); // x = 75
+
+    return 0;
+}

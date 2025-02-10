@@ -46,10 +46,8 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 	}
 
 	for !p.IsEof() {
-		stmts, _ := p.ParseStatement()
-		for _, stmt := range stmts {
-			prog.Body = append(prog.Body, stmt)
-		}
+		stmt, _ := p.ParseStatement()
+		prog.Body = append(prog.Body, stmt)
 	}
 
 	return prog
@@ -98,35 +96,30 @@ func (p *Parser) AddCustomType(name string, ty ast.Type) {
 	p.customTypes[name] = ty
 }
 
-func (p *Parser) ParseStatement() ([]ast.Statement, error) {
+func (p *Parser) ParseStatement() (ast.Statement, error) {
 	p.collectAnnotations()
 
 	switch p.Current().Kind {
 	case tokens.Fun:
-		return []ast.Statement{p.parseFunction()}, nil
+		return p.parseFunction(), nil
 	case tokens.Return:
-		return []ast.Statement{p.parseReturn()}, nil
+		return p.parseReturn(), nil
 	case tokens.Type:
-		return []ast.Statement{p.parseTypeDefinition()}, nil
+		return p.parseTypeDefinition(), nil
 	case tokens.Entity:
-		return []ast.Statement{p.parseEntity()}, nil
+		return p.parseEntity(), nil
 	case tokens.For:
-		decl, while := p.ParseForLoop()
-		if decl != nil {
-			return []ast.Statement{decl, while}, nil
-		}
-
-		return []ast.Statement{while}, nil
+		return p.ParseForLoop(), nil
 	case tokens.While:
-		return []ast.Statement{p.ParseWhileLoop()}, nil
+		return p.ParseWhileLoop(), nil
 	case tokens.Identifier:
 		if p.Next().Kind == tokens.Identifier ||
 			(p.Next().Kind == tokens.Asterisk && p.Peek(2).Kind == tokens.Identifier) {
-			return []ast.Statement{p.parseVariableDeclaration()}, nil
+			return p.parseVariableDeclaration(), nil
 		}
 
 		if p.Next().Kind == tokens.LeftParenthesis {
-			return []ast.Statement{p.parseFunctionCall(p.Consume(), true)}, nil
+			return p.parseFunctionCall(p.Consume(), true), nil
 		}
 
 		if p.Next().Kind == tokens.DoubleColon {
@@ -157,7 +150,7 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 				Value:    token.Value + "." + identifier.Value,
 			}
 
-			return []ast.Statement{p.parseFunctionCall(token, true)}, nil
+			return p.parseFunctionCall(token, true), nil
 		}
 
 		if p.Next().Kind == tokens.Dot {
@@ -168,12 +161,12 @@ func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 				dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 			}
 
-			return []ast.Statement{exp}, nil
+			return exp, nil
 		}
 	}
 
 	exp, err := p.ParseExpression()
-	return []ast.Statement{exp}, err
+	return exp, err
 }
 
 func (p *Parser) ParseExpression() (ast.Expression, error) {
