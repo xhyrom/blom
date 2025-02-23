@@ -16,6 +16,13 @@ type Parser struct {
 	annotations []ast.Annotation
 }
 
+type Context int
+
+const (
+	Statement Context = iota
+	Expression
+)
+
 func New(file string) *Parser {
 	return &Parser{
 		tokens:      make([]tokens.Token, 0),
