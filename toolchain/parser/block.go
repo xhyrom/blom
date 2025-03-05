@@ -14,11 +14,7 @@ func (p *Parser) parseBlock() *ast.BlockStatement {
 	body := []ast.Statement{}
 
 	for !p.IsEof() && current.Kind != tokens.RightCurlyBracket {
-		stmt, err := p.ParseStatement()
-		if err != nil {
-			dbg := debug.NewSourceLocation(p.Source(), current.Location.Row, current.Location.Column)
-			dbg.ThrowError(err.Error(), true)
-		}
+		stmt := p.parseStatement()
 
 		body = append(body, stmt)
 

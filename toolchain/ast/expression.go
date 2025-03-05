@@ -5,11 +5,10 @@ import "blom/tokens"
 type Expression Statement
 
 type BinaryExpression struct {
-	Left        Expression
-	Right       Expression
-	Operator    tokens.TokenKind
-	Loc         tokens.Location
-	OperatorLoc tokens.Location
+	Left     Expression
+	Right    Expression
+	Operator tokens.TokenKind
+	Loc      tokens.Location
 }
 
 func (b BinaryExpression) Kind() NodeKind {
