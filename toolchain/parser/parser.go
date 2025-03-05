@@ -84,6 +84,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	p.collectAnnotations()
 
 	switch p.Current().Kind {
+	case tokens.Fun:
+		return p.parseFunction()
 	case tokens.Return:
 		return p.parseReturn()
 	}

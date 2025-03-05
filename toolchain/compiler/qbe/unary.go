@@ -15,9 +15,8 @@ func (c *Compiler) compileUnaryExpression(expression *ast.UnaryExpression, funct
 			Right: &ast.IntLiteral{
 				Value: 1,
 			},
-			Loc:         expression.Operand.Location(),
-			Operator:    tokens.Asterisk, // multiply by 1
-			OperatorLoc: expression.Operand.Location(),
+			Loc:      expression.Operand.Location(),
+			Operator: tokens.Asterisk, // multiply by 1
 		}, function, vtype, isReturn)
 	case tokens.Minus: // unary minus
 		return c.compileStatement(&ast.BinaryExpression{
@@ -25,9 +24,8 @@ func (c *Compiler) compileUnaryExpression(expression *ast.UnaryExpression, funct
 			Right: &ast.IntLiteral{
 				Value: -1,
 			},
-			Loc:         expression.Operand.Location(),
-			Operator:    tokens.Asterisk, // multiply by -1
-			OperatorLoc: expression.Operand.Location(),
+			Loc:      expression.Operand.Location(),
+			Operator: tokens.Asterisk, // multiply by -1
 		}, function, vtype, isReturn)
 	case tokens.Tilde: // bitwise not
 		return c.compileStatement(&ast.BinaryExpression{
@@ -35,9 +33,8 @@ func (c *Compiler) compileUnaryExpression(expression *ast.UnaryExpression, funct
 			Right: &ast.IntLiteral{
 				Value: -1,
 			},
-			Loc:         expression.Operand.Location(),
-			Operator:    tokens.CircumflexAccent, // bitwise xor
-			OperatorLoc: expression.Operand.Location(),
+			Loc:      expression.Operand.Location(),
+			Operator: tokens.CircumflexAccent, // bitwise xor
 		}, function, vtype, isReturn)
 	case tokens.Ampersand: // address of
 		return compileAddressOf(c, expression.Operand, function, vtype)
