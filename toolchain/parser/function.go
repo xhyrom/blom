@@ -69,7 +69,7 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 
 		fun.ReturnType = p.parseType()
 	} else {
-		fun.ReturnType = ast.Void
+		fun.ReturnType = ast.Int32
 	}
 
 	fun.Arguments = arguments
