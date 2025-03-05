@@ -118,8 +118,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 			tokens.VerticalLine,
 			tokens.CircumflexAccent:
 			left = p.parseInfixExpression(left)
-		//case tokens.Dot:
-		//	left = p.parseMemberAccess(left)
+		case tokens.Dot:
+			left = p.parseMemberAccess(left)
 		default:
 			return left
 		}
