@@ -83,15 +83,25 @@ func (p *Parser) Advance() {
 func (p *Parser) parseStatement() ast.Statement {
 	p.collectAnnotations()
 
+	var statement ast.Statement
+
 	switch p.Current().Kind {
 	case tokens.Fun:
 		return p.parseFunction()
 	case tokens.Return:
-		return p.parseReturn()
+		statement = p.parseReturn()
 	}
 
-	exp := p.parseExpression()
-	return exp
+	if statement == nil {
+		statement = p.parseExpression()
+	}
+
+	if p.Consume().Kind != tokens.Semicolon {
+		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Current())
+		dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
+	}
+
+	return statement
 }
 
 func (p *Parser) parseExpression() ast.Statement {
@@ -122,6 +132,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 			left = p.parseInfixExpression(left)
 		case tokens.Dot:
 			left = p.parseMemberAccess(left)
+		case tokens.DoubleColon:
+			left = p.parseNamespaceAccess(left)
 		default:
 			return left
 		}

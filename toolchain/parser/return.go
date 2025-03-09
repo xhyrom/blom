@@ -7,7 +7,7 @@ import (
 func (p *Parser) parseReturn() *ast.ReturnStatement {
 	p.Consume()
 
-	value := p.parseStatement()
+	value := p.parseExpression()
 
 	return &ast.ReturnStatement{
 		Value: value,
