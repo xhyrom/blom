@@ -90,6 +90,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseFunction()
 	case tokens.Return:
 		statement = p.parseReturn()
+	case tokens.Identifier:
+		statement = p.parseVariableDeclaration()
 	}
 
 	if statement == nil {

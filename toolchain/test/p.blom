@@ -1,5 +1,4 @@
 fun @public main() -> i32 {
-  asd::lol;
-  asd.lol;
+  i32 a = 5;
   return 5 + 2 * (4 + 6) * 9;
 }
