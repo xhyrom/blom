@@ -6,11 +6,16 @@ type If struct {
 	Condition Expression
 	Then      []Statement
 	Else      []Statement
+	Cat       Category
 	Loc       tokens.Location
 }
 
 func (i If) Kind() NodeKind {
 	return IfNode
+}
+
+func (i If) Category() Category {
+	return i.Cat
 }
 
 func (i If) Location() tokens.Location {

@@ -2,21 +2,26 @@ package ast
 
 import "blom/tokens"
 
-type WhileLoopStatement struct {
+type WhileLoop struct {
 	Condition Expression
 	Body      []Statement
+	Cat       Category
 	Loc       tokens.Location
 }
 
-func (w WhileLoopStatement) Kind() NodeKind {
+func (w WhileLoop) Kind() NodeKind {
 	return WhileLoopNode
 }
 
-func (w WhileLoopStatement) Location() tokens.Location {
+func (w WhileLoop) Location() tokens.Location {
 	return w.Loc
 }
 
-func (w *WhileLoopStatement) SetLocation(row uint64, column uint64) {
+func (w WhileLoop) Category() Category {
+	return w.Cat
+}
+
+func (w *WhileLoop) SetLocation(row uint64, column uint64) {
 	w.Loc.Row = row
 	w.Loc.Column = column
 }

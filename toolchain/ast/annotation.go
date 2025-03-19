@@ -48,6 +48,10 @@ func (a Annotation) Kind() NodeKind {
 	return AnnotationNode
 }
 
+func (a Annotation) Category() Category {
+	return ExpressionCategory
+}
+
 func (a Annotation) Location() tokens.Location {
 	return a.Loc
 }

@@ -24,6 +24,10 @@ func (f FunctionDeclaration) Kind() NodeKind {
 	return FunctionDeclarationNode
 }
 
+func (f FunctionDeclaration) Category() Category {
+	return StatementCategory
+}
+
 func (f FunctionDeclaration) Location() tokens.Location {
 	return f.Loc
 }
@@ -65,6 +69,10 @@ type FunctionCall struct {
 
 func (f FunctionCall) Kind() NodeKind {
 	return FunctionCallNode
+}
+
+func (f FunctionCall) Category() Category {
+	return ExpressionCategory
 }
 
 func (f FunctionCall) Location() tokens.Location {

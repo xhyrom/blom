@@ -95,7 +95,7 @@ func (p *Parser) parseStatement() ast.Statement {
 			statement = p.parseVariableDeclaration()
 		}
 	case tokens.LeftCurlyBracket:
-		return p.parseBlockStatement()
+		return p.parseBlock(ast.StatementCategory)
 	}
 
 	if statement == nil {
@@ -124,7 +124,7 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 	case tokens.LeftParenthesis:
 		left = p.parseGroupedExpression()
 	case tokens.LeftCurlyBracket:
-		left = p.parseBlockExpression()
+		left = p.parseBlock(ast.ExpressionCategory)
 	}
 
 	for p.Current().Kind != tokens.Semicolon && precedence < p.Current().Kind.Precedence() {

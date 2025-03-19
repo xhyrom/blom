@@ -40,9 +40,9 @@ func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement) (ast.Type, bool
 	switch statement := statement.(type) {
 	case *ast.FunctionDeclaration:
 		a.analyzeFunctionDeclaration(statement)
-	case *ast.VariableDeclarationStatement:
+	case *ast.VariableDeclaration:
 		a.analyzeVariableDeclarationStatement(statement)
-	case *ast.WhileLoopStatement:
+	case *ast.WhileLoop:
 		a.analyzeWhileLoopStatement(statement)
 	case *ast.FunctionCall:
 		a.analyzeFunctionCall(statement)
@@ -110,8 +110,8 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 	case *ast.LambdaDeclaration:
 		lambdaDeclaration := expression.(*ast.LambdaDeclaration)
 		return a.analyzeLambdaDeclaration(lambdaDeclaration)
-	case *ast.BlockStatement:
-		blockStatement := expression.(*ast.BlockStatement)
+	case *ast.Block:
+		blockStatement := expression.(*ast.Block)
 		return a.analyzeBlock(blockStatement)
 	}
 

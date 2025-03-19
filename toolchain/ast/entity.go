@@ -6,13 +6,18 @@ import (
 
 type Entity struct {
 	Name        string
-	Fields      []*VariableDeclarationStatement
+	Fields      []*VariableDeclaration
 	Annotations []Annotation
+	Cat         Category
 	Loc         tokens.Location
 }
 
 func (e Entity) Kind() NodeKind {
 	return EntityNode
+}
+
+func (e Entity) Category() Category {
+	return e.Cat
 }
 
 func (e Entity) Location() tokens.Location {

@@ -7,7 +7,7 @@ import (
 
 func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	switch statement := statement.(type) {
-	case *ast.VariableDeclarationStatement:
+	case *ast.VariableDeclaration:
 		return c.compileVariableDeclaration(statement, function, isReturn)
 	case *ast.Assignment:
 		return c.compileAssignmentStatement(statement, function, isReturn)
@@ -25,15 +25,15 @@ func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Funct
 		return c.compileMemberAccess(statement, function, vtype, isReturn)
 	case *ast.If:
 		return c.compileCondition(statement, function, vtype, isReturn)
-	case *ast.WhileLoopStatement:
+	case *ast.WhileLoop:
 		return c.compileLoop(statement, function, vtype, isReturn)
-	case *ast.ReturnStatement:
+	case *ast.Return:
 		return c.compileReturnStatement(statement, function, vtype)
 	case *ast.BinaryExpression:
 		return c.compileBinaryExpression(statement, function, vtype, isReturn)
 	case *ast.UnaryExpression:
 		return c.compileUnaryExpression(statement, function, vtype, isReturn)
-	case *ast.BlockStatement:
+	case *ast.Block:
 		return c.compileBlock(statement, function, vtype, isReturn)
 	}
 

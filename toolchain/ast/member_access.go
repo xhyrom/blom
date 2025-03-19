@@ -12,6 +12,10 @@ func (m *MemberAccess) Kind() NodeKind {
 	return MemberAccessNode
 }
 
+func (m MemberAccess) Category() Category {
+	return ExpressionCategory
+}
+
 func (m *MemberAccess) Location() tokens.Location {
 	return m.Loc
 }

@@ -32,10 +32,18 @@ const (
 	MemberAccessNode
 )
 
+type Category int
+
+const (
+	ExpressionCategory Category = iota
+	StatementCategory
+)
+
 type Statement interface {
 	Kind() NodeKind
+	Category() Category
 	Location() tokens.Location
 	SetLocation(row uint64, column uint64)
 }
 
-type Program BlockStatement
+type Program Block

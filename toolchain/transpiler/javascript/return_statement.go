@@ -5,6 +5,6 @@ import (
 	"fmt"
 )
 
-func (t JavascriptTranspiler) TranspileReturnStatement(stmt *ast.ReturnStatement) string {
+func (t JavascriptTranspiler) TranspileReturnStatement(stmt *ast.Return) string {
 	return fmt.Sprintf("return %s;", t.TranspileAndFunctionifyStatement(stmt.Value))
 }

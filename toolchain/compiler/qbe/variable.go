@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclarationStatement, function *qbe.Function, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	t := qbe.RemapAstType(statement.Type)
 
 	value := c.compileStatement(statement.Value, function, t, isReturn)

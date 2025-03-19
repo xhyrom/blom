@@ -4,7 +4,7 @@ import (
 	"blom/tokens"
 )
 
-type VariableDeclarationStatement struct {
+type VariableDeclaration struct {
 	Name        string
 	Type        Type
 	Value       Expression
@@ -12,15 +12,19 @@ type VariableDeclarationStatement struct {
 	Loc         tokens.Location
 }
 
-func (d VariableDeclarationStatement) Kind() NodeKind {
+func (d VariableDeclaration) Kind() NodeKind {
 	return VariableDeclarationNode
 }
 
-func (d VariableDeclarationStatement) Location() tokens.Location {
+func (d VariableDeclaration) Category() Category {
+	return StatementCategory
+}
+
+func (d VariableDeclaration) Location() tokens.Location {
 	return d.Loc
 }
 
-func (d *VariableDeclarationStatement) SetLocation(row uint64, column uint64) {
+func (d *VariableDeclaration) SetLocation(row uint64, column uint64) {
 	d.Loc.Row = row
 	d.Loc.Column = column
 }
@@ -33,6 +37,10 @@ type Assignment struct {
 
 func (a Assignment) Kind() NodeKind {
 	return AssignmentNode
+}
+
+func (a Assignment) Category() Category {
+	return StatementCategory
 }
 
 func (a Assignment) Location() tokens.Location {

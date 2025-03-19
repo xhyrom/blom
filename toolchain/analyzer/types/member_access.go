@@ -26,7 +26,7 @@ func (a *TypeAnalyzer) analyzeMemberAccess(access *ast.MemberAccess) ast.Type {
 		)
 	}
 
-	var field *ast.VariableDeclarationStatement
+	var field *ast.VariableDeclaration
 	for _, entityField := range left.(*ast.Entity).Fields {
 		if entityField.Name == right {
 			field = entityField

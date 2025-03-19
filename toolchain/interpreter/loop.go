@@ -5,7 +5,7 @@ import (
 	"blom/interpreter/objects"
 )
 
-func (t *Interpreter) interpretLoop(loopStatement *ast.WhileLoopStatement, function *ast.FunctionDeclaration, vtype *ast.Type, isReturn bool) objects.Object {
+func (t *Interpreter) interpretLoop(loopStatement *ast.WhileLoop, function *ast.FunctionDeclaration, vtype *ast.Type, isReturn bool) objects.Object {
 	t.Scopes.Append()
 
 	// Loop condition

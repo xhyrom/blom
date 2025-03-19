@@ -14,14 +14,14 @@ func (t *Interpreter) interpretCondition(conditionStatement *ast.If, function *a
 	if condition.(*objects.BooleanObject).Value().(bool) == true {
 		for _, statement := range conditionStatement.Then {
 			value := t.interpretStatement(statement, function, vtype, isReturn)
-			if _, ok := statement.(*ast.ReturnStatement); ok {
+			if _, ok := statement.(*ast.Return); ok {
 				return value
 			}
 		}
 	} else if conditionStatement.Else != nil {
 		for _, statement := range conditionStatement.Else {
 			value := t.interpretStatement(statement, function, vtype, isReturn)
-			if _, ok := statement.(*ast.ReturnStatement); ok {
+			if _, ok := statement.(*ast.Return); ok {
 				return value
 			}
 		}

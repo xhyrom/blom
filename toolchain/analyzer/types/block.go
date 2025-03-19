@@ -6,14 +6,14 @@ import (
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
+func (a *TypeAnalyzer) analyzeBlock(block *ast.Block) ast.Type {
 	a.Scopes.Append()
 
 	var lastReturnType ast.Type = ast.Void
 
 	for _, statement := range block.Body {
 		if statement.Kind() == ast.ReturnNode {
-			ret := statement.(*ast.ReturnStatement)
+			ret := statement.(*ast.Return)
 			returnType := a.analyzeExpression(ret.Value)
 
 			//handleInconsistentReturnTypes(a, ret, returnType, lastReturnType)

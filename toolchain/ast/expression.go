@@ -15,6 +15,10 @@ func (b BinaryExpression) Kind() NodeKind {
 	return BinaryExpressionNode
 }
 
+func (b BinaryExpression) Category() Category {
+	return ExpressionCategory
+}
+
 func (b BinaryExpression) Location() tokens.Location {
 	return b.Loc
 }

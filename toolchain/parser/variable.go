@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func (p *Parser) parseVariableDeclaration() *ast.VariableDeclarationStatement {
+func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
 	ty := p.parseType()
 	name := p.parseLiteral().(*ast.IdentifierLiteral).Value
 
@@ -19,7 +19,7 @@ func (p *Parser) parseVariableDeclaration() *ast.VariableDeclarationStatement {
 
 	value := p.parseExpression()
 
-	return &ast.VariableDeclarationStatement{
+	return &ast.VariableDeclaration{
 		Name:        name,
 		Type:        ty,
 		Value:       value,

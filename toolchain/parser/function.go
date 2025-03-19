@@ -74,7 +74,7 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 
 	fun.Arguments = arguments
 	fun.Annotations = p.extractAnnotations()
-	fun.Body = p.parseBlockStatement().Body
+	fun.Body = p.parseBlock(ast.StatementCategory).Body
 
 	return fun
 }

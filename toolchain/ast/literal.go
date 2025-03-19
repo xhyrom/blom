@@ -13,6 +13,10 @@ func (l IdentifierLiteral) Kind() NodeKind {
 	return IdentifierLiteralNode
 }
 
+func (l IdentifierLiteral) Category() Category {
+	return ExpressionCategory
+}
+
 func (l IdentifierLiteral) Location() tokens.Location {
 	return l.Loc
 }
@@ -29,6 +33,10 @@ type CharLiteral struct {
 
 func (l CharLiteral) Kind() NodeKind {
 	return CharLiteralNode
+}
+
+func (l CharLiteral) Category() Category {
+	return ExpressionCategory
 }
 
 func (l CharLiteral) Location() tokens.Location {
@@ -49,6 +57,10 @@ func (l StringLiteral) Kind() NodeKind {
 	return StringLiteralNode
 }
 
+func (l StringLiteral) Category() Category {
+	return ExpressionCategory
+}
+
 func (l StringLiteral) Location() tokens.Location {
 	return l.Loc
 }
@@ -65,6 +77,10 @@ type IntLiteral struct {
 
 func (l IntLiteral) Kind() NodeKind {
 	return IntLiteralNode
+}
+
+func (l IntLiteral) Category() Category {
+	return ExpressionCategory
 }
 
 func (l IntLiteral) Location() tokens.Location {
@@ -85,6 +101,10 @@ func (l FloatLiteral) Kind() NodeKind {
 	return FloatLiteralNode
 }
 
+func (l FloatLiteral) Category() Category {
+	return ExpressionCategory
+}
+
 func (l FloatLiteral) Location() tokens.Location {
 	return l.Loc
 }
@@ -101,6 +121,10 @@ type BooleanLiteral struct {
 
 func (l BooleanLiteral) Kind() NodeKind {
 	return BooleanLiteralNode
+}
+
+func (l BooleanLiteral) Category() Category {
+	return ExpressionCategory
 }
 
 func (l BooleanLiteral) Location() tokens.Location {

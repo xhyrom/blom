@@ -20,13 +20,13 @@ func (t LuaTranspiler) Transpile(program *ast.Program) (string, error) {
 		},
 	})
 
-	return t.TranspileBlock(ast.BlockStatement{
+	return t.TranspileBlock(ast.Block{
 		Body: program.Body,
 		Loc:  program.Loc,
 	}), nil
 }
 
-func (t LuaTranspiler) TranspileBlock(block ast.BlockStatement) string {
+func (t LuaTranspiler) TranspileBlock(block ast.Block) string {
 	result := "do\n"
 
 	for _, stmt := range block.Body {
@@ -60,9 +60,9 @@ func (t LuaTranspiler) TranspileStatement(stmt ast.Statement) string {
 		return stmt.Value
 	case ast.IdentifierLiteral:
 		return stmt.Value
-	case *ast.BlockStatement:
+	case *ast.Block:
 		return t.TranspileBlock(*stmt)
-	case ast.BlockStatement:
+	case ast.Block:
 		return t.TranspileBlock(stmt)
 	case *ast.FunctionDeclaration:
 		return t.TranspileFunctionDeclaration(stmt)
@@ -76,13 +76,13 @@ func (t LuaTranspiler) TranspileStatement(stmt ast.Statement) string {
 		return t.TranspileUnaryExpression(stmt)
 	case ast.UnaryExpression:
 		return t.TranspileUnaryExpression(&stmt)
-	case *ast.VariableDeclarationStatement:
+	case *ast.VariableDeclaration:
 		return t.TranspileDeclarationStatement(stmt)
-	case ast.VariableDeclarationStatement:
+	case ast.VariableDeclaration:
 		return t.TranspileDeclarationStatement(&stmt)
-	case *ast.ReturnStatement:
+	case *ast.Return:
 		return t.TranspileReturnStatement(stmt)
-	case ast.ReturnStatement:
+	case ast.Return:
 		return t.TranspileReturnStatement(&stmt)
 	case *ast.If:
 		return t.TranspileIfStatement(stmt)

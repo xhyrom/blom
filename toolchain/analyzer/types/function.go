@@ -21,7 +21,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 
 	for _, statement := range function.Body {
 		if statement.Kind() == ast.ReturnNode {
-			ret := statement.(*ast.ReturnStatement)
+			ret := statement.(*ast.Return)
 			returnType := a.analyzeExpression(ret.Value)
 
 			if returnType != function.ReturnType && (ret.Value.Kind() != ast.IntLiteralNode && !a.canBeImplicitlyCast(returnType, function.ReturnType)) {

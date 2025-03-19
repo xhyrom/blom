@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStatement) {
+func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoop) {
 	condition := a.analyzeExpression(statement.Condition)
 
 	if condition != ast.Boolean {
@@ -20,7 +20,7 @@ func (a *TypeAnalyzer) analyzeWhileLoopStatement(statement *ast.WhileLoopStateme
 		)
 	}
 
-	a.analyzeStatement(&ast.BlockStatement{
+	a.analyzeStatement(&ast.Block{
 		Body: statement.Body,
 		Loc:  statement.Loc,
 	})

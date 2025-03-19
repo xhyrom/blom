@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func (t JavascriptTranspiler) TranspileDeclarationStatement(declaration *ast.VariableDeclarationStatement) string {
+func (t JavascriptTranspiler) TranspileDeclarationStatement(declaration *ast.VariableDeclaration) string {
 	if declaration.Redeclaration {
 		return fmt.Sprintf("%s = %s\n", declaration.Name, t.TranspileAndFunctionifyStatement(declaration.Value))
 	}

@@ -16,6 +16,10 @@ func (f LambdaDeclaration) Kind() NodeKind {
 	return FunctionDeclarationNode
 }
 
+func (f LambdaDeclaration) Category() Category {
+	return ExpressionCategory
+}
+
 func (f LambdaDeclaration) Location() tokens.Location {
 	return f.Loc
 }

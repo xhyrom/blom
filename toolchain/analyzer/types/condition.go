@@ -19,13 +19,13 @@ func (a *TypeAnalyzer) analyzeIf(expression *ast.If) ast.Type {
 		)
 	}
 
-	returnType := a.analyzeBlock(&ast.BlockStatement{
+	returnType := a.analyzeBlock(&ast.Block{
 		Body: expression.Then,
 		Loc:  expression.Loc,
 	})
 
 	if expression.HasElse() {
-		elseReturnType := a.analyzeBlock(&ast.BlockStatement{
+		elseReturnType := a.analyzeBlock(&ast.Block{
 			Body: expression.Else,
 			Loc:  expression.Loc,
 		})

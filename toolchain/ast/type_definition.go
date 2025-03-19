@@ -12,6 +12,10 @@ func (t TypeDefinition) Kind() NodeKind {
 	return TypeDefinitionNode
 }
 
+func (t TypeDefinition) Category() Category {
+	return StatementCategory
+}
+
 func (t TypeDefinition) Location() tokens.Location {
 	return t.Loc
 }

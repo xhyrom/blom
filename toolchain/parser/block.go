@@ -6,7 +6,7 @@ import (
 	"blom/tokens"
 )
 
-func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+func (p *Parser) parseBlock(category ast.Category) *ast.Block {
 	p.Consume()
 
 	current := p.Current()
@@ -26,34 +26,9 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 		dbg.ThrowError("Expected closing bracket", true, debug.NewHint("Did you forget to add a closing bracket?", "}"))
 	}
 
-	return &ast.BlockStatement{
+	return &ast.Block{
 		Body: body,
-		Loc:  current.Location,
-	}
-}
-
-func (p *Parser) parseBlockExpression() *ast.BlockExpression {
-	p.Consume()
-
-	current := p.Current()
-
-	body := []ast.Statement{}
-
-	for !p.IsEof() && current.Kind != tokens.RightCurlyBracket {
-		expr := p.parseStatement()
-
-		body = append(body, expr)
-
-		current = p.Current()
-	}
-
-	if p.Consume().Kind != tokens.RightCurlyBracket {
-		dbg := debug.NewSourceLocation(p.Source(), current.Location.Row, current.Location.Column)
-		dbg.ThrowError("Expected closing bracket", true, debug.NewHint("Did you forget to add a closing bracket?", "}"))
-	}
-
-	return &ast.BlockExpression{
-		Body: body,
+		Cat:  category,
 		Loc:  current.Location,
 	}
 }

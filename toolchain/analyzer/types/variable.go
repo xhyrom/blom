@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.VariableDeclarationStatement) {
+func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.VariableDeclaration) {
 	valueType := a.analyzeExpression(statement.Value)
 
 	if !statement.Type.Equal(valueType) && (!a.canBeImplicitlyCast(valueType, statement.Type) || statement.Value.Kind() == ast.FunctionCallNode) {

@@ -18,7 +18,7 @@ func (a *TypeAnalyzer) analyzeLambdaDeclaration(lambda *ast.LambdaDeclaration) a
 
 	for _, statement := range lambda.Body {
 		if statement.Kind() == ast.ReturnNode {
-			ret := statement.(*ast.ReturnStatement)
+			ret := statement.(*ast.Return)
 			returnType := a.analyzeExpression(ret.Value)
 
 			if !returnType.Equal(lambda.ReturnType) && (ret.Value.Kind() != ast.IntLiteralNode && !a.canBeImplicitlyCast(returnType, lambda.ReturnType)) {
