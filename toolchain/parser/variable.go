@@ -27,3 +27,15 @@ func (p *Parser) parseVariableDeclaration() *ast.VariableDeclarationStatement {
 		Loc:         assign.Location,
 	}
 }
+
+func (p *Parser) parseAssignment(left ast.Expression) ast.Expression {
+	p.Consume()
+
+	right := p.parseExpression()
+
+	return &ast.Assignment{
+		Left:  left,
+		Right: right,
+		Loc:   right.Location(),
+	}
+}

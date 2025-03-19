@@ -91,7 +91,9 @@ func (p *Parser) parseStatement() ast.Statement {
 	case tokens.Return:
 		statement = p.parseReturn()
 	case tokens.Identifier:
-		statement = p.parseVariableDeclaration()
+		if !p.IsEof() && p.Peek(1).Kind == tokens.Identifier {
+			statement = p.parseVariableDeclaration()
+		}
 	}
 
 	if statement == nil {
@@ -136,6 +138,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 			left = p.parseMemberAccess(left)
 		case tokens.DoubleColon:
 			left = p.parseNamespaceAccess(left)
+		case tokens.Assign:
+			left = p.parseAssignment(left)
 		default:
 			return left
 		}
