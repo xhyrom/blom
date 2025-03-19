@@ -94,6 +94,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		if !p.IsEof() && p.Peek(1).Kind == tokens.Identifier {
 			statement = p.parseVariableDeclaration()
 		}
+	case tokens.LeftCurlyBracket:
+		return p.parseBlockStatement()
 	}
 
 	if statement == nil {
@@ -121,6 +123,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 		left = p.parseLiteral()
 	case tokens.LeftParenthesis:
 		left = p.parseGroupedExpression()
+	case tokens.LeftCurlyBracket:
+		left = p.parseBlockExpression()
 	}
 
 	for p.Current().Kind != tokens.Semicolon && precedence < p.Current().Kind.Precedence() {

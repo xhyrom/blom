@@ -1,5 +1,10 @@
 fun @public main() -> i32 {
   i32 a = 5;
   a = 9;
+
+  i32 c = {
+    return 10;
+  };
+
   return 5 + 2 * (4 + 6) * 9;
 }
