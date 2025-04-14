@@ -102,6 +102,10 @@ func (c BuiltinFunctionCall) Kind() NodeKind {
 	return CompileTimeFunctionCallNode
 }
 
+func (c BuiltinFunctionCall) Category() Category {
+	return ExpressionCategory
+}
+
 func (c BuiltinFunctionCall) Location() tokens.Location {
 	return c.Loc
 }

@@ -43,7 +43,6 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	for p.Current().Kind != tokens.RightParenthesis {
 		argument := parseFunctionArgument(p, fun)
 		if argument == nil {
-			p.Consume()
 			break
 		}
 
@@ -74,7 +73,20 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 
 	fun.Arguments = arguments
 	fun.Annotations = p.extractAnnotations()
-	fun.Body = p.parseBlock(ast.StatementCategory).Body
+
+	if !fun.HasAnnotation(ast.Native) {
+		fun.Body = p.parseBlock(ast.StatementCategory).Body
+	} else {
+		if p.Current().Kind == tokens.LeftCurlyBracket {
+			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
+			dbg.ThrowError("Native functions cannot have a body", true)
+		}
+
+		if p.Consume().Kind != tokens.Semicolon {
+			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
+			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
+		}
+	}
 
 	return fun
 }
@@ -105,5 +117,45 @@ func parseFunctionArgument(p *Parser, fun *ast.FunctionDeclaration) *ast.Functio
 	return &ast.FunctionArgument{
 		Name: argument.Value,
 		Type: p.parseType(),
+	}
+}
+
+// Parses a function call that can have a form:
+// <name>(<arguments>)
+func (p *Parser) parseFunctionCall(left ast.Expression) *ast.FunctionCall {
+	p.Consume()
+
+	if left.Kind() != ast.IdentifierLiteralNode {
+		dbg := debug.NewSourceLocation(p.Source(), left.Location().Row, left.Location().Column)
+		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function name?", "fn"))
+	}
+
+	name := left.(*ast.IdentifierLiteral).Value
+	parameters := make([]ast.Expression, 0)
+
+	for p.Current().Kind != tokens.RightParenthesis {
+		parameter := p.parseExpression()
+		if parameter == nil {
+			break
+		}
+
+		parameters = append(parameters, parameter)
+
+		if p.Current().Kind == tokens.Comma {
+			p.Consume()
+		}
+	}
+
+	last := p.Consume()
+
+	if last.Kind != tokens.RightParenthesis {
+		dbg := debug.NewSourceLocation(p.Source(), left.Location().Row, left.Location().Column)
+		dbg.ThrowError("Expected closing parenthesis", true, debug.NewHint("Did you forget to add a closing parenthesis?", ")"))
+	}
+
+	return &ast.FunctionCall{
+		Name:       name,
+		Parameters: parameters,
+		Loc:        last.Location,
 	}
 }

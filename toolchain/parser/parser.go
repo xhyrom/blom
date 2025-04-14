@@ -125,14 +125,14 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 	switch p.Current().Kind {
 	case tokens.Identifier, tokens.IntLiteral, tokens.FloatLiteral, tokens.StringLiteral, tokens.CharLiteral, tokens.BooleanLiteral:
 		left = p.parseLiteral()
-	case tokens.Plus, tokens.Minus, tokens.Ampersand, tokens.Tilde, tokens.Asterisk:
-		left = p.parseUnaryExpression()
 	case tokens.LeftParenthesis:
 		left = p.parseGroupedExpression()
 	case tokens.If:
 		left = p.parseCondition(ast.ExpressionCategory)
 	case tokens.LeftCurlyBracket:
 		left = p.parseBlock(ast.ExpressionCategory)
+	case tokens.Plus, tokens.Minus, tokens.Ampersand, tokens.Tilde, tokens.Asterisk:
+		left = p.parseUnaryExpression()
 	}
 
 	for p.Current().Kind != tokens.Semicolon && precedence < p.Current().Kind.Precedence() {
@@ -158,6 +158,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 			left = p.parseNamespaceAccess(left)
 		case tokens.Assign:
 			left = p.parseAssignment(left)
+		case tokens.LeftParenthesis:
+			left = p.parseFunctionCall(left)
 		default:
 			return left
 		}

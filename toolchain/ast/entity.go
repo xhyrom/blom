@@ -91,6 +91,10 @@ func (e EntityConstruction) Kind() NodeKind {
 	return EntityConstructionNode
 }
 
+func (e EntityConstruction) Category() Category {
+	return ExpressionCategory
+}
+
 func (e EntityConstruction) Location() tokens.Location {
 	return e.Loc
 }
