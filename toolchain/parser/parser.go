@@ -90,6 +90,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseFunction()
 	case tokens.Return:
 		statement = p.parseReturn()
+	case tokens.If:
+		return p.parseCondition(ast.StatementCategory)
 	case tokens.Identifier:
 		if !p.IsEof() && p.Peek(1).Kind == tokens.Identifier {
 			statement = p.parseVariableDeclaration()
@@ -123,6 +125,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 		left = p.parseLiteral()
 	case tokens.LeftParenthesis:
 		left = p.parseGroupedExpression()
+	case tokens.If:
+		left = p.parseCondition(ast.ExpressionCategory)
 	case tokens.LeftCurlyBracket:
 		left = p.parseBlock(ast.ExpressionCategory)
 	}
@@ -130,7 +134,9 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 	for p.Current().Kind != tokens.Semicolon && precedence < p.Current().Kind.Precedence() {
 		// infix
 		switch p.Current().Kind {
-		case tokens.Plus,
+		case tokens.Equals,
+			tokens.NotEquals,
+			tokens.Plus,
 			tokens.Minus,
 			tokens.Asterisk,
 			tokens.Slash,
