@@ -38,6 +38,10 @@ func (u UnaryExpression) Kind() NodeKind {
 	return UnaryExpressionNode
 }
 
+func (u UnaryExpression) Category() Category {
+	return ExpressionCategory
+}
+
 func (u UnaryExpression) Location() tokens.Location {
 	return u.Loc
 }

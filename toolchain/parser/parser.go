@@ -125,6 +125,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 	switch p.Current().Kind {
 	case tokens.Identifier, tokens.IntLiteral, tokens.FloatLiteral, tokens.StringLiteral, tokens.CharLiteral, tokens.BooleanLiteral:
 		left = p.parseLiteral()
+	case tokens.Plus, tokens.Minus, tokens.Ampersand, tokens.Tilde, tokens.Asterisk:
+		left = p.parseUnaryExpression()
 	case tokens.LeftParenthesis:
 		left = p.parseGroupedExpression()
 	case tokens.If:
@@ -175,6 +177,17 @@ func (p *Parser) parseGroupedExpression() ast.Statement {
 	}
 
 	return exp
+}
+
+func (p *Parser) parseUnaryExpression() ast.Statement {
+	operator := p.Consume()
+	operand := p.parseExpressionWithPrecedence(operator.Kind.Precedence())
+
+	return &ast.UnaryExpression{
+		Operator: operator.Kind,
+		Operand:  operand,
+		Loc:      operator.Location,
+	}
 }
 
 func (p *Parser) parseInfixExpression(left ast.Statement) ast.Statement {
