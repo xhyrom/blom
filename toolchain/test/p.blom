@@ -1,16 +1,5 @@
 fun @public main() -> i32 {
-  i32 a = 5;
-  a = 9;
+  for i32 a = 6; a < 5; a = a + 1 {
 
-  i32 c = {
-    return 10;
-  };
-
-  if c == 5 {
-    a = 10;
-  } else {
-    a = 20;
   }
-
-  return 5 + 2 * (4 + 6) * 9;
 }
