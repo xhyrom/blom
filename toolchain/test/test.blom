@@ -8,9 +8,11 @@ fun @infix nam::add(a: i32, b: i32) -> i32 {
   return a + b;
 }
 
-fun @public main() {
-  val a: i32 = 5;
+fun @infix nam::times(a: i32, b: i32) -> i32 {
+  return a * b;
+}
 
-  printf("%d\n", a nam::add 3);
+fun @public main() {
+  printf("%d %d\n", 3 nam::add 3 nam::times ~9, ~5 + 9 nam::add 9);
   return 0;
 }

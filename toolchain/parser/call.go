@@ -101,7 +101,7 @@ func (p *Parser) parseMethodCall(left *ast.Field) *ast.MethodCall {
 // <left> <name> <right>
 func (p *Parser) parseInfixCall(left ast.Node) *ast.FunctionCall {
 	function := p.parseExpression()
-	right := p.parseExpression()
+	right := p.parseExpressionWithPrecedence(tokens.HighestPrecedence)
 
 	var path *ast.Path
 	if function.Kind() == ast.IdentifierNode {
