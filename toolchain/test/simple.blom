@@ -1,0 +1,22 @@
+fun @native @variadic printf(format: string);
+
+fun i32::length(a: i32) {
+  return 4;
+}
+
+fun test(a: i32) {
+  return a + 2;
+}
+
+fun @infix test(a: i32, b: i32) {
+  return a + b;
+}
+
+fun test(a: string, b: i32) {
+  return 2;
+}
+
+fun @public main() {
+  printf("hello %d %d %d %d\n", i32::length(4), test("ahoj", 5), test(7), 9 test 4);
+  return 0;
+}

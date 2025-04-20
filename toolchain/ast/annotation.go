@@ -25,6 +25,7 @@ const (
 	Variadic
 	Public
 	Infix
+	NoMangle
 )
 
 var annotations = []string{
@@ -32,6 +33,7 @@ var annotations = []string{
 	Variadic: "variadic",
 	Public:   "public",
 	Infix:    "infix",
+	NoMangle: "nomangle",
 }
 
 func (a AnnotationType) String() string {

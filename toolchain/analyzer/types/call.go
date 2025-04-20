@@ -33,7 +33,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 		return ast.Void
 	}
 
-	call.Path = modifyPathLikeFunName(function, call.Path)
+	a.Context.FunctionCalls[call] = function
 
 	isNative := function.HasAnnotation(ast.Native)
 

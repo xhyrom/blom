@@ -4,6 +4,7 @@ import (
 	"blom/analyzer"
 	"blom/compiler"
 	"blom/lexer"
+	"blom/mangling"
 	"blom/parser"
 	"blom/tokens"
 	"fmt"
@@ -77,6 +78,8 @@ func main() {
 
 	analyzer := analyzer.New(inputFile, ast)
 	analyzer.Analyze()
+
+	mangling.Mangle(ast, analyzer.GetAnalysisContext())
 
 	//if emitAst {
 	//	dump.Println(ast)

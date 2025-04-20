@@ -39,7 +39,5 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 		}
 	}
 
-	a.mangleFunctionDeclaration(function)
-
 	a.Scopes.Pop()
 }

@@ -13,6 +13,7 @@ type TypeAnalyzer struct {
 	Program         *ast.Program
 	Scopes          *scope.Scopes[*Variable]
 	FunctionManager *manager.FunctionManager
+	Context         *AnalysisContext
 }
 
 type Variable struct {
@@ -25,6 +26,7 @@ func New(file string, program *ast.Program, functionManager *manager.FunctionMan
 		Program:         program,
 		Scopes:          scope.NewScopes[*Variable](),
 		FunctionManager: functionManager,
+		Context:         NewAnalysisContext(),
 	}
 }
 
@@ -173,4 +175,8 @@ func (a *TypeAnalyzer) canBeImplicitlyCast(from ast.Type, to ast.Type) bool {
 	}
 
 	return false
+}
+
+func (a *TypeAnalyzer) GetContext() *AnalysisContext {
+	return a.Context
 }

@@ -10,6 +10,7 @@ type Analyzer struct {
 	Source          string
 	Program         *ast.Program
 	FunctionManager *manager.FunctionManager
+	TypeAnalyzer    *types.TypeAnalyzer
 }
 
 func New(file string, program *ast.Program) *Analyzer {
@@ -31,8 +32,13 @@ func (a *Analyzer) Analyze() {
 	a.mergeImportedModules()
 }
 
+func (a *Analyzer) GetAnalysisContext() *types.AnalysisContext {
+	return a.TypeAnalyzer.GetContext()
+}
+
 func (a *Analyzer) analyzeTypes() {
-	types.New(a.Source, a.Program, a.FunctionManager).Analyze()
+	a.TypeAnalyzer = types.New(a.Source, a.Program, a.FunctionManager)
+	a.TypeAnalyzer.Analyze()
 }
 
 func (a *Analyzer) eliminateDeadCode() {

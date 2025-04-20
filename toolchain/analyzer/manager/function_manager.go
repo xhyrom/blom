@@ -4,11 +4,6 @@ import (
 	"blom/ast"
 )
 
-type FunctionWithSuffix struct {
-	*ast.FunctionDeclaration
-	Suffix string
-}
-
 type FunctionManager struct {
 	functions map[string][]*ast.FunctionDeclaration
 }
