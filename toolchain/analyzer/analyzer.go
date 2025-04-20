@@ -10,7 +10,6 @@ type Analyzer struct {
 	Source          string
 	Program         *ast.Program
 	FunctionManager *manager.FunctionManager
-	TypeManager     *manager.TypeManager
 }
 
 func New(file string, program *ast.Program) *Analyzer {
@@ -18,7 +17,6 @@ func New(file string, program *ast.Program) *Analyzer {
 		Source:          file,
 		Program:         program,
 		FunctionManager: manager.NewFunctionManager(),
-		TypeManager:     manager.NewTypeManager(),
 	}
 }
 
@@ -34,7 +32,7 @@ func (a *Analyzer) Analyze() {
 }
 
 func (a *Analyzer) analyzeTypes() {
-	types.New(a.Source, a.Program, a.FunctionManager, a.TypeManager).Analyze()
+	types.New(a.Source, a.Program, a.FunctionManager).Analyze()
 }
 
 func (a *Analyzer) eliminateDeadCode() {

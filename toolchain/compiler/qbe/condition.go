@@ -13,10 +13,10 @@ func (c *Compiler) compileCondition(conditionStatement *ast.If, function *qbe.Fu
 
 	thenLabel := fmt.Sprintf("ift.%d", c.TempCounter)
 	elseLabel := fmt.Sprintf("iff.%d", c.TempCounter)
-	endLabel := fmt.Sprintf("iend.%d", c.TempCounter)
+	endLabel := fmt.Sprintf("ife.%d", c.TempCounter)
 
 	var ifZero string
-	if conditionStatement.Else != nil && len(conditionStatement.Else) > 0 {
+	if conditionStatement.Else != nil && len(conditionStatement.Else.Body) > 0 {
 		ifZero = elseLabel
 	} else {
 		ifZero = endLabel
@@ -36,12 +36,12 @@ func (c *Compiler) compileCondition(conditionStatement *ast.If, function *qbe.Fu
 	// Then block
 	function.AddBlock(thenLabel)
 
-	for _, statement := range conditionStatement.Then {
+	for _, statement := range conditionStatement.Then.Body {
 		c.compileStatement(statement, function, nil, isReturn)
 	}
 
 	// Else block
-	if conditionStatement.Else != nil && len(conditionStatement.Else) > 0 {
+	if conditionStatement.Else != nil && len(conditionStatement.Else.Body) > 0 {
 		if !function.LastBlock().IsLastStatement(qbe.Jump) &&
 			!function.LastBlock().IsLastStatement(qbe.Return) &&
 			!function.LastBlock().IsLastStatement(qbe.JumpNonZero) {
@@ -52,7 +52,7 @@ func (c *Compiler) compileCondition(conditionStatement *ast.If, function *qbe.Fu
 
 		function.AddBlock(elseLabel)
 
-		for _, statement := range conditionStatement.Else {
+		for _, statement := range conditionStatement.Else.Body {
 			c.compileStatement(statement, function, nil, isReturn)
 		}
 	}

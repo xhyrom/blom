@@ -78,9 +78,9 @@ func main() {
 	analyzer := analyzer.New(inputFile, ast)
 	analyzer.Analyze()
 
-	if emitAst {
-		dump.Println(ast)
-	}
+	//if emitAst {
+	//	dump.Println(ast)
+	//}
 
 	comp := compiler.New(compiler.QBE)
 	sse := comp.Compile(ast)

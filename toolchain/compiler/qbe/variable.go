@@ -7,16 +7,16 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclarationStatement, function *qbe.Function, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	t := qbe.RemapAstType(statement.Type)
 
-	value := c.compileStatement(statement.Value, function, t, isReturn)
+	value := c.compileStatement(statement.Init, function, t, isReturn)
 	if value.Type.IsFunction() {
 		t = value.Type
 	}
 
-	c.createVariable(t, statement.Name)
-	address := c.createVariable(t, fmt.Sprintf("%s.addr", statement.Name))
+	c.createVariable(t, statement.Name.Value)
+	address := c.createVariable(t, fmt.Sprintf("%s.addr", statement.Name.Value))
 
 	function.LastBlock().AddAssign(
 		address,
@@ -55,7 +55,7 @@ func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, functio
 	return value
 }
 
-func evaluateLeftSide(c *Compiler, left ast.Expression, function *qbe.Function) *qbe.TypedValue {
+func evaluateLeftSide(c *Compiler, left ast.Node, function *qbe.Function) *qbe.TypedValue {
 	switch expr := left.(type) {
 	case *ast.IdentifierLiteral:
 		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", expr.Value))
@@ -72,10 +72,6 @@ func evaluateLeftSide(c *Compiler, left ast.Expression, function *qbe.Function) 
 
 		operand := c.compileStatement(expr.Operand, function, nil, false)
 		return operand
-
-	case *ast.MemberAccess:
-		left := c.compileStatement(expr.Left, function, nil, false)
-		return processMemberAccess(c, left, expr.Right, function, false)
 
 	default:
 		panic("unsupported left expression")

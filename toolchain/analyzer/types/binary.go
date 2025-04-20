@@ -12,7 +12,7 @@ func (a *TypeAnalyzer) analyzeBinaryExpression(expression *ast.BinaryExpression)
 	right := a.analyzeExpression(expression.Right)
 
 	if left != right && (!a.canBeImplicitlyCast(left, right) && !a.canBeImplicitlyCast(right, left)) {
-		dbg := debug.NewSourceLocation(a.Source, expression.OperatorLoc.Row, expression.OperatorLoc.Column)
+		dbg := debug.NewSourceLocation(a.Source, expression.Loc.Row, expression.Loc.Column)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Binary expression '%s' has mismatched types '%s' and '%s'",

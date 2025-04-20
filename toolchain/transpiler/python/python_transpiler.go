@@ -21,13 +21,13 @@ func (t PythonTranspiler) Transpile(program *ast.Program) (string, error) {
 		},
 	})
 
-	return t.TranspileBlock(ast.BlockStatement{
+	return t.TranspileBlock(ast.Block{
 		Body: program.Body,
 		Loc:  program.Loc,
 	}, env.New(), 0), nil
 }
 
-func (t PythonTranspiler) TranspileBlock(block ast.BlockStatement, environment *env.Scope, indent int) string {
+func (t PythonTranspiler) TranspileBlock(block ast.Block, environment *env.Scope, indent int) string {
 	indentation := strings.Repeat("    ", indent)
 
 	env := env.New(*environment)
@@ -68,9 +68,9 @@ func (t PythonTranspiler) TranspileStatement(stmt ast.Statement, environment *en
 		return stmt.Value
 	case ast.IdentifierLiteral:
 		return stmt.Value
-	case *ast.BlockStatement:
+	case *ast.Block:
 		return t.TranspileBlock(*stmt, environment, indent+1)
-	case ast.BlockStatement:
+	case ast.Block:
 		return t.TranspileBlock(stmt, environment, indent+1)
 	case *ast.FunctionDeclaration:
 		return t.TranspileFunctionDeclaration(stmt, environment, indent)
@@ -84,13 +84,13 @@ func (t PythonTranspiler) TranspileStatement(stmt ast.Statement, environment *en
 		return t.TranspileUnaryExpression(stmt, environment, indent)
 	case ast.UnaryExpression:
 		return t.TranspileUnaryExpression(&stmt, environment, indent)
-	case *ast.VariableDeclarationStatement:
+	case *ast.VariableDeclaration:
 		return t.TranspileDeclarationStatement(stmt, environment, indent)
-	case ast.VariableDeclarationStatement:
+	case ast.VariableDeclaration:
 		return t.TranspileDeclarationStatement(&stmt, environment, indent)
-	case *ast.ReturnStatement:
+	case *ast.Return:
 		return t.TranspileReturnStatement(stmt, environment, indent)
-	case ast.ReturnStatement:
+	case ast.Return:
 		return t.TranspileReturnStatement(&stmt, environment, indent)
 	case *ast.If:
 		return t.TranspileIfStatement(stmt, environment, indent)

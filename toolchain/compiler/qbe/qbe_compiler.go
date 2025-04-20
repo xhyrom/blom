@@ -11,7 +11,6 @@ type Compiler struct {
 	TempCounter int
 	Module      qbe.Module
 	Scopes      *scope.Scopes[*qbe.TypedValue]
-	Entities    map[string]*ast.Entity
 }
 
 func New() *Compiler {
@@ -19,7 +18,6 @@ func New() *Compiler {
 		TempCounter: 0,
 		Module:      qbe.NewModule(),
 		Scopes:      scope.NewScopes[*qbe.TypedValue](),
-		Entities:    make(map[string]*ast.Entity),
 	}
 }
 
@@ -37,19 +35,13 @@ func (c *Compiler) Emit() string {
 	return c.Module.String()
 }
 
-func (c *Compiler) compilePrimitive(primitive ast.Statement, populate bool) {
+func (c *Compiler) compilePrimitive(primitive ast.Node, populate bool) {
 	switch primitive := primitive.(type) {
 	case *ast.FunctionDeclaration:
 		if populate {
 			c.Module.AddFunction(qbe.RemapAstFunction(*primitive))
 		} else {
 			c.compileFunction(primitive)
-		}
-	case *ast.TypeDefinition:
-	case *ast.Entity:
-		if populate {
-			c.Entities[primitive.Name] = primitive
-			c.Module.AddType(c.compileEntity(*primitive))
 		}
 	default:
 		panic(fmt.Sprintf("'%T' is not a valid primitive", primitive))

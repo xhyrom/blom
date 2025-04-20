@@ -2,22 +2,19 @@ package ast
 
 import (
 	"blom/tokens"
+	"fmt"
 	"strings"
 )
 
-type FunctionArgument struct {
-	Name string
-	Type Type
-}
-
 type FunctionDeclaration struct {
-	Name        string
-	Arguments   []FunctionArgument
+	Name        tokens.Token
+	Params      []Argument
 	Annotations []Annotation
-	ReturnType  Type
-	Body        []Statement
-	Variadic    bool
-	Loc         tokens.Location
+	Block       *Block
+
+	Return Type
+
+	Loc tokens.Location
 }
 
 func (f FunctionDeclaration) Kind() NodeKind {
@@ -28,14 +25,9 @@ func (f FunctionDeclaration) Location() tokens.Location {
 	return f.Loc
 }
 
-func (f *FunctionDeclaration) SetLocation(row uint64, column uint64) {
-	f.Loc.Row = row
-	f.Loc.Column = column
-}
-
-func (f *FunctionDeclaration) HasAnnotation(typ AnnotationType) bool {
+func (f FunctionDeclaration) HasAnnotation(ty AnnotationType) bool {
 	for _, annotation := range f.Annotations {
-		if annotation.Type == typ {
+		if annotation.Type == ty {
 			return true
 		}
 	}
@@ -43,62 +35,10 @@ func (f *FunctionDeclaration) HasAnnotation(typ AnnotationType) bool {
 	return false
 }
 
-func (f *FunctionDeclaration) IsNative() bool {
-	return f.HasAnnotation(Native)
-}
-
-func (f FunctionDeclaration) PrettyName() string {
-	if dotIndex := strings.Index(f.Name, "."); dotIndex != -1 {
-		return f.Name[:dotIndex]
+func (f FunctionDeclaration) String() string {
+	args := make([]string, len(f.Params))
+	for i, arg := range f.Params {
+		args[i] = arg.String()
 	}
-
-	return f.Name
-}
-
-type FunctionCall struct {
-	Name         string
-	Parameters   []Expression
-	Infix        bool
-	MemberAccess bool
-	Loc          tokens.Location
-}
-
-func (f FunctionCall) Kind() NodeKind {
-	return FunctionCallNode
-}
-
-func (f FunctionCall) Location() tokens.Location {
-	return f.Loc
-}
-
-func (f *FunctionCall) SetLocation(row uint64, column uint64) {
-	f.Loc.Row = row
-	f.Loc.Column = column
-}
-
-func (f FunctionCall) PrettyName() string {
-	if dotIndex := strings.Index(f.Name, "."); dotIndex != -1 {
-		return f.Name[:dotIndex]
-	}
-
-	return f.Name
-}
-
-type BuiltinFunctionCall struct {
-	Name       string
-	Parameters []Expression
-	Loc        tokens.Location
-}
-
-func (c BuiltinFunctionCall) Kind() NodeKind {
-	return CompileTimeFunctionCallNode
-}
-
-func (c BuiltinFunctionCall) Location() tokens.Location {
-	return c.Loc
-}
-
-func (c *BuiltinFunctionCall) SetLocation(row uint64, column uint64) {
-	c.Loc.Row = row
-	c.Loc.Column = column
+	return fmt.Sprintf("fn(%s) -> %s", strings.Join(args, ", "), f.Return)
 }

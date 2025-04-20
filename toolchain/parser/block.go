@@ -1,4 +1,4 @@
-package expressions
+package parser
 
 import (
 	"blom/ast"
@@ -6,23 +6,17 @@ import (
 	"blom/tokens"
 )
 
-func ParseBlock(p Parser) *ast.BlockStatement {
+func (p *Parser) parseBlock() *ast.Block {
 	p.Consume()
 
 	current := p.Current()
 
-	body := []ast.Statement{}
+	body := []ast.Node{}
 
 	for !p.IsEof() && current.Kind != tokens.RightCurlyBracket {
-		stmts, err := p.ParseStatement()
-		if err != nil {
-			dbg := debug.NewSourceLocation(p.Source(), current.Location.Row, current.Location.Column)
-			dbg.ThrowError(err.Error(), true)
-		}
+		stmt := p.parseStatement()
 
-		for _, stmt := range stmts {
-			body = append(body, stmt)
-		}
+		body = append(body, stmt)
 
 		current = p.Current()
 	}
@@ -32,7 +26,7 @@ func ParseBlock(p Parser) *ast.BlockStatement {
 		dbg.ThrowError("Expected closing bracket", true, debug.NewHint("Did you forget to add a closing bracket?", "}"))
 	}
 
-	return &ast.BlockStatement{
+	return &ast.Block{
 		Body: body,
 		Loc:  current.Location,
 	}

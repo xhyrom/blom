@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileLoop(loopStatement *ast.WhileLoopStatement, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileLoop(loopStatement *ast.WhileLoop, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	c.Scopes.Append()
 
 	c.TempCounter += 1
@@ -31,7 +31,7 @@ func (c *Compiler) compileLoop(loopStatement *ast.WhileLoopStatement, function *
 	// Loop body
 	function.AddBlock(loopLabel)
 
-	for _, statement := range loopStatement.Body {
+	for _, statement := range loopStatement.Block.Body {
 		c.compileStatement(statement, function, nil, isReturn)
 	}
 

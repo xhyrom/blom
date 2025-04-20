@@ -1,0 +1,10 @@
+@native fun printf(format: string, ...) -> i32;
+
+fun @public main() -> i32 {
+  string b = "ahoj";
+  string* a;
+
+  printf("Hello, World! %s\n", a);
+
+  return 0;
+}

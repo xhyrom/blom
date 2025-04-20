@@ -65,8 +65,8 @@ const (
 	// Keywords
 	Fun
 	Return
-	Type
-	Entity
+	Val
+	Var
 )
 
 var tokens = []string{
@@ -117,8 +117,8 @@ var tokens = []string{
 	RightCurlyBracket:  "}",
 	Fun:                "fun",
 	Return:             "return",
-	Type:               "type",
-	Entity:             "entity",
+	Val:                "val",
+	Var:                "var",
 }
 
 var reserved = []string{
@@ -128,8 +128,8 @@ var reserved = []string{
 	While:  "while",
 	Fun:    "fun",
 	Return: "return",
-	Type:   "type",
-	Entity: "entity",
+	Val:    "val",
+	Var:    "var",
 }
 
 func (t TokenKind) String() string {
@@ -153,6 +153,7 @@ type Precedence int
 
 const (
 	LowestPrecedence Precedence = iota
+	AssignPrecedence
 	OrPrecedence
 	AndPrecedence
 	BitwiseOrPrecedence
@@ -168,6 +169,8 @@ const (
 
 func (kind TokenKind) Precedence() Precedence {
 	switch kind {
+	case Assign:
+		return AssignPrecedence
 	case Or:
 		return OrPrecedence
 	case And:
@@ -188,6 +191,8 @@ func (kind TokenKind) Precedence() Precedence {
 		return AdditivePrecedence
 	case Asterisk, Slash, PercentSign:
 		return MultiplicativePrecedence
+	case Tilde, Dot, LeftParenthesis, LeftSquareBracket, DoubleColon, Identifier:
+		return HighestPrecedence
 	default:
 		return LowestPrecedence
 	}

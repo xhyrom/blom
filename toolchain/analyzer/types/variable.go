@@ -6,11 +6,11 @@ import (
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.VariableDeclarationStatement) {
-	valueType := a.analyzeExpression(statement.Value)
+func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.VariableDeclaration) {
+	valueType := a.analyzeExpression(statement.Init)
 
-	if !statement.Type.Equal(valueType) && (!a.canBeImplicitlyCast(valueType, statement.Type) || statement.Value.Kind() == ast.FunctionCallNode) {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, statement.Value)
+	if !statement.Type.Equal(valueType) && (!a.canBeImplicitlyCast(valueType, statement.Type) || statement.Init.Kind() == ast.FunctionCallNode) {
+		dbg := debug.NewSourceLocationFromNode(a.Source, statement.Init)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Variable '%s' declared as '%s', but assigned with '%s'",
@@ -22,7 +22,7 @@ func (a *TypeAnalyzer) analyzeVariableDeclarationStatement(statement *ast.Variab
 		)
 	}
 
-	a.Scopes.Set(statement.Name, &Variable{Type: valueType})
+	a.Scopes.Set(statement.Name.Value, &Variable{Type: valueType})
 }
 
 func (a *TypeAnalyzer) analyzeAssignment(assignment *ast.Assignment) ast.Type {
@@ -30,7 +30,7 @@ func (a *TypeAnalyzer) analyzeAssignment(assignment *ast.Assignment) ast.Type {
 	rightType := a.analyzeExpression(assignment.Right)
 
 	if !leftType.Equal(rightType) && !a.canBeImplicitlyCast(rightType, leftType) {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, assignment.Right)
+		dbg := debug.NewSourceLocationFromNode(a.Source, assignment.Right)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Cannot assign value of type '%s' to '%s'",

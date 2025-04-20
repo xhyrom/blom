@@ -34,7 +34,7 @@ type TypeCheckFunc func(ast.Type) bool
 
 func expectsType(a *TypeAnalyzer, expression *ast.UnaryExpression, operand ast.Type, name string, checkFunc TypeCheckFunc) {
 	if !checkFunc(operand) {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Operand)
+		dbg := debug.NewSourceLocationFromNode(a.Source, expression.Operand)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Unary expression '%s' expects %s operand, got '%s'",

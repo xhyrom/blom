@@ -11,10 +11,6 @@ func (a *Analyzer) populate() {
 		switch statement := statement.(type) {
 		case *ast.FunctionDeclaration:
 			a.populateFunction(statement)
-		case *ast.TypeDefinition:
-			a.populateTypeDefinition(statement)
-		case *ast.Entity:
-			a.TypeManager.Register(statement.Name, statement)
 		default:
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 			dbg.ThrowError(
@@ -56,7 +52,7 @@ func (a *Analyzer) populateFunction(statement *ast.FunctionDeclaration) {
 		)
 	}
 
-	if statement.Name == "main" && !statement.HasAnnotation(ast.Public) {
+	if statement.Name.Value == "main" && !statement.HasAnnotation(ast.Public) {
 		dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column-4)
 		dbg.ThrowError(
 			"The 'main' function must be declared as public since it's the program's entry point.",
@@ -69,45 +65,4 @@ func (a *Analyzer) populateFunction(statement *ast.FunctionDeclaration) {
 	}
 
 	a.FunctionManager.Register(statement)
-}
-
-func (a *Analyzer) populateTypeDefinition(statement *ast.TypeDefinition) {
-	if statement.Name == "main" {
-		dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
-		dbg.ThrowError(
-			"Type 'main' is reserved and cannot be redefined.",
-			true,
-			debug.NewHint(
-				"Consider renaming the type to avoid conflicts.",
-				"",
-			),
-		)
-	}
-
-	_, err := ast.ParseType(statement.Name, map[string]ast.Type{})
-	if err == nil {
-		dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
-		dbg.ThrowError(
-			fmt.Sprintf("Type '%s' is a primitive type and cannot be redefined.", statement.Name),
-			true,
-			debug.NewHint(
-				"Consider renaming the type to avoid conflicts.",
-				"",
-			),
-		)
-	}
-
-	if a.TypeManager.Has(statement.Name) {
-		dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
-		dbg.ThrowError(
-			fmt.Sprintf("Type '%s' has already been defined.", statement.Name),
-			true,
-			debug.NewHint(
-				"Consider renaming the type to avoid conflicts.",
-				"",
-			),
-		)
-	}
-
-	a.TypeManager.Register(statement.Name, statement.Type)
 }

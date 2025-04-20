@@ -41,7 +41,7 @@ func (l Linkage) String() string {
 type Function struct {
 	Linkage    Linkage
 	Name       string
-	Arguments  []TypedValue
+	Params     []TypedValue
 	ReturnType Type
 	Variadic   bool
 	External   bool
@@ -66,9 +66,9 @@ func (f Function) String() string {
 		signature += fmt.Sprintf(" %s", f.ReturnType.IntoAbi())
 	}
 
-	parameters := make([]string, len(f.Arguments))
+	parameters := make([]string, len(f.Params))
 
-	for i, p := range f.Arguments {
+	for i, p := range f.Params {
 		parameters[i] = fmt.Sprintf("%s %s", p.Type, p.Value)
 	}
 
@@ -88,22 +88,22 @@ func (f Function) String() string {
 }
 
 func RemapAstFunction(fun ast.FunctionDeclaration) Function {
-	arguments := make([]TypedValue, len(fun.Arguments))
+	params := make([]TypedValue, len(fun.Params))
 
-	for i, arg := range fun.Arguments {
-		arguments[i] = TypedValue{
-			Type:  RemapAstType(arg.Type),
-			Value: NewTemporaryValue(arg.Name),
+	for i, param := range fun.Params {
+		params[i] = TypedValue{
+			Type:  RemapAstType(param.Type),
+			Value: NewTemporaryValue(param.Name.Value),
 		}
 	}
 
 	return Function{
 		Linkage:    NewLinkage(fun.HasAnnotation(ast.Public)),
-		Name:       fun.Name,
-		Arguments:  arguments,
-		ReturnType: RemapAstType(fun.ReturnType),
-		Variadic:   fun.Variadic,
-		External:   fun.IsNative(),
+		Name:       fun.Name.Value,
+		Params:     params,
+		ReturnType: RemapAstType(fun.Return),
+		Variadic:   fun.HasAnnotation(ast.Variadic),
+		External:   fun.HasAnnotation(ast.Native),
 		Blocks:     make([]Block, 0),
 	}
 }

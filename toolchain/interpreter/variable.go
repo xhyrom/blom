@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (t *Interpreter) interpretVariableDeclaration(statement *ast.VariableDeclarationStatement, function *ast.FunctionDeclaration, isReturn bool) {
+func (t *Interpreter) interpretVariableDeclaration(statement *ast.VariableDeclaration, function *ast.FunctionDeclaration, isReturn bool) {
 	ty := statement.Type
 
 	value := t.interpretStatement(statement.Value, function, &ty, isReturn)

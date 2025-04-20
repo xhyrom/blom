@@ -13,41 +13,39 @@ type TypeAnalyzer struct {
 	Program         *ast.Program
 	Scopes          *scope.Scopes[*Variable]
 	FunctionManager *manager.FunctionManager
-	TypeManager     *manager.TypeManager
 }
 
 type Variable struct {
 	Type ast.Type
 }
 
-func New(file string, program *ast.Program, functionManager *manager.FunctionManager, typeManager *manager.TypeManager) *TypeAnalyzer {
+func New(file string, program *ast.Program, functionManager *manager.FunctionManager) *TypeAnalyzer {
 	return &TypeAnalyzer{
 		Source:          file,
 		Program:         program,
 		Scopes:          scope.NewScopes[*Variable](),
 		FunctionManager: functionManager,
-		TypeManager:     typeManager,
 	}
 }
 
 func (a *TypeAnalyzer) Analyze() {
-	for _, statement := range a.Program.Body {
-		a.analyzeStatement(statement)
+	for _, node := range a.Program.Body {
+		a.analyzeStatement(node)
 	}
 }
 
-func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement) (ast.Type, bool) {
+func (a *TypeAnalyzer) analyzeStatement(statement ast.Node) (ast.Type, bool) {
 	switch statement := statement.(type) {
 	case *ast.FunctionDeclaration:
 		a.analyzeFunctionDeclaration(statement)
-	case *ast.VariableDeclarationStatement:
+	case *ast.VariableDeclaration:
 		a.analyzeVariableDeclarationStatement(statement)
-	case *ast.WhileLoopStatement:
+	case *ast.WhileLoop:
 		a.analyzeWhileLoopStatement(statement)
-	case *ast.FunctionCall:
-		a.analyzeFunctionCall(statement)
+	case *ast.FunctionCall, *ast.MethodCall, *ast.InfixCall:
+		a.analyzeCall(statement.(ast.Call))
 	default:
-		if statement.Kind() != ast.IfNode && statement.Kind() != ast.AssignmentNode && statement.Kind() != ast.BlockNode && statement.Kind() != ast.TypeDefinitionNode {
+		if statement.Kind() != ast.IfNode && statement.Kind() != ast.AssignmentNode && statement.Kind() != ast.BlockNode {
 			dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
 			dbg.ThrowWarning(
 				fmt.Sprintf(
@@ -68,7 +66,7 @@ func (a *TypeAnalyzer) analyzeStatement(statement ast.Statement) (ast.Type, bool
 	return ast.Void, false
 }
 
-func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
+func (a *TypeAnalyzer) analyzeExpression(expression ast.Node) ast.Type {
 	switch expression.(type) {
 	case *ast.IntLiteral:
 		return ast.Int32
@@ -89,29 +87,16 @@ func (a *TypeAnalyzer) analyzeExpression(expression ast.Expression) ast.Type {
 	case *ast.UnaryExpression:
 		unaryExpression := expression.(*ast.UnaryExpression)
 		return a.analyzeUnaryExpression(unaryExpression)
-	case *ast.MemberAccess:
-		memberAccess := expression.(*ast.MemberAccess)
-		return a.analyzeMemberAccess(memberAccess)
-	case *ast.If: // if is statement but also an expression
+	case *ast.If:
 		ifExpression := expression.(*ast.If)
 		return a.analyzeIf(ifExpression)
 	case *ast.Assignment:
 		assignmentExpression := expression.(*ast.Assignment)
 		return a.analyzeAssignment(assignmentExpression)
-	case *ast.FunctionCall:
-		functionCall := expression.(*ast.FunctionCall)
-		return a.analyzeFunctionCall(functionCall)
-	case *ast.BuiltinFunctionCall:
-		compileTimeFunctionCall := expression.(*ast.BuiltinFunctionCall)
-		return a.analyzeBuiltinFunctionCall(compileTimeFunctionCall)
-	case *ast.EntityConstruction:
-		entityConstruction := expression.(*ast.EntityConstruction)
-		return a.analyzeEntityConstruction(entityConstruction)
-	case *ast.LambdaDeclaration:
-		lambdaDeclaration := expression.(*ast.LambdaDeclaration)
-		return a.analyzeLambdaDeclaration(lambdaDeclaration)
-	case *ast.BlockStatement:
-		blockStatement := expression.(*ast.BlockStatement)
+	case *ast.FunctionCall, *ast.MethodCall, *ast.InfixCall:
+		return a.analyzeCall(expression.(ast.Call))
+	case *ast.Block:
+		blockStatement := expression.(*ast.Block)
 		return a.analyzeBlock(blockStatement)
 	}
 

@@ -49,7 +49,7 @@ func (t *Interpreter) interpretFunctionCall(call *ast.FunctionCall, currentFunct
 	for _, statement := range function.Body {
 		value := t.interpretStatement(statement, function, &function.ReturnType, false)
 		switch statement.(type) {
-		case *ast.ReturnStatement:
+		case *ast.Return:
 			t.Scopes.PopUntil(startScopeIndex)
 			return value
 		case *ast.If:

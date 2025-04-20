@@ -10,16 +10,11 @@ type IdentifierLiteral struct {
 }
 
 func (l IdentifierLiteral) Kind() NodeKind {
-	return IdentifierLiteralNode
+	return IdentifierNode
 }
 
 func (l IdentifierLiteral) Location() tokens.Location {
 	return l.Loc
-}
-
-func (l IdentifierLiteral) SetLocation(row uint64, column uint64) {
-	l.Loc.Row = row
-	l.Loc.Column = column
 }
 
 type CharLiteral struct {
@@ -28,16 +23,11 @@ type CharLiteral struct {
 }
 
 func (l CharLiteral) Kind() NodeKind {
-	return CharLiteralNode
+	return CharNode
 }
 
 func (l CharLiteral) Location() tokens.Location {
 	return l.Loc
-}
-
-func (l CharLiteral) SetLocation(row uint64, column uint64) {
-	l.Loc.Row = row
-	l.Loc.Column = column
 }
 
 type StringLiteral struct {
@@ -46,16 +36,11 @@ type StringLiteral struct {
 }
 
 func (l StringLiteral) Kind() NodeKind {
-	return StringLiteralNode
+	return StringNode
 }
 
 func (l StringLiteral) Location() tokens.Location {
 	return l.Loc
-}
-
-func (l StringLiteral) SetLocation(row uint64, column uint64) {
-	l.Loc.Row = row
-	l.Loc.Column = column
 }
 
 type IntLiteral struct {
@@ -64,16 +49,11 @@ type IntLiteral struct {
 }
 
 func (l IntLiteral) Kind() NodeKind {
-	return IntLiteralNode
+	return IntNode
 }
 
 func (l IntLiteral) Location() tokens.Location {
 	return l.Loc
-}
-
-func (l IntLiteral) SetLocation(row uint64, column uint64) {
-	l.Loc.Row = row
-	l.Loc.Column = column
 }
 
 type FloatLiteral struct {
@@ -82,16 +62,11 @@ type FloatLiteral struct {
 }
 
 func (l FloatLiteral) Kind() NodeKind {
-	return FloatLiteralNode
+	return FloatNode
 }
 
 func (l FloatLiteral) Location() tokens.Location {
 	return l.Loc
-}
-
-func (l FloatLiteral) SetLocation(row uint64, column uint64) {
-	l.Loc.Row = row
-	l.Loc.Column = column
 }
 
 type BooleanLiteral struct {
@@ -100,14 +75,9 @@ type BooleanLiteral struct {
 }
 
 func (l BooleanLiteral) Kind() NodeKind {
-	return BooleanLiteralNode
+	return BooleanNode
 }
 
 func (l BooleanLiteral) Location() tokens.Location {
 	return l.Loc
-}
-
-func (l BooleanLiteral) SetLocation(row uint64, column uint64) {
-	l.Loc.Row = row
-	l.Loc.Column = column
 }

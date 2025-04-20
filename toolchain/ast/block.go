@@ -2,20 +2,15 @@ package ast
 
 import "blom/tokens"
 
-type BlockStatement struct {
-	Body []Statement
+type Block struct {
+	Body []Node
 	Loc  tokens.Location
 }
 
-func (b BlockStatement) Kind() NodeKind {
+func (b Block) Kind() NodeKind {
 	return BlockNode
 }
 
-func (b BlockStatement) Location() tokens.Location {
+func (b Block) Location() tokens.Location {
 	return b.Loc
-}
-
-func (b *BlockStatement) SetLocation(row uint64, column uint64) {
-	b.Loc.Row = row
-	b.Loc.Column = column
 }

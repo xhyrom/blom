@@ -6,14 +6,14 @@ import (
 	"fmt"
 )
 
-func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
+func (a *TypeAnalyzer) analyzeBlock(block *ast.Block) ast.Type {
 	a.Scopes.Append()
 
 	var lastReturnType ast.Type = ast.Void
 
 	for _, statement := range block.Body {
 		if statement.Kind() == ast.ReturnNode {
-			ret := statement.(*ast.ReturnStatement)
+			ret := statement.(*ast.Return)
 			returnType := a.analyzeExpression(ret.Value)
 
 			//handleInconsistentReturnTypes(a, ret, returnType, lastReturnType)
@@ -32,12 +32,12 @@ func (a *TypeAnalyzer) analyzeBlock(block *ast.BlockStatement) ast.Type {
 	return lastReturnType
 }
 
-func handleInconsistentReturnTypes(a *TypeAnalyzer, expression ast.Expression, returnType ast.Type, lastReturnType ast.Type) {
+func handleInconsistentReturnTypes(a *TypeAnalyzer, expression ast.Node, returnType ast.Type, lastReturnType ast.Type) {
 	if lastReturnType == ast.Void || lastReturnType == returnType {
 		return
 	}
 
-	dbg := debug.NewSourceLocationFromExpression(a.Source, expression)
+	dbg := debug.NewSourceLocationFromNode(a.Source, expression)
 	dbg.ThrowError(
 		fmt.Sprintf(
 			"Return type '%s' does not match the previous return type '%s'",

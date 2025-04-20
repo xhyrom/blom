@@ -2,8 +2,12 @@ package manager
 
 import (
 	"blom/ast"
-	"fmt"
 )
+
+type FunctionWithSuffix struct {
+	*ast.FunctionDeclaration
+	Suffix string
+}
 
 type FunctionManager struct {
 	functions map[string][]*ast.FunctionDeclaration
@@ -16,65 +20,58 @@ func NewFunctionManager() *FunctionManager {
 }
 
 func (m *FunctionManager) Register(fun *ast.FunctionDeclaration) {
-	if _, ok := m.functions[fun.Name]; !ok {
-		m.functions[fun.Name] = make([]*ast.FunctionDeclaration, 0)
+	if _, ok := m.functions[fun.Name.Value]; !ok {
+		m.functions[fun.Name.Value] = make([]*ast.FunctionDeclaration, 0)
 	}
 
-	m.functions[fun.Name] = append(m.functions[fun.Name], fun)
+	m.functions[fun.Name.Value] = append(m.functions[fun.Name.Value], fun)
 }
 
-func (m *FunctionManager) Get(name string, arguments []ast.Type) (*ast.FunctionDeclaration, bool) {
+func (m *FunctionManager) GetWithIndex(name string, params []ast.Type) (*ast.FunctionDeclaration, int, bool) {
 	if functions, ok := m.functions[name]; ok {
-		for _, fun := range functions {
-			if len(fun.Arguments) == len(arguments) {
+		for i, fun := range functions {
+			if len(fun.Params) == len(params) {
 				matches := true
-				for i, arg := range fun.Arguments {
-					if !arg.Type.Equal(arguments[i]) {
+				for j, param := range fun.Params {
+					if !param.Type.Equal(params[j]) {
 						matches = false
 						break
 					}
 				}
 
 				if matches {
-					return fun, true
+					return fun, i, true
 				}
 			}
 		}
 	}
 
+	return nil, -1, false
+}
+
+func (m *FunctionManager) GetByDeclarationWithIndex(fun *ast.FunctionDeclaration) (*ast.FunctionDeclaration, int, bool) {
+	params := make([]ast.Type, len(fun.Params))
+	for i, arg := range fun.Params {
+		params[i] = arg.Type
+	}
+
+	return m.GetWithIndex(fun.Name.Value, params)
+}
+
+func (m *FunctionManager) Get(name string, params []ast.Type) (*ast.FunctionDeclaration, bool) {
+	if fun, _, ok := m.GetWithIndex(name, params); ok {
+		return fun, true
+	}
+
 	return nil, false
 }
 
-func (m *FunctionManager) GetAllNamed(name string) []*ast.FunctionDeclaration {
-	return m.functions[name]
-}
-
 func (m *FunctionManager) GetByDeclaration(fun *ast.FunctionDeclaration) (*ast.FunctionDeclaration, bool) {
-	arguments := make([]ast.Type, len(fun.Arguments))
-	for i, arg := range fun.Arguments {
-		arguments[i] = arg.Type
+	if fun, _, ok := m.GetByDeclarationWithIndex(fun); ok {
+		return fun, true
 	}
 
-	return m.Get(fun.Name, arguments)
-}
-
-func (m *FunctionManager) GetNewName(fun *ast.FunctionDeclaration) string {
-	functions := m.functions[fun.Name]
-
-	if functions == nil || len(functions) == 1 {
-		return fun.Name
-	}
-
-	index := 1
-	for _, f := range functions {
-		if f == fun {
-			break
-		}
-
-		index++
-	}
-
-	return fmt.Sprintf("%s.%d", fun.Name, index)
+	return nil, false
 }
 
 func (m *FunctionManager) Has(name string) bool {

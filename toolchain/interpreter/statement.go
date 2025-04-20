@@ -8,7 +8,7 @@ import (
 
 func (t *Interpreter) interpretStatement(statement ast.Statement, function *ast.FunctionDeclaration, vtype *ast.Type, isReturn bool) objects.Object {
 	switch statement := statement.(type) {
-	case *ast.VariableDeclarationStatement:
+	case *ast.VariableDeclaration:
 		t.interpretVariableDeclaration(statement, function, isReturn)
 		return nil
 	case *ast.Assignment:
@@ -23,15 +23,15 @@ func (t *Interpreter) interpretStatement(statement ast.Statement, function *ast.
 		return t.interpretLambdaDeclaration(statement, function, vtype)
 	case *ast.If:
 		return t.interpretCondition(statement, function, vtype, isReturn)
-	case *ast.WhileLoopStatement:
+	case *ast.WhileLoop:
 		return t.interpretLoop(statement, function, vtype, isReturn)
-	case *ast.ReturnStatement:
+	case *ast.Return:
 		return t.interpretReturnStatement(statement, function, vtype)
 	case *ast.BinaryExpression:
 		return t.interpretBinaryExpression(statement, function, vtype, isReturn)
 	case *ast.UnaryExpression:
 		return t.interpretUnaryExpression(statement, function, vtype, isReturn)
-	case *ast.BlockStatement:
+	case *ast.Block:
 		return t.interpretBlock(statement, function, vtype, isReturn)
 	}
 

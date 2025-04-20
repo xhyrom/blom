@@ -2,6 +2,7 @@ package debug
 
 import (
 	"blom/ast"
+	"blom/tokens"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -47,13 +48,28 @@ func NewSourceLocation(file string, row uint64, column uint64) SourceLocation {
 	}
 }
 
-func NewSourceLocationFromExpression(file string, expression ast.Expression) SourceLocation {
+func NewSourceLocationFromNode(file string, node ast.Node) SourceLocation {
 	if fileCache == nil {
 		fileCache = map[string][]byte{}
 	}
 
-	row := expression.Location().Row
-	column := expression.Location().Column
+	row := node.Location().Row
+	column := node.Location().Column
+
+	return SourceLocation{
+		File:   file,
+		Row:    row,
+		Column: column + 1,
+	}
+}
+
+func NewSourceLocationFromToken(file string, token tokens.Token) SourceLocation {
+	if fileCache == nil {
+		fileCache = map[string][]byte{}
+	}
+
+	row := token.Location.Row
+	column := token.Location.Column
 
 	return SourceLocation{
 		File:   file,

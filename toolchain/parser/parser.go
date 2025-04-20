@@ -2,24 +2,22 @@ package parser
 
 import (
 	"blom/ast"
+	"blom/debug"
 	"blom/lexer"
-	"blom/parser/expressions"
-	"blom/parser/statements"
 	"blom/tokens"
-	"errors"
 )
 
 type Parser struct {
 	tokens      []tokens.Token
 	source      string
-	customTypes map[string]ast.Type
+	annotations []ast.Annotation
 }
 
 func New(file string) *Parser {
 	return &Parser{
 		tokens:      make([]tokens.Token, 0),
 		source:      file,
-		customTypes: make(map[string]ast.Type),
+		annotations: make([]ast.Annotation, 0),
 	}
 }
 
@@ -36,18 +34,10 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 		}
 	}
 
-	prog := &ast.Program{
-		Loc: tokens.Location{
-			Row:    1,
-			Column: 0,
-		},
-	}
-
+	prog := ast.NewProgram()
 	for !p.IsEof() {
-		stmts, _ := p.ParseStatement()
-		for _, stmt := range stmts {
-			prog.Body = append(prog.Body, stmt)
-		}
+		stmt := p.parseStatement()
+		prog.Body = append(prog.Body, stmt)
 	}
 
 	return prog
@@ -69,10 +59,6 @@ func (p *Parser) Current() tokens.Token {
 	return p.tokens[0]
 }
 
-func (p *Parser) Next() tokens.Token {
-	return p.tokens[1]
-}
-
 func (p *Parser) Peek(i int) tokens.Token {
 	return p.tokens[i]
 }
@@ -88,165 +74,126 @@ func (p *Parser) Advance() {
 	p.tokens = p.tokens[1:]
 }
 
-func (p *Parser) CustomTypes() map[string]ast.Type {
-	return p.customTypes
-}
+func (p *Parser) parseStatement() ast.Node {
+	p.collectAnnotations()
 
-func (p *Parser) AddCustomType(name string, ty ast.Type) {
-	p.customTypes[name] = ty
-}
+	var statement ast.Node
 
-func (p *Parser) ParseStatement() ([]ast.Statement, error) {
 	switch p.Current().Kind {
 	case tokens.Fun:
-		return []ast.Statement{statements.ParseFunction(p)}, nil
+		return p.parseFunction()
 	case tokens.Return:
-		return []ast.Statement{statements.ParseReturn(p)}, nil
-	case tokens.Type:
-		return []ast.Statement{statements.ParseTypeDefinition(p)}, nil
-	case tokens.Entity:
-		return []ast.Statement{statements.ParseEntity(p)}, nil
+		statement = p.parseReturn()
+	case tokens.If:
+		return p.parseCondition()
 	case tokens.For:
-		decl, while := statements.ParseForLoop(p)
-		if decl != nil {
-			return []ast.Statement{decl, while}, nil
-		}
-
-		return []ast.Statement{while}, nil
-	case tokens.While:
-		return []ast.Statement{statements.ParseWhileLoop(p)}, nil
-	case tokens.Identifier:
-		if p.Next().Kind == tokens.Identifier ||
-			(p.Next().Kind == tokens.Asterisk && p.Peek(2).Kind == tokens.Identifier) {
-			return []ast.Statement{statements.ParseVariableDeclaration(p)}, nil
-		}
-
-		if p.Next().Kind == tokens.LeftParenthesis {
-			return []ast.Statement{expressions.ParseFunctionCall(p, p.Consume(), true)}, nil
-		}
+		return p.parseForLoop()
+	case tokens.Val, tokens.Var:
+		statement = p.parseVariableDeclaration()
+	case tokens.LeftCurlyBracket:
+		return p.parseBlock()
 	}
 
-	exp, err := p.ParseExpression()
-	return []ast.Statement{exp}, err
+	if statement == nil {
+		statement = p.parseExpression()
+	}
+
+	if p.Consume().Kind != tokens.Semicolon {
+		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Current())
+		dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
+	}
+
+	return statement
 }
 
-func (p *Parser) ParseExpression() (ast.Expression, error) {
+func (p *Parser) parseExpression() ast.Node {
 	return p.parseExpressionWithPrecedence(tokens.LowestPrecedence)
 }
 
-func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) (ast.Expression, error) {
-	left, err := p.ParsePrimaryExpression()
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast.Node {
+	// prefix
+	var left ast.Node
 
-	for !p.IsEof() && precedence < p.Current().Kind.Precedence() {
-		op := p.Current()
-		p.Consume()
-
-		right, err := p.parseExpressionWithPrecedence(op.Kind.Precedence())
-		if err != nil {
-			return nil, err
-		}
-
-		left = &ast.BinaryExpression{
-			Left:        left,
-			Operator:    op.Kind,
-			Right:       right,
-			Loc:         right.Location(),
-			OperatorLoc: op.Location,
-		}
-	}
-
-	return left, nil
-}
-
-func (p *Parser) ParsePrimaryExpression() (ast.Expression, error) {
-	// parse cases that can't be infix
 	switch p.Current().Kind {
-	case tokens.LeftCurlyBracket:
-		return expressions.ParseBlock(p), nil
-	case tokens.If:
-		return expressions.ParseIf(p), nil
-	case tokens.AtMark:
-		return expressions.ParseCompileTimeFunctionCall(p), nil
+	case tokens.Identifier, tokens.IntLiteral, tokens.FloatLiteral, tokens.StringLiteral, tokens.CharLiteral, tokens.BooleanLiteral:
+		left = p.parseLiteral()
 	case tokens.LeftParenthesis:
-		p.Consume() // consume '('
-		expr, err := p.ParseExpression()
-		p.Consume() // consume ')'
-		expr.SetLocation(expr.Location().Row, expr.Location().Column+1)
+		left = p.parseGroupedExpression()
+	case tokens.If:
+		left = p.parseCondition()
+	case tokens.LeftCurlyBracket:
+		left = p.parseBlock()
+	case tokens.Plus, tokens.Minus, tokens.Ampersand, tokens.Tilde, tokens.Asterisk:
+		left = p.parseUnaryExpression()
+	}
 
-		if p.Current().Kind == tokens.Dot {
-			expr = expressions.ParseMemberAccess(p, expr)
+	for p.Current().Kind != tokens.Semicolon && precedence < p.Current().Kind.Precedence() {
+		// infix
+		switch p.Current().Kind {
+		case tokens.Equals,
+			tokens.NotEquals,
+			tokens.Plus,
+			tokens.Minus,
+			tokens.Asterisk,
+			tokens.Slash,
+			tokens.PercentSign,
+			tokens.VerticalLine,
+			tokens.CircumflexAccent,
+			tokens.LessThan,
+			tokens.DoubleLessThan,
+			tokens.GreaterThan,
+			tokens.DoubleGreaterThan:
+			left = p.parseBinaryExpression(left)
+		case tokens.Identifier:
+			left = p.parseInfixCall(left)
+		case tokens.Dot:
+			left = p.parseField(left)
+		case tokens.DoubleColon:
+			left = p.parsePath(left)
+		case tokens.Assign:
+			left = p.parseAssignment(left)
+		case tokens.LeftParenthesis:
+			left = p.parseCall(left)
+		default:
+			return left
 		}
-
-		return expr, err
 	}
 
-	left, err := p.parseSingleExpression()
-	if err != nil {
-		return nil, err
-	}
-
-	if !p.IsEof() && p.Current().Kind == tokens.Assign {
-		return expressions.ParseAssignment(p, left), nil
-	}
-
-	if !p.IsEof() && p.Current().Kind == tokens.Identifier && p.Next().Kind != tokens.Asterisk {
-		op := p.Current()
-
-		p.Consume()
-		if !p.IsEof() && p.Current().Kind != tokens.LeftCurlyBracket && p.Current().Kind != tokens.Dot &&
-			p.Current().Kind != tokens.If && p.Current().Kind != tokens.LeftParenthesis {
-
-			right, err := p.ParsePrimaryExpression()
-
-			if err == nil {
-				return &ast.FunctionCall{
-					Name: op.Value,
-					Parameters: []ast.Expression{
-						left,
-						right,
-					},
-					Infix: true,
-					Loc:   op.Location,
-				}, nil
-			}
-		}
-
-		// restore
-		p.tokens = append([]tokens.Token{op}, p.tokens...)
-	}
-
-	return left, nil
+	return left
 }
 
-func (p *Parser) parseSingleExpression() (ast.Expression, error) {
-	var exp ast.Expression
+func (p *Parser) parseGroupedExpression() ast.Node {
+	p.Consume() // consume "("
 
-	switch p.Current().Kind {
-	case tokens.CharLiteral,
-		tokens.StringLiteral,
-		tokens.IntLiteral,
-		tokens.FloatLiteral,
-		tokens.BooleanLiteral,
-		tokens.Identifier:
-		exp, _ = expressions.ParseLiteral(p)
-	case tokens.AtMark:
-		exp = expressions.ParseCompileTimeFunctionCall(p)
-	case tokens.Plus, tokens.Minus, tokens.Tilde, tokens.Ampersand, tokens.Asterisk:
-		exp = expressions.ParseUnary(p)
-	case tokens.Fun:
-		exp = expressions.ParseLambda(p)
+	exp := p.parseExpression()
+
+	if p.Consume().Kind != tokens.RightParenthesis {
+		dbg := debug.NewSourceLocationFromNode(p.Source(), exp)
+		dbg.ThrowError("Expected closing parenthesis", true, debug.NewHint("Did you forget to add a closing parenthesis?", ")"))
 	}
 
-	if p.Current().Kind == tokens.Dot {
-		exp = expressions.ParseMemberAccess(p, exp)
-	}
+	return exp
+}
 
-	if exp != nil {
-		return exp, nil
-	}
+func (p *Parser) parseUnaryExpression() ast.Node {
+	operator := p.Consume()
+	operand := p.parseExpressionWithPrecedence(operator.Kind.Precedence())
 
-	return nil, errors.New("Unexpected token " + p.Current().Kind.String())
+	return &ast.UnaryExpression{
+		Operator: operator.Kind,
+		Operand:  operand,
+		Loc:      operator.Location,
+	}
+}
+
+func (p *Parser) parseBinaryExpression(left ast.Node) ast.Node {
+	operator := p.Consume()
+	right := p.parseExpressionWithPrecedence(operator.Kind.Precedence())
+
+	return &ast.BinaryExpression{
+		Left:     left,
+		Operator: operator.Kind,
+		Right:    right,
+		Loc:      operator.Location,
+	}
 }

@@ -1,17 +1,20 @@
 package ast
 
-import "blom/tokens"
+import (
+	"blom/tokens"
+)
 
 type NodeKind int
 
 const (
 	ProgramNode NodeKind = iota
-	IdentifierLiteralNode
-	CharLiteralNode
-	StringLiteralNode
-	IntLiteralNode
-	FloatLiteralNode
-	BooleanLiteralNode
+	IdentifierNode
+	CharNode
+	StringNode
+	IntNode
+	FloatNode
+	BooleanNode
+
 	BinaryExpressionNode
 	UnaryExpressionNode
 	VariableDeclarationNode
@@ -20,22 +23,27 @@ const (
 	BlockNode
 	IfNode
 	WhileLoopNode
-
 	AnnotationNode
 	FunctionDeclarationNode
 	FunctionCallNode
-	CompileTimeFunctionCallNode
-	TypeDefinitionNode
+	MethodCallNode
+	InfixCallNode
 
-	EntityNode
-	EntityConstructionNode
-	MemberAccessNode
+	FieldNode
+	PathNode
 )
 
-type Statement interface {
+type Node interface {
 	Kind() NodeKind
 	Location() tokens.Location
-	SetLocation(row uint64, column uint64)
 }
 
-type Program BlockStatement
+type Program struct {
+	Body []Node
+}
+
+func NewProgram() *Program {
+	return &Program{
+		Body: []Node{},
+	}
+}

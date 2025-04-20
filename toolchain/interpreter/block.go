@@ -5,7 +5,7 @@ import (
 	"blom/interpreter/objects"
 )
 
-func (t *Interpreter) interpretBlock(block *ast.BlockStatement, function *ast.FunctionDeclaration, vtype *ast.Type, isReturn bool) objects.Object {
+func (t *Interpreter) interpretBlock(block *ast.Block, function *ast.FunctionDeclaration, vtype *ast.Type, isReturn bool) objects.Object {
 	t.Scopes.Append()
 
 	for _, statement := range block.Body {
