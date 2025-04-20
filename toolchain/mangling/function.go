@@ -95,7 +95,7 @@ func GenerateFunctionMangledName(fn *ast.FunctionDeclaration) string {
 
 	returnTypeCode := typeToCode(fn.Return)
 
-	return fmt.Sprintf("Zn_%s.Za_%s.Zr_%s",
+	return fmt.Sprintf("%s.%s.%s",
 		fn.Name.Value,
 		strings.Join(types, ""),
 		returnTypeCode)
