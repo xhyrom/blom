@@ -100,10 +100,10 @@ func main() {
 		}
 	}
 
-	sseFile := filepath.Join(outputDir, "out.sse")
+	ssaFile := filepath.Join(outputDir, "out.ssa")
 	asmFile := filepath.Join(outputDir, "out.s")
 
-	err = os.WriteFile(sseFile, []byte(sse), 0644)
+	err = os.WriteFile(ssaFile, []byte(sse), 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -113,7 +113,7 @@ func main() {
 	cmd := exec.Command("sh", "-c",
 		fmt.Sprintf("qbe -o %s %s && cc -O3 %s -o %s",
 			asmFile,    // QBE output assembly
-			sseFile,    // QBE input
+			ssaFile,    // QBE input
 			asmFile,    // CC input
 			outputFile, // Final executable
 		))
