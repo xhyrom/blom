@@ -95,7 +95,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case tokens.For:
 		return p.parseForLoop()
 	case tokens.Identifier:
-		if !p.IsEof() && p.Peek(1).Kind == tokens.Identifier {
+		if !p.IsEof() && (p.Peek(1).Kind == tokens.Identifier || (p.Peek(1).Kind == tokens.Asterisk && p.Peek(2).Kind == tokens.Identifier)) {
 			statement = p.parseVariableDeclaration()
 		}
 	case tokens.LeftCurlyBracket:

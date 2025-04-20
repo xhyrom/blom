@@ -17,7 +17,14 @@ func (p *Parser) parseType() ast.Type {
 		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a type name?", "i32"))
 	}
 
-	ty, err := ast.ParseType(token.Value, map[string]ast.Type{})
+	str := token.Value
+
+	if p.Current().Kind == tokens.Asterisk {
+		str += "*"
+		token = p.Consume()
+	}
+
+	ty, err := ast.ParseType(str, map[string]ast.Type{})
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), token.Location.Row, token.Location.Column)
 		dbg.ThrowError(err.Error(), true)

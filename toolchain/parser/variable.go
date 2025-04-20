@@ -2,21 +2,25 @@ package parser
 
 import (
 	"blom/ast"
-	"blom/debug"
 	"blom/tokens"
 )
 
 func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
 	ty := p.parseType()
-	name := p.parseLiteral().(*ast.IdentifierLiteral).Value
+	literal := p.parseLiteral()
+	name := literal.(*ast.IdentifierLiteral).Value
 
-	assign := p.Consume()
-
-	if assign.Kind != tokens.Assign {
-		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Current())
-		dbg.ThrowError("Expected assignment", true, debug.NewHint("Did you forget to add an assignment?", "="))
+	if p.Current().Kind != tokens.Assign {
+		return &ast.VariableDeclaration{
+			Name:        name,
+			Type:        ast.Int32,
+			Value:       &ast.IntLiteral{Value: 0},
+			Annotations: p.extractAnnotations(),
+			Loc:         literal.Location(),
+		}
 	}
 
+	assign := p.Consume()
 	value := p.parseExpression()
 
 	return &ast.VariableDeclaration{
