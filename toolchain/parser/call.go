@@ -108,8 +108,11 @@ func (p *Parser) parseInfixCall(left ast.Node) *ast.FunctionCall {
 		path = &ast.Path{
 			Segments: []ast.IdentifierLiteral{*function.(*ast.IdentifierLiteral)},
 		}
-	} else {
+	} else if function.Kind() == ast.PathNode {
 		path = function.(*ast.Path)
+	} else {
+		dbg := debug.NewSourceLocation(p.Source(), function.Location().Row, function.Location().Column)
+		dbg.ThrowError("Expected identifier or path", true, debug.NewHint("Did you forget to add a function name?", "fn"))
 	}
 
 	return &ast.FunctionCall{
