@@ -96,3 +96,25 @@ func (p *Parser) parseMethodCall(left *ast.Field) *ast.MethodCall {
 		Loc:    last.Location,
 	}
 }
+
+// Parses an infix call that can have a form:
+// <left> <name> <right>
+func (p *Parser) parseInfixCall(left ast.Node) *ast.FunctionCall {
+	function := p.parseExpression()
+	right := p.parseExpression()
+
+	var path *ast.Path
+	if function.Kind() == ast.IdentifierNode {
+		path = &ast.Path{
+			Segments: []ast.IdentifierLiteral{*function.(*ast.IdentifierLiteral)},
+		}
+	} else {
+		path = function.(*ast.Path)
+	}
+
+	return &ast.FunctionCall{
+		Path: *path,
+		Args: []ast.Node{left, right},
+		Loc:  function.Location(),
+	}
+}

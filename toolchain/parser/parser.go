@@ -88,10 +88,8 @@ func (p *Parser) parseStatement() ast.Node {
 		return p.parseCondition()
 	case tokens.For:
 		return p.parseForLoop()
-	case tokens.Identifier:
-		if !p.IsEof() && (p.Peek(1).Kind == tokens.Identifier || (p.Peek(1).Kind == tokens.Asterisk && p.Peek(2).Kind == tokens.Identifier)) {
-			statement = p.parseVariableDeclaration()
-		}
+	case tokens.Val, tokens.Var:
+		statement = p.parseVariableDeclaration()
 	case tokens.LeftCurlyBracket:
 		return p.parseBlock()
 	}
@@ -146,6 +144,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 			tokens.GreaterThan,
 			tokens.DoubleGreaterThan:
 			left = p.parseBinaryExpression(left)
+		case tokens.Identifier:
+			left = p.parseInfixCall(left)
 		case tokens.Dot:
 			left = p.parseField(left)
 		case tokens.DoubleColon:

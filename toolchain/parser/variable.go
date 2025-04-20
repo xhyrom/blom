@@ -6,15 +6,21 @@ import (
 )
 
 func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
-	ty := p.parseType()
-	literal := p.parseLiteral()
-	name := *literal.(*ast.IdentifierLiteral)
+	mutable := false
+	if p.Consume().Kind == tokens.Val {
+		mutable = true
+	}
+
+	argument := p.parseArgument()
+	name := argument.Name
+	ty := argument.Type
 
 	if p.Current().Kind != tokens.Assign {
 		return &ast.VariableDeclaration{
-			Name: name,
-			Type: ast.Int32,
-			Loc:  literal.Location(),
+			Name:    name,
+			Type:    ast.Int32,
+			Mutable: mutable,
+			Loc:     name.Location(),
 		}
 	}
 
@@ -22,10 +28,11 @@ func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
 	value := p.parseExpression()
 
 	return &ast.VariableDeclaration{
-		Name: name,
-		Type: ty,
-		Init: value,
-		Loc:  assign.Location,
+		Name:    name,
+		Type:    ty,
+		Init:    value,
+		Mutable: mutable,
+		Loc:     assign.Location,
 	}
 }
 

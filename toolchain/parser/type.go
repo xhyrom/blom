@@ -14,7 +14,7 @@ func (p *Parser) parseType() ast.Type {
 
 	if token.Kind != tokens.Identifier {
 		dbg := debug.NewSourceLocation(p.Source(), token.Location.Row, token.Location.Column)
-		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a type name?", " i32"))
+		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a type name?", "i32"))
 	}
 
 	str := token.Value

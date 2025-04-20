@@ -58,7 +58,7 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 
 	params := make([]ast.Argument, 0)
 	for p.Current().Kind != tokens.RightParenthesis {
-		param := parseArgument(p)
+		param := p.parseArgument()
 		if param == nil {
 			break
 		}
@@ -106,29 +106,4 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	}
 
 	return fun
-}
-
-// Parses a list of function arguments that can have a form:
-// (<argument> : <type>, <argument> : <type>, ...)
-//
-// where:
-// - <argument> is the name of the argument
-// - <type> is the type of the argument
-func parseArgument(p *Parser) *ast.Argument {
-	argument := p.Consume()
-
-	if argument.Kind != tokens.Identifier {
-		dbg := debug.NewSourceLocation(p.Source(), argument.Location.Row, argument.Location.Column+1)
-		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add an argument name?", "<name>"))
-	}
-
-	if p.Consume().Kind != tokens.Colon {
-		dbg := debug.NewSourceLocation(p.Source(), argument.Location.Row, argument.Location.Column+1)
-		dbg.ThrowError("Expected colon", true, debug.NewHint("Did you forget to add a colon?", ":"))
-	}
-
-	return &ast.Argument{
-		Name: argument,
-		Type: p.parseType(),
-	}
 }
