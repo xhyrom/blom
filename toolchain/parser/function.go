@@ -138,12 +138,18 @@ func parseArgument(p *Parser) *ast.Argument {
 func (p *Parser) parseFunctionCall(left ast.Node) *ast.FunctionCall {
 	p.Consume()
 
-	if left.Kind() != ast.IdentifierNode {
+	var path *ast.Path
+	if left.Kind() == ast.IdentifierNode {
+		path = &ast.Path{
+			Segments: []ast.IdentifierLiteral{*left.(*ast.IdentifierLiteral)},
+		}
+	} else if left.Kind() == ast.PathNode {
+		path = left.(*ast.Path)
+	} else {
 		dbg := debug.NewSourceLocation(p.Source(), left.Location().Row, left.Location().Column)
-		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function name?", "fn"))
+		dbg.ThrowError("Expected identifier or path", true, debug.NewHint("Did you forget to add a function name?", "fn"))
 	}
 
-	name := left.(*ast.IdentifierLiteral)
 	args := make([]ast.Node, 0)
 
 	for p.Current().Kind != tokens.RightParenthesis {
@@ -167,9 +173,7 @@ func (p *Parser) parseFunctionCall(left ast.Node) *ast.FunctionCall {
 	}
 
 	return &ast.FunctionCall{
-		Path: ast.Path{
-			Segments: []ast.IdentifierLiteral{*name},
-		},
+		Path: *path,
 		Args: args,
 		Loc:  last.Location,
 	}

@@ -1,6 +1,8 @@
 package ast
 
-import "blom/tokens"
+import (
+	"blom/tokens"
+)
 
 type NodeKind int
 
@@ -24,6 +26,9 @@ const (
 	AnnotationNode
 	FunctionDeclarationNode
 	FunctionCallNode
+	MethodCallNode
+
+	PathNode
 )
 
 type Node interface {
@@ -33,4 +38,10 @@ type Node interface {
 
 type Program struct {
 	Body []Node
+}
+
+func NewProgram() *Program {
+	return &Program{
+		Body: []Node{},
+	}
 }

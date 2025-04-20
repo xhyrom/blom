@@ -34,7 +34,7 @@ func (p *Parser) AST(file string, code string) *ast.Program {
 		}
 	}
 
-	prog := &ast.Program{}
+	prog := ast.NewProgram()
 	for !p.IsEof() {
 		stmt := p.parseStatement()
 		prog.Body = append(prog.Body, stmt)
@@ -146,6 +146,8 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 			tokens.GreaterThan,
 			tokens.DoubleGreaterThan:
 			left = p.parseBinaryExpression(left)
+		case tokens.DoubleColon:
+			left = p.parsePath(left)
 		case tokens.Assign:
 			left = p.parseAssignment(left)
 		case tokens.LeftParenthesis:
