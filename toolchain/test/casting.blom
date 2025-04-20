@@ -1,7 +1,0 @@
-fun @native printf(format: string, ...) -> i32;
-
-fun @public main() {
-    f32 a = 5.9;
-
-    printf("ahoj %f\n", a);
-}

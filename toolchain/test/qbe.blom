@@ -1,9 +1,0 @@
-fun @native printf(format: string, ...) -> i32;
-
-fun ahoj(a: i64) -> i64 {
-    return a + 9;
-}
-
-fun @public main() -> i64 {
-    return ahoj(7);
-}
