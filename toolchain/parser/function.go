@@ -8,6 +8,7 @@ import (
 
 // Parses a function declaration that can have a form:
 // fun ?(<annotations>) <name> (<parameters>) ?(-> <return type>) { <body> }
+// fun ?(<annotations>) <namespace>::<name> (<parameters>) ?(-> <return type>) { <body> }
 //
 // where:
 // - <annotations> is a list of annotations
@@ -27,6 +28,22 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	if name.Kind != tokens.Identifier {
 		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
 		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function name?", "fn"))
+	}
+
+	if p.Current().Kind == tokens.DoubleColon {
+		p.Consume()
+
+		namespace := p.Consume()
+		if namespace.Kind != tokens.Identifier {
+			dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
+			dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function identifier?", "fn"))
+		}
+
+		name = tokens.Token{
+			Kind:     tokens.Identifier,
+			Location: name.Location,
+			Value:    name.Value + "." + namespace.Value,
+		}
 	}
 
 	if p.Consume().Kind != tokens.LeftParenthesis {
