@@ -38,3 +38,19 @@ func (m MethodCall) Location() tokens.Location {
 }
 
 func (m MethodCall) isCall() {}
+
+type InfixCall struct {
+	*FunctionCall
+	*MethodCall
+	Loc tokens.Location
+}
+
+func (i InfixCall) Kind() NodeKind {
+	return InfixCallNode
+}
+
+func (i InfixCall) Location() tokens.Location {
+	return i.Loc
+}
+
+func (i InfixCall) isCall() {}

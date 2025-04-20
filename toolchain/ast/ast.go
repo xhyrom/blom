@@ -27,6 +27,7 @@ const (
 	FunctionDeclarationNode
 	FunctionCallNode
 	MethodCallNode
+	InfixCallNode
 
 	FieldNode
 	PathNode

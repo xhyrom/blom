@@ -61,9 +61,9 @@ var types = []string{
 	Function:      "fun",
 }
 
-func ParseType(str string, additionalTypes map[string]Type) (Type, error) {
+func ParseType(str string) (Type, error) {
 	if len(str) > 1 && str[len(str)-1] == '*' {
-		baseType, err := ParseType(str[:len(str)-1], additionalTypes)
+		baseType, err := ParseType(str[:len(str)-1])
 		if err != nil {
 			return nil, err
 		}
@@ -73,10 +73,6 @@ func ParseType(str string, additionalTypes map[string]Type) (Type, error) {
 	index := slices.Index(types, str)
 	if index != -1 {
 		return TypeId(index), nil
-	}
-
-	if t, exists := additionalTypes[str]; exists {
-		return t, nil
 	}
 
 	return nil, fmt.Errorf("unknown type '%s'", str)

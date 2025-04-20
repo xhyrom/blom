@@ -19,16 +19,10 @@ func (a *TypeAnalyzer) analyzeIf(expression *ast.If) ast.Type {
 		)
 	}
 
-	returnType := a.analyzeBlock(&ast.Block{
-		Body: expression.Then,
-		Loc:  expression.Loc,
-	})
+	returnType := a.analyzeBlock(&expression.Then)
 
-	if expression.HasElse() {
-		elseReturnType := a.analyzeBlock(&ast.Block{
-			Body: expression.Else,
-			Loc:  expression.Loc,
-		})
+	if expression.Else != nil {
+		elseReturnType := a.analyzeBlock(expression.Else)
 
 		if returnType != elseReturnType {
 			dbg := debug.NewSourceLocation(a.Source, expression.Location().Row, expression.Location().Column)

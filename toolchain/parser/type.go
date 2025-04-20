@@ -24,7 +24,7 @@ func (p *Parser) parseType() ast.Type {
 		token = p.Consume()
 	}
 
-	ty, err := ast.ParseType(str, map[string]ast.Type{})
+	ty, err := ast.ParseType(str)
 	if err != nil {
 		dbg := debug.NewSourceLocation(p.Source(), token.Location.Row, token.Location.Column)
 		dbg.ThrowError(err.Error(), true)

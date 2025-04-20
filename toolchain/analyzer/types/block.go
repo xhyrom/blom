@@ -32,7 +32,7 @@ func (a *TypeAnalyzer) analyzeBlock(block *ast.Block) ast.Type {
 	return lastReturnType
 }
 
-func handleInconsistentReturnTypes(a *TypeAnalyzer, expression ast.Expression, returnType ast.Type, lastReturnType ast.Type) {
+func handleInconsistentReturnTypes(a *TypeAnalyzer, expression ast.Node, returnType ast.Type, lastReturnType ast.Type) {
 	if lastReturnType == ast.Void || lastReturnType == returnType {
 		return
 	}

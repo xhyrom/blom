@@ -99,25 +99,41 @@ func (p *Parser) parseMethodCall(left *ast.Field) *ast.MethodCall {
 
 // Parses an infix call that can have a form:
 // <left> <name> <right>
-func (p *Parser) parseInfixCall(left ast.Node) *ast.FunctionCall {
+func (p *Parser) parseInfixCall(left ast.Node) *ast.InfixCall {
 	function := p.parseExpression()
 	right := p.parseExpressionWithPrecedence(tokens.HighestPrecedence)
 
-	var path *ast.Path
-	if function.Kind() == ast.IdentifierNode {
-		path = &ast.Path{
-			Segments: []ast.IdentifierLiteral{*function.(*ast.IdentifierLiteral)},
+	switch function.Kind() {
+	case ast.IdentifierNode:
+		return &ast.InfixCall{
+			FunctionCall: &ast.FunctionCall{
+				Path: ast.Path{
+					Segments: []ast.IdentifierLiteral{*function.(*ast.IdentifierLiteral)},
+				},
+				Args: []ast.Node{left, right},
+				Loc:  function.Location(),
+			},
 		}
-	} else if function.Kind() == ast.PathNode {
-		path = function.(*ast.Path)
-	} else {
+	case ast.PathNode:
+		return &ast.InfixCall{
+			FunctionCall: &ast.FunctionCall{
+				Path: *function.(*ast.Path),
+				Args: []ast.Node{left, right},
+				Loc:  function.Location(),
+			},
+		}
+	case ast.FieldNode:
+		return &ast.InfixCall{
+			MethodCall: &ast.MethodCall{
+				Callee: function,
+				Args:   []ast.Node{left, right},
+				Loc:    function.Location(),
+			},
+		}
+	default:
 		dbg := debug.NewSourceLocation(p.Source(), function.Location().Row, function.Location().Column)
 		dbg.ThrowError("Expected identifier or path", true, debug.NewHint("Did you forget to add a function name?", "fn"))
 	}
 
-	return &ast.FunctionCall{
-		Path: *path,
-		Args: []ast.Node{left, right},
-		Loc:  function.Location(),
-	}
+	return nil
 }
