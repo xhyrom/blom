@@ -33,6 +33,8 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 		return ast.Void
 	}
 
+	call.Path = modifyPathLikeFunName(function, call.Path)
+
 	isNative := function.HasAnnotation(ast.Native)
 
 	if !isNative && len(function.Params) != len(call.Args) {
@@ -41,7 +43,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 			fmt.Sprintf(
 				"Function '%s' (%s) expects %d arguments, but got %d.",
 				name,
-				formatFunctionSignature(function.FunctionDeclaration),
+				formatFunctionSignature(function),
 				len(function.Params),
 				len(call.Args),
 			),
@@ -58,7 +60,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 				fmt.Sprintf(
 					"Function '%s' (%s) expects argument %d to be of type '%s', but got '%s'.",
 					name,
-					formatFunctionSignature(function.FunctionDeclaration),
+					formatFunctionSignature(function),
 					i+1,
 					function.Params[i].Type,
 					argType,
@@ -66,13 +68,6 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 				true,
 			)
 		}
-	}
-
-	if function.Suffix != "" && call.Path.Segments[len(call.Path.Segments)-1].Value != function.Suffix {
-		call.Path.Segments = append(call.Path.Segments, ast.IdentifierLiteral{
-			Value: function.Suffix,
-			Loc:   call.Path.Location(),
-		})
 	}
 
 	return function.Return

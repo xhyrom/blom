@@ -39,12 +39,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 		}
 	}
 
-	fun, _ := a.FunctionManager.GetByDeclaration(function)
-	suffix := a.FunctionManager.GetFuncNameSuffix(function)
-	if suffix != "" {
-		function.Name.Value = function.Name.Value + "." + suffix
-		fun.Suffix = suffix
-	}
+	a.mangleFunctionDeclaration(function)
 
 	a.Scopes.Pop()
 }

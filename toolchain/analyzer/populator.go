@@ -34,7 +34,7 @@ func (a *Analyzer) populate() {
 }
 
 func (a *Analyzer) populateFunction(statement *ast.FunctionDeclaration) {
-	fun, exists := a.FunctionManager.GetDeclarationByDeclaration(statement)
+	fun, exists := a.FunctionManager.GetByDeclaration(statement)
 
 	if exists {
 		dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column)
