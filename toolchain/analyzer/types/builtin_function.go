@@ -12,7 +12,7 @@ func (a *TypeAnalyzer) analyzeBuiltinFunctionCall(call *ast.BuiltinFunctionCall)
 		return analyzeCastFunctionCall(a, call)
 	}
 
-	dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+	dbg := debug.NewSourceLocationFromNode(a.Source, call)
 	dbg.ThrowError(
 		fmt.Sprintf("Unknown builtin function call '%s'.", call.Name),
 		true,
@@ -23,7 +23,7 @@ func (a *TypeAnalyzer) analyzeBuiltinFunctionCall(call *ast.BuiltinFunctionCall)
 
 func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.BuiltinFunctionCall) ast.Type {
 	if len(call.Parameters) != 2 {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+		dbg := debug.NewSourceLocationFromNode(a.Source, call)
 		dbg.ThrowError(
 			"Function 'cast' requires exactly two parameters (type, expression).",
 			true,
@@ -41,7 +41,7 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.BuiltinFunctionCall) ast
 	}
 
 	if firstParam.Kind() != ast.IdentifierLiteralNode {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+		dbg := debug.NewSourceLocationFromNode(a.Source, call)
 		dbg.ThrowError(
 			"First parameter of 'cast' function must be an type.",
 			true,
@@ -51,7 +51,7 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.BuiltinFunctionCall) ast
 	typeName := firstParam.(*ast.IdentifierLiteral).Value
 	castType, err := ast.ParseType(typeName, a.TypeManager.Types())
 	if err != nil {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+		dbg := debug.NewSourceLocationFromNode(a.Source, call)
 		dbg.ThrowError(
 			err.Error(),
 			true,
@@ -60,7 +60,7 @@ func analyzeCastFunctionCall(a *TypeAnalyzer, call *ast.BuiltinFunctionCall) ast
 
 	ret := a.analyzeExpression(call.Parameters[1])
 	if ret == ast.Void {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+		dbg := debug.NewSourceLocationFromNode(a.Source, call)
 		dbg.ThrowError(
 			"Expression in 'cast' function must return a value.",
 			true,

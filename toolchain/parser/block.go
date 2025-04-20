@@ -6,12 +6,12 @@ import (
 	"blom/tokens"
 )
 
-func (p *Parser) parseBlock(category ast.Category) *ast.Block {
+func (p *Parser) parseBlock() *ast.Block {
 	p.Consume()
 
 	current := p.Current()
 
-	body := []ast.Statement{}
+	body := []ast.Node{}
 
 	for !p.IsEof() && current.Kind != tokens.RightCurlyBracket {
 		stmt := p.parseStatement()
@@ -28,7 +28,6 @@ func (p *Parser) parseBlock(category ast.Category) *ast.Block {
 
 	return &ast.Block{
 		Body: body,
-		Cat:  category,
 		Loc:  current.Location,
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func (p *Parser) parseLiteral() ast.Expression {
+func (p *Parser) parseLiteral() ast.Node {
 	switch p.Current().Kind {
 	case tokens.CharLiteral:
 		token := p.Consume()
@@ -51,7 +51,7 @@ func (p *Parser) parseLiteral() ast.Expression {
 	panic(fmt.Sprintf("unexpected literal %T", p.Current()))
 }
 
-func parseIdentifier(p *Parser) ast.Statement {
+func parseIdentifier(p *Parser) ast.Node {
 	token := p.Consume()
 
 	return &ast.IdentifierLiteral{

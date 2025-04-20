@@ -8,15 +8,13 @@ import (
 func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
 	ty := p.parseType()
 	literal := p.parseLiteral()
-	name := literal.(*ast.IdentifierLiteral).Value
+	name := literal.(*ast.IdentifierLiteral)
 
 	if p.Current().Kind != tokens.Assign {
 		return &ast.VariableDeclaration{
-			Name:        name,
-			Type:        ast.Int32,
-			Value:       &ast.IntLiteral{Value: 0},
-			Annotations: p.extractAnnotations(),
-			Loc:         literal.Location(),
+			Id:   name,
+			Type: ast.Int32,
+			Loc:  literal.Location(),
 		}
 	}
 
@@ -24,15 +22,14 @@ func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
 	value := p.parseExpression()
 
 	return &ast.VariableDeclaration{
-		Name:        name,
-		Type:        ty,
-		Value:       value,
-		Annotations: p.extractAnnotations(),
-		Loc:         assign.Location,
+		Id:   name,
+		Type: ty,
+		Init: value,
+		Loc:  assign.Location,
 	}
 }
 
-func (p *Parser) parseAssignment(left ast.Expression) ast.Expression {
+func (p *Parser) parseAssignment(left ast.Node) ast.Node {
 	p.Consume()
 
 	right := p.parseExpression()

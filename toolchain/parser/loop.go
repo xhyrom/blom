@@ -13,8 +13,8 @@ func (p *Parser) parseForLoop() *ast.Block {
 	p.Consume()
 
 	var declaration *ast.VariableDeclaration
-	var condition ast.Expression
-	var step ast.Expression
+	var condition ast.Node
+	var step ast.Node
 
 	stmt := p.parseStatement()
 	if stmt.Kind() == ast.VariableDeclarationNode {
@@ -39,34 +39,31 @@ func (p *Parser) parseForLoop() *ast.Block {
 		dbg.ThrowError("Expected opening bracket", true, debug.NewHint("Did you forget to add an opening bracket?", "{"))
 	}
 
-	block := p.parseBlock(ast.StatementCategory)
+	block := p.parseBlock()
 	block.Body = append(block.Body, step)
 
 	if declaration != nil {
-
 		return &ast.Block{
-			Body: []ast.Statement{
+			Body: []ast.Node{
 				declaration,
 				&ast.WhileLoop{
 					Condition: condition,
-					Body:      block.Body,
-					Cat:       ast.StatementCategory,
+					Block:     block,
 					Loc:       condition.Location(),
 				},
 			},
-			Cat: ast.StatementCategory,
+			Loc: block.Location(),
 		}
 	}
 
 	return &ast.Block{
-		Body: []ast.Statement{
+		Body: []ast.Node{
 			&ast.WhileLoop{
 				Condition: condition,
-				Body:      block.Body,
-				Cat:       ast.StatementCategory,
+				Block:     block,
 				Loc:       condition.Location(),
 			},
 		},
-		Cat: ast.StatementCategory,
+		Loc: block.Location(),
 	}
 }

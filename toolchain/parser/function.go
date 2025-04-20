@@ -52,18 +52,18 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	}
 
 	fun := &ast.FunctionDeclaration{
-		Name: name.Value,
-		Loc:  name.Location,
+		Id:  name,
+		Loc: name.Location,
 	}
 
-	arguments := make([]ast.FunctionArgument, 0)
+	params := make([]ast.Argument, 0)
 	for p.Current().Kind != tokens.RightParenthesis {
-		argument := parseFunctionArgument(p, fun)
-		if argument == nil {
+		param := parseArgument(p)
+		if param == nil {
 			break
 		}
 
-		arguments = append(arguments, *argument)
+		params = append(params, *param)
 
 		if p.Current().Kind == tokens.Comma {
 			p.Consume()
@@ -88,11 +88,11 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 		fun.ReturnType = ast.Int32
 	}
 
-	fun.Arguments = arguments
+	fun.Params = params
 	fun.Annotations = p.extractAnnotations()
 
 	if !fun.HasAnnotation(ast.Native) {
-		fun.Body = p.parseBlock(ast.StatementCategory).Body
+		fun.Block = p.parseBlock()
 	} else {
 		if p.Current().Kind == tokens.LeftCurlyBracket {
 			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
@@ -114,12 +114,8 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 // where:
 // - <argument> is the name of the argument
 // - <type> is the type of the argument
-func parseFunctionArgument(p *Parser, fun *ast.FunctionDeclaration) *ast.FunctionArgument {
+func parseArgument(p *Parser) *ast.Argument {
 	argument := p.Consume()
-	if argument.Kind == tokens.Ellipsis {
-		fun.Variadic = true
-		return nil
-	}
 
 	if argument.Kind != tokens.Identifier {
 		dbg := debug.NewSourceLocation(p.Source(), argument.Location.Row, argument.Location.Column)
@@ -131,32 +127,32 @@ func parseFunctionArgument(p *Parser, fun *ast.FunctionDeclaration) *ast.Functio
 		dbg.ThrowError("Expected colon", true, debug.NewHint("Did you forget to add a colon?", ":"))
 	}
 
-	return &ast.FunctionArgument{
-		Name: argument.Value,
+	return &ast.Argument{
+		Name: argument,
 		Type: p.parseType(),
 	}
 }
 
 // Parses a function call that can have a form:
 // <name>(<arguments>)
-func (p *Parser) parseFunctionCall(left ast.Expression) *ast.FunctionCall {
+func (p *Parser) parseFunctionCall(left ast.Node) *ast.FunctionCall {
 	p.Consume()
 
-	if left.Kind() != ast.IdentifierLiteralNode {
+	if left.Kind() != ast.IdentifierNode {
 		dbg := debug.NewSourceLocation(p.Source(), left.Location().Row, left.Location().Column)
 		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function name?", "fn"))
 	}
 
-	name := left.(*ast.IdentifierLiteral).Value
-	parameters := make([]ast.Expression, 0)
+	name := left.(*ast.IdentifierLiteral)
+	args := make([]ast.Node, 0)
 
 	for p.Current().Kind != tokens.RightParenthesis {
-		parameter := p.parseExpression()
-		if parameter == nil {
+		arg := p.parseExpression()
+		if arg == nil {
 			break
 		}
 
-		parameters = append(parameters, parameter)
+		args = append(args, arg)
 
 		if p.Current().Kind == tokens.Comma {
 			p.Consume()
@@ -171,8 +167,10 @@ func (p *Parser) parseFunctionCall(left ast.Expression) *ast.FunctionCall {
 	}
 
 	return &ast.FunctionCall{
-		Name:       name,
-		Parameters: parameters,
-		Loc:        last.Location,
+		Path: ast.Path{
+			Segments: []ast.IdentifierLiteral{*name},
+		},
+		Args: args,
+		Loc:  last.Location,
 	}
 }

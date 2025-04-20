@@ -48,13 +48,13 @@ func NewSourceLocation(file string, row uint64, column uint64) SourceLocation {
 	}
 }
 
-func NewSourceLocationFromExpression(file string, expression ast.Expression) SourceLocation {
+func NewSourceLocationFromNode(file string, node ast.Node) SourceLocation {
 	if fileCache == nil {
 		fileCache = map[string][]byte{}
 	}
 
-	row := expression.Location().Row
-	column := expression.Location().Column
+	row := node.Location().Row
+	column := node.Location().Column
 
 	return SourceLocation{
 		File:   file,

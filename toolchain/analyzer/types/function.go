@@ -25,7 +25,7 @@ func (a *TypeAnalyzer) analyzeFunctionDeclaration(function *ast.FunctionDeclarat
 			returnType := a.analyzeExpression(ret.Value)
 
 			if returnType != function.ReturnType && (ret.Value.Kind() != ast.IntLiteralNode && !a.canBeImplicitlyCast(returnType, function.ReturnType)) {
-				dbg := debug.NewSourceLocationFromExpression(a.Source, ret)
+				dbg := debug.NewSourceLocationFromNode(a.Source, ret)
 				dbg.ThrowError(
 					fmt.Sprintf(
 						"Function '%s' returns '%s', but declared to return '%s'",
@@ -64,7 +64,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 	if !exists {
 		variable, exists := a.Scopes.GetValue(name)
 		if !exists {
-			dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+			dbg := debug.NewSourceLocationFromNode(a.Source, call)
 
 			overloads := a.FunctionManager.GetAllNamed(name)
 
@@ -129,7 +129,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 	}
 
 	if !function.IsNative() && !skipChecking && len(function.Arguments) != len(call.Parameters) {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+		dbg := debug.NewSourceLocationFromNode(a.Source, call)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Function '%s' (%s) expects %d arguments, but got %d.",
@@ -172,7 +172,7 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 	}
 
 	if !function.HasAnnotation(ast.Infix) && call.Infix {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, call)
+		dbg := debug.NewSourceLocationFromNode(a.Source, call)
 		dbg.ThrowError(
 			fmt.Sprintf("Function '%s' is not marked as infix.", call.PrettyName()),
 			true,

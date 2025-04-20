@@ -37,7 +37,7 @@ func handleInconsistentReturnTypes(a *TypeAnalyzer, expression ast.Expression, r
 		return
 	}
 
-	dbg := debug.NewSourceLocationFromExpression(a.Source, expression)
+	dbg := debug.NewSourceLocationFromNode(a.Source, expression)
 	dbg.ThrowError(
 		fmt.Sprintf(
 			"Return type '%s' does not match the previous return type '%s'",

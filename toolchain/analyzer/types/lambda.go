@@ -22,7 +22,7 @@ func (a *TypeAnalyzer) analyzeLambdaDeclaration(lambda *ast.LambdaDeclaration) a
 			returnType := a.analyzeExpression(ret.Value)
 
 			if !returnType.Equal(lambda.ReturnType) && (ret.Value.Kind() != ast.IntLiteralNode && !a.canBeImplicitlyCast(returnType, lambda.ReturnType)) {
-				dbg := debug.NewSourceLocationFromExpression(a.Source, ret)
+				dbg := debug.NewSourceLocationFromNode(a.Source, ret)
 				dbg.ThrowError(
 					fmt.Sprintf(
 						"Lambda returns '%s', but declared to return '%s'",

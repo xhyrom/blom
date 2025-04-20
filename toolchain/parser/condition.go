@@ -8,7 +8,7 @@ import (
 
 // Parses a condition that can have a form:
 // if <condition> { <then> } else { <else> }
-func (p *Parser) parseCondition(category ast.Category) *ast.If {
+func (p *Parser) parseCondition() *ast.If {
 	p.Consume()
 
 	condition := p.parseExpression()
@@ -22,8 +22,8 @@ func (p *Parser) parseCondition(category ast.Category) *ast.If {
 		dbg.ThrowError("Expected opening bracket", true, debug.NewHint("Did you forget to add an opening bracket?", "{"))
 	}
 
-	thenBlock := p.parseBlock(category)
-	var elseBlock *ast.Block = &ast.Block{Body: []ast.Statement{}}
+	thenBlock := p.parseBlock()
+	var elseBlock *ast.Block = &ast.Block{Body: []ast.Node{}}
 
 	loc := thenBlock.Loc
 
@@ -35,15 +35,14 @@ func (p *Parser) parseCondition(category ast.Category) *ast.If {
 			dbg.ThrowError("Expected opening bracket", true, debug.NewHint("Did you forget to add an opening bracket", "{"))
 		}
 
-		elseBlock = p.parseBlock(category)
+		elseBlock = p.parseBlock()
 		loc = elseBlock.Loc
 	}
 
 	return &ast.If{
 		Condition: condition,
-		Then:      thenBlock.Body,
-		Else:      elseBlock.Body,
+		Then:      thenBlock,
+		Else:      elseBlock,
 		Loc:       loc,
-		Cat:       category,
 	}
 }

@@ -80,10 +80,10 @@ func (p *Parser) Advance() {
 	p.tokens = p.tokens[1:]
 }
 
-func (p *Parser) parseStatement() ast.Statement {
+func (p *Parser) parseStatement() ast.Node {
 	p.collectAnnotations()
 
-	var statement ast.Statement
+	var statement ast.Node
 
 	switch p.Current().Kind {
 	case tokens.Fun:
@@ -91,7 +91,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case tokens.Return:
 		statement = p.parseReturn()
 	case tokens.If:
-		return p.parseCondition(ast.StatementCategory)
+		return p.parseCondition()
 	case tokens.For:
 		return p.parseForLoop()
 	case tokens.Identifier:
@@ -99,7 +99,7 @@ func (p *Parser) parseStatement() ast.Statement {
 			statement = p.parseVariableDeclaration()
 		}
 	case tokens.LeftCurlyBracket:
-		return p.parseBlock(ast.StatementCategory)
+		return p.parseBlock()
 	}
 
 	if statement == nil {
@@ -114,13 +114,13 @@ func (p *Parser) parseStatement() ast.Statement {
 	return statement
 }
 
-func (p *Parser) parseExpression() ast.Statement {
+func (p *Parser) parseExpression() ast.Node {
 	return p.parseExpressionWithPrecedence(tokens.LowestPrecedence)
 }
 
-func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast.Statement {
+func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast.Node {
 	// prefix
-	var left ast.Statement
+	var left ast.Node
 
 	switch p.Current().Kind {
 	case tokens.Identifier, tokens.IntLiteral, tokens.FloatLiteral, tokens.StringLiteral, tokens.CharLiteral, tokens.BooleanLiteral:
@@ -128,9 +128,9 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 	case tokens.LeftParenthesis:
 		left = p.parseGroupedExpression()
 	case tokens.If:
-		left = p.parseCondition(ast.ExpressionCategory)
+		left = p.parseCondition()
 	case tokens.LeftCurlyBracket:
-		left = p.parseBlock(ast.ExpressionCategory)
+		left = p.parseBlock()
 	case tokens.Plus, tokens.Minus, tokens.Ampersand, tokens.Tilde, tokens.Asterisk:
 		left = p.parseUnaryExpression()
 	}
@@ -151,11 +151,7 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 			tokens.DoubleLessThan,
 			tokens.GreaterThan,
 			tokens.DoubleGreaterThan:
-			left = p.parseInfixExpression(left)
-		case tokens.Dot:
-			left = p.parseMemberAccess(left)
-		case tokens.DoubleColon:
-			left = p.parseNamespaceAccess(left)
+			left = p.parseBinaryExpression(left)
 		case tokens.Assign:
 			left = p.parseAssignment(left)
 		case tokens.LeftParenthesis:
@@ -168,20 +164,20 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 	return left
 }
 
-func (p *Parser) parseGroupedExpression() ast.Statement {
+func (p *Parser) parseGroupedExpression() ast.Node {
 	p.Consume() // consume "("
 
 	exp := p.parseExpression()
 
 	if p.Consume().Kind != tokens.RightParenthesis {
-		dbg := debug.NewSourceLocationFromExpression(p.Source(), exp)
+		dbg := debug.NewSourceLocationFromNode(p.Source(), exp)
 		dbg.ThrowError("Expected closing parenthesis", true, debug.NewHint("Did you forget to add a closing parenthesis?", ")"))
 	}
 
 	return exp
 }
 
-func (p *Parser) parseUnaryExpression() ast.Statement {
+func (p *Parser) parseUnaryExpression() ast.Node {
 	operator := p.Consume()
 	operand := p.parseExpressionWithPrecedence(operator.Kind.Precedence())
 
@@ -192,7 +188,7 @@ func (p *Parser) parseUnaryExpression() ast.Statement {
 	}
 }
 
-func (p *Parser) parseInfixExpression(left ast.Statement) ast.Statement {
+func (p *Parser) parseBinaryExpression(left ast.Node) ast.Node {
 	operator := p.Consume()
 	right := p.parseExpressionWithPrecedence(operator.Kind.Precedence())
 

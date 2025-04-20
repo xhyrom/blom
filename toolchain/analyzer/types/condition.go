@@ -9,7 +9,7 @@ import (
 func (a *TypeAnalyzer) analyzeIf(expression *ast.If) ast.Type {
 	conditionType := a.analyzeExpression(expression.Condition)
 	if conditionType != ast.Boolean {
-		dbg := debug.NewSourceLocationFromExpression(a.Source, expression.Condition)
+		dbg := debug.NewSourceLocationFromNode(a.Source, expression.Condition)
 		dbg.ThrowError(
 			fmt.Sprintf(
 				"Condition requires a 'boolean' type, but got '%s'",

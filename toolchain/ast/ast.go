@@ -6,12 +6,13 @@ type NodeKind int
 
 const (
 	ProgramNode NodeKind = iota
-	IdentifierLiteralNode
-	CharLiteralNode
-	StringLiteralNode
-	IntLiteralNode
-	FloatLiteralNode
-	BooleanLiteralNode
+	IdentifierNode
+	CharNode
+	StringNode
+	IntNode
+	FloatNode
+	BooleanNode
+
 	BinaryExpressionNode
 	UnaryExpressionNode
 	VariableDeclarationNode
@@ -20,30 +21,14 @@ const (
 	BlockNode
 	IfNode
 	WhileLoopNode
-
 	AnnotationNode
 	FunctionDeclarationNode
 	FunctionCallNode
-	CompileTimeFunctionCallNode
-	TypeDefinitionNode
-
-	EntityNode
-	EntityConstructionNode
-	MemberAccessNode
 )
 
-type Category int
-
-const (
-	ExpressionCategory Category = iota
-	StatementCategory
-)
-
-type Statement interface {
+type Node interface {
 	Kind() NodeKind
-	Category() Category
 	Location() tokens.Location
-	SetLocation(row uint64, column uint64)
 }
 
 type Program Block
