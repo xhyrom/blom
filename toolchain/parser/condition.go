@@ -30,6 +30,19 @@ func (p *Parser) parseCondition() *ast.If {
 	if p.Current().Kind == tokens.Else {
 		p.Consume()
 
+		if p.Current().Kind == tokens.If {
+			return &ast.If{
+				Condition: condition,
+				Then:      *thenBlock,
+				Else: &ast.Block{
+					Body: []ast.Node{
+						p.parseCondition(),
+					},
+				},
+				Loc: loc,
+			}
+		}
+
 		if p.Current().Kind != tokens.LeftCurlyBracket {
 			dbg := debug.NewSourceLocation(p.Source(), condition.Location().Row, condition.Location().Column)
 			dbg.ThrowError("Expected opening bracket", true, debug.NewHint("Did you forget to add an opening bracket", "{"))

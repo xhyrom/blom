@@ -16,7 +16,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	}
 
 	c.createVariable(t, statement.Name.Value)
-	address := c.createVariable(t, fmt.Sprintf("%s.addr", statement.Name))
+	address := c.createVariable(t, fmt.Sprintf("%s.addr", statement.Name.Value))
 
 	function.LastBlock().AddAssign(
 		address,

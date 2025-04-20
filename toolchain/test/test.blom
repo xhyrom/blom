@@ -5,6 +5,16 @@ fun i32::ahoj(self: i32) {
 }
 
 fun @public main() {
+  i32 a = 6;
+
+  if a == 5 {
+    printf("yes a = 5\n");
+  } else if a == 7 {
+    printf("yes a = 7\n");
+  } else {
+    printf("neither\n");
+  }
+
   printf("hello %d %d\n", i32::ahoj(5));
   return 0;
 }
