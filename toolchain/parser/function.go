@@ -52,8 +52,8 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	}
 
 	fun := &ast.FunctionDeclaration{
-		Id:  name,
-		Loc: name.Location,
+		Name: name,
+		Loc:  name.Location,
 	}
 
 	params := make([]ast.Argument, 0)
@@ -83,9 +83,9 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 			dbg.ThrowError("Expected arrow", true, debug.NewHint("Did you forget to add an arrow?", " ->"))
 		}
 
-		fun.ReturnType = p.parseType()
+		fun.Return = p.parseType()
 	} else {
-		fun.ReturnType = ast.Int32
+		fun.Return = ast.Int32
 	}
 
 	fun.Params = params

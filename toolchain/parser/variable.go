@@ -8,11 +8,11 @@ import (
 func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
 	ty := p.parseType()
 	literal := p.parseLiteral()
-	name := literal.(*ast.IdentifierLiteral)
+	name := *literal.(*ast.IdentifierLiteral)
 
 	if p.Current().Kind != tokens.Assign {
 		return &ast.VariableDeclaration{
-			Id:   name,
+			Name: name,
 			Type: ast.Int32,
 			Loc:  literal.Location(),
 		}
@@ -22,7 +22,7 @@ func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
 	value := p.parseExpression()
 
 	return &ast.VariableDeclaration{
-		Id:   name,
+		Name: name,
 		Type: ty,
 		Init: value,
 		Loc:  assign.Location,

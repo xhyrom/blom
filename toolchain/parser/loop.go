@@ -48,7 +48,7 @@ func (p *Parser) parseForLoop() *ast.Block {
 				declaration,
 				&ast.WhileLoop{
 					Condition: condition,
-					Block:     block,
+					Block:     *block,
 					Loc:       condition.Location(),
 				},
 			},
@@ -60,7 +60,7 @@ func (p *Parser) parseForLoop() *ast.Block {
 		Body: []ast.Node{
 			&ast.WhileLoop{
 				Condition: condition,
-				Block:     block,
+				Block:     *block,
 				Loc:       condition.Location(),
 			},
 		},

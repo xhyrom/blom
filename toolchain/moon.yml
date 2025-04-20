@@ -29,6 +29,6 @@ tasks:
       - "bin/blomp"
   test:
     description: Run the tests
-    command: go test ./qbe/...
+    command: go test ./qbe/... && go test ./parser/...
     inputs:
       - "**/*.go"

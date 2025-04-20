@@ -31,4 +31,6 @@ type Node interface {
 	Location() tokens.Location
 }
 
-type Program Block
+type Program struct {
+	Body []Node
+}

@@ -4,7 +4,7 @@ import "blom/tokens"
 
 type WhileLoop struct {
 	Condition Node
-	Block     *Block
+	Block     Block
 	Loc       tokens.Location
 }
 

@@ -28,9 +28,10 @@ const (
 )
 
 var annotations = []string{
-	Native: "native",
-	Public: "public",
-	Infix:  "infix",
+	Native:   "native",
+	Variadic: "variadic",
+	Public:   "public",
+	Infix:    "infix",
 }
 
 func (a AnnotationType) String() string {

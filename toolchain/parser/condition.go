@@ -23,7 +23,7 @@ func (p *Parser) parseCondition() *ast.If {
 	}
 
 	thenBlock := p.parseBlock()
-	var elseBlock *ast.Block = &ast.Block{Body: []ast.Node{}}
+	var elseBlock *ast.Block = nil
 
 	loc := thenBlock.Loc
 
@@ -41,7 +41,7 @@ func (p *Parser) parseCondition() *ast.If {
 
 	return &ast.If{
 		Condition: condition,
-		Then:      thenBlock,
+		Then:      *thenBlock,
 		Else:      elseBlock,
 		Loc:       loc,
 	}

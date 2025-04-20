@@ -4,7 +4,7 @@ import "blom/tokens"
 
 type If struct {
 	Condition Node
-	Then      *Block
+	Then      Block
 	Else      *Block
 	Loc       tokens.Location
 }

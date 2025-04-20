@@ -5,7 +5,7 @@ import (
 )
 
 type VariableDeclaration struct {
-	Id   *IdentifierLiteral
+	Name IdentifierLiteral
 	Type Type
 	Init Node
 	Loc  tokens.Location

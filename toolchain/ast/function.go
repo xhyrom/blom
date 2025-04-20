@@ -2,15 +2,17 @@ package ast
 
 import (
 	"blom/tokens"
+	"fmt"
+	"strings"
 )
 
 type FunctionDeclaration struct {
-	Id          tokens.Token
+	Name        tokens.Token
 	Params      []Argument
 	Annotations []Annotation
 	Block       *Block
 
-	ReturnType Type
+	Return Type
 
 	Loc tokens.Location
 }
@@ -31,6 +33,14 @@ func (f FunctionDeclaration) HasAnnotation(ty AnnotationType) bool {
 	}
 
 	return false
+}
+
+func (f FunctionDeclaration) String() string {
+	args := make([]string, len(f.Params))
+	for i, arg := range f.Params {
+		args[i] = arg.String()
+	}
+	return fmt.Sprintf("fn(%s) -> %s", strings.Join(args, ", "), f.Return)
 }
 
 type FunctionCall struct {
