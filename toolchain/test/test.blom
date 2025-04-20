@@ -5,6 +5,6 @@ fun i32::ahoj(self: i32) {
 }
 
 fun @public main() {
-  printf("hello %d\n", i32::ahoj(5));
+  printf("hello %d %d\n", i32::ahoj(5));
   return 0;
 }

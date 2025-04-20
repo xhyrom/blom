@@ -42,17 +42,3 @@ func (f FunctionDeclaration) String() string {
 	}
 	return fmt.Sprintf("fn(%s) -> %s", strings.Join(args, ", "), f.Return)
 }
-
-type FunctionCall struct {
-	Path Path
-	Args []Node
-	Loc  tokens.Location
-}
-
-func (f FunctionCall) Kind() NodeKind {
-	return FunctionCallNode
-}
-
-func (f FunctionCall) Location() tokens.Location {
-	return f.Loc
-}

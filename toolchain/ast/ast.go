@@ -28,6 +28,7 @@ const (
 	FunctionCallNode
 	MethodCallNode
 
+	FieldNode
 	PathNode
 )
 

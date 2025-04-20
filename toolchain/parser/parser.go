@@ -146,12 +146,14 @@ func (p *Parser) parseExpressionWithPrecedence(precedence tokens.Precedence) ast
 			tokens.GreaterThan,
 			tokens.DoubleGreaterThan:
 			left = p.parseBinaryExpression(left)
+		case tokens.Dot:
+			left = p.parseField(left)
 		case tokens.DoubleColon:
 			left = p.parsePath(left)
 		case tokens.Assign:
 			left = p.parseAssignment(left)
 		case tokens.LeftParenthesis:
-			left = p.parseFunctionCall(left)
+			left = p.parseCall(left)
 		default:
 			return left
 		}
