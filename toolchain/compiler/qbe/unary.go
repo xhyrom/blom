@@ -45,7 +45,7 @@ func (c *Compiler) compileUnaryExpression(expression *ast.UnaryExpression, funct
 	panic(fmt.Sprintf("unknown unary operator: %s", expression.Operator))
 }
 
-func compileAddressOf(c *Compiler, expression ast.Expression, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func compileAddressOf(c *Compiler, expression ast.Node, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	val := c.compileStatement(expression, function, vtype, false)
 	ty := qbe.NewPointer(val.Type)
 
@@ -84,7 +84,7 @@ func compileAddressOf(c *Compiler, expression ast.Expression, function *qbe.Func
 	}
 }
 
-func compileDereference(c *Compiler, expression ast.Expression, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func compileDereference(c *Compiler, expression ast.Node, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	val := c.compileStatement(expression, function, vtype, false)
 	tempValue := c.getTemporaryValue(nil)
 

@@ -3,18 +3,17 @@ package qbe
 import (
 	"blom/ast"
 	"blom/qbe"
-	"fmt"
 )
 
 func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	c.Scopes.Append()
 
-	arguments := make([]qbe.TypedValue, len(declaration.Arguments))
-	for i, argument := range declaration.Arguments {
-		t := qbe.RemapAstType(argument.Type)
+	params := make([]qbe.TypedValue, len(declaration.Params))
+	for i, param := range declaration.Params {
+		t := qbe.RemapAstType(param.Type)
 
-		temp := c.createVariable(t, argument.Name)
-		arguments[i] = qbe.NewTypedValue(t, temp)
+		temp := c.createVariable(t, param.Name.Value)
+		params[i] = qbe.NewTypedValue(t, temp)
 	}
 
 	var linkage qbe.Linkage
@@ -24,96 +23,62 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 		linkage = qbe.NewLinkage(false)
 	}
 
-	returnType := qbe.RemapAstType(declaration.ReturnType)
+	returnType := qbe.RemapAstType(declaration.Return)
 	function := qbe.Function{
 		Linkage:    linkage,
-		Name:       declaration.Name,
-		Arguments:  arguments,
+		Name:       declaration.Name.Value,
+		Params:     params,
 		ReturnType: returnType,
-		Variadic:   declaration.Variadic,
-		External:   declaration.IsNative(),
+		Variadic:   declaration.HasAnnotation(ast.Variadic),
+		External:   declaration.HasAnnotation(ast.Native),
 		Blocks:     make([]qbe.Block, 0),
 	}
 
-	if declaration.IsNative() {
+	if declaration.HasAnnotation(ast.Native) {
 		c.Scopes.Pop()
 		return
 	}
 
 	function.AddBlock("start")
 
-	for _, statement := range declaration.Body {
+	for _, statement := range declaration.Block.Body {
 		c.compileStatement(statement, &function, nil, false)
 	}
 
 	c.Scopes.Pop()
 
-	c.Module.SetFunctionByName(declaration.Name, function)
+	c.Module.SetFunctionByName(declaration.Name.Value, function)
 }
 
 func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
-	function := c.Module.GetFunctionByName(call.Name)
-	var name qbe.Value
+	function := c.Module.GetFunctionByName(call.Path.Dotify())
+	name := qbe.NewGlobalValue(function.Name)
 
-	if function == nil {
-		// lambda
-		variable, exists := c.Scopes.GetValue(call.Name)
-		if !exists {
-			panic("lambda function not found")
-		}
-
-		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", call.Name))
-		if exists {
-			currentFunction.LastBlock().AddAssign(
-				variable.Value,
-				variable.Type,
-				qbe.NewLoadInstruction(variable.Type, address.Value),
-			)
-		}
-
-		if !variable.Type.IsFunction() {
-			fallback := qbe.Function{
-				Linkage:    qbe.NewLinkage(false),
-				Arguments:  make([]qbe.TypedValue, 0),
-				ReturnType: qbe.Word,
-			}
-
-			function = &fallback
+	arguments := make([]qbe.TypedValue, 0)
+	for i, arg := range call.Args {
+		var paramType qbe.Type
+		if i < len(function.Params) {
+			paramType = function.Params[i].Type
 		} else {
-			inner := variable.Type.(qbe.FunctionBox).Inner
-			function = &inner
+			paramType = vtype
 		}
 
-		name = variable.Value
-	} else {
-		name = qbe.NewGlobalValue(function.Name)
-	}
-
-	parameters := make([]qbe.TypedValue, 0)
-	for i, parameter := range call.Parameters {
-		var argType qbe.Type
-		if i < len(function.Arguments) {
-			argType = function.Arguments[i].Type
-		} else {
-			argType = vtype
-		}
-
-		value := *c.compileStatement(parameter, currentFunction, argType, false)
+		value := *c.compileStatement(arg, currentFunction, paramType, false)
 
 		// Promotes f32 to f64 acording to the ISO C standard
 		// https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf
-		if value.Type == qbe.Single && i >= len(function.Arguments) {
+		if value.Type == qbe.Single && i >= len(function.Params) {
 			value = *c.convertToType(value.Type, qbe.Double, value.Value, currentFunction)
 		}
 
-		if len(function.Arguments) == i && function.Variadic {
-			parameters = append(parameters, qbe.TypedValue{
+		if len(function.Params) == i && function.Variadic {
+			arguments = append(arguments, qbe.TypedValue{
 				Value: qbe.NewLiteralValue("..."),
 				Type:  qbe.Null,
 			})
 		}
 
-		parameters = append(parameters, value)
+		arguments = append(arguments, value)
 	}
 
 	tempValue := c.getTemporaryValue(nil)
@@ -121,7 +86,7 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 	currentFunction.LastBlock().AddAssign(
 		tempValue,
 		function.ReturnType,
-		qbe.NewCallInstruction(name, parameters...),
+		qbe.NewCallInstruction(name, arguments...),
 	)
 
 	return &qbe.TypedValue{

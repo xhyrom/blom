@@ -1,1 +1,10 @@
-a::b::c();
+fun @native @variadic printf(format: string);
+
+fun i32::ahoj(self: i32) {
+  return self + 95;
+}
+
+fun @public main() {
+  printf("hello %d\n", i32::ahoj(5));
+  return 0;
+}

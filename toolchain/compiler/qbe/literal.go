@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileLiteral(literal ast.Statement, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileLiteral(literal ast.Node, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	switch literal := literal.(type) {
 	case *ast.IdentifierLiteral:
 		return compileIdentifierLiteral(c, literal, function)

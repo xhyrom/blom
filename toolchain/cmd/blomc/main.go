@@ -1,7 +1,6 @@
 package main
 
 import (
-	"blom/analyzer"
 	"blom/compiler"
 	"blom/lexer"
 	"blom/parser"
@@ -75,12 +74,12 @@ func main() {
 		dump.Println(ast)
 	}
 
-	analyzer := analyzer.New(inputFile, ast)
-	analyzer.Analyze()
+	//analyzer := analyzer.New(inputFile, ast)
+	//analyzer.Analyze()
 
-	if emitAst {
-		dump.Println(ast)
-	}
+	//if emitAst {
+	//	dump.Println(ast)
+	//}
 
 	comp := compiler.New(compiler.QBE)
 	sse := comp.Compile(ast)

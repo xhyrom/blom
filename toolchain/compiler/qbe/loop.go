@@ -31,7 +31,7 @@ func (c *Compiler) compileLoop(loopStatement *ast.WhileLoop, function *qbe.Funct
 	// Loop body
 	function.AddBlock(loopLabel)
 
-	for _, statement := range loopStatement.Body {
+	for _, statement := range loopStatement.Block.Body {
 		c.compileStatement(statement, function, nil, isReturn)
 	}
 

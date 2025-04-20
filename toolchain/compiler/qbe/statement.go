@@ -5,7 +5,7 @@ import (
 	"blom/qbe"
 )
 
-func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Compiler) compileStatement(statement ast.Node, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	switch statement := statement.(type) {
 	case *ast.VariableDeclaration:
 		return c.compileVariableDeclaration(statement, function, isReturn)
@@ -15,14 +15,6 @@ func (c *Compiler) compileStatement(statement ast.Statement, function *qbe.Funct
 		return c.compileLiteral(statement, function, vtype, isReturn)
 	case *ast.FunctionCall:
 		return c.compileFunctionCall(statement, function, vtype)
-	case *ast.BuiltinFunctionCall:
-		return c.compileBuiltinFunctionCall(statement, function, vtype)
-	case *ast.LambdaDeclaration:
-		return c.compileLambda(statement, function, vtype)
-	case *ast.EntityConstruction:
-		return c.compileEntityConstruction(statement, function, vtype)
-	case *ast.MemberAccess:
-		return c.compileMemberAccess(statement, function, vtype, isReturn)
 	case *ast.If:
 		return c.compileCondition(statement, function, vtype, isReturn)
 	case *ast.WhileLoop:

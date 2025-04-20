@@ -118,12 +118,12 @@ func parseArgument(p *Parser) *ast.Argument {
 	argument := p.Consume()
 
 	if argument.Kind != tokens.Identifier {
-		dbg := debug.NewSourceLocation(p.Source(), argument.Location.Row, argument.Location.Column)
+		dbg := debug.NewSourceLocation(p.Source(), argument.Location.Row, argument.Location.Column+1)
 		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add an argument name?", "<name>"))
 	}
 
 	if p.Consume().Kind != tokens.Colon {
-		dbg := debug.NewSourceLocation(p.Source(), argument.Location.Row, argument.Location.Column)
+		dbg := debug.NewSourceLocation(p.Source(), argument.Location.Row, argument.Location.Column+1)
 		dbg.ThrowError("Expected colon", true, debug.NewHint("Did you forget to add a colon?", ":"))
 	}
 
