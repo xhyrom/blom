@@ -7,7 +7,7 @@ import (
 
 func TestModuleString(t *testing.T) {
 	align := uint64(8)
-	arguments := []qbe.TypedValue{
+	params := []qbe.TypedValue{
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "a"}},
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "b"}},
 	}
@@ -26,7 +26,7 @@ func TestModuleString(t *testing.T) {
 		{
 			Linkage:    qbe.NewLinkage(true),
 			Name:       "foo",
-			Arguments:  arguments,
+			Params:     params,
 			ReturnType: qbe.Word,
 			Variadic:   false,
 			Blocks:     blocks,

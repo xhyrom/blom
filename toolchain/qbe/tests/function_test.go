@@ -6,7 +6,7 @@ import (
 )
 
 func TestFunctionString(t *testing.T) {
-	arguments := []qbe.TypedValue{
+	params := []qbe.TypedValue{
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "a"}},
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "b"}},
 	}
@@ -30,7 +30,7 @@ func TestFunctionString(t *testing.T) {
 			qbe.Function{
 				Linkage:    qbe.NewLinkage(true),
 				Name:       "foo",
-				Arguments:  arguments,
+				Params:     params,
 				ReturnType: qbe.Word,
 				Variadic:   false,
 				Blocks:     blocks,
@@ -41,7 +41,7 @@ func TestFunctionString(t *testing.T) {
 			qbe.Function{
 				Linkage:    qbe.NewLinkage(false),
 				Name:       "bar",
-				Arguments:  arguments,
+				Params:     params,
 				ReturnType: qbe.Word,
 				Variadic:   true,
 				Blocks:     blocks,
@@ -58,16 +58,16 @@ func TestFunctionString(t *testing.T) {
 }
 
 func TestFunctionStringNoReturnType(t *testing.T) {
-	arguments := []qbe.TypedValue{
+	params := []qbe.TypedValue{
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "a"}},
 		{Type: qbe.Word, Value: qbe.TemporaryValue{Name: "b"}},
 	}
 
 	function := qbe.Function{
-		Linkage:   qbe.NewLinkage(true),
-		Name:      "foo",
-		Arguments: arguments,
-		Variadic:  false,
+		Linkage:  qbe.NewLinkage(true),
+		Name:     "foo",
+		Params:   params,
+		Variadic: false,
 		Blocks: []qbe.Block{
 			{Label: "start", Statements: []qbe.Statement{
 				qbe.AssignStatement{Name: qbe.TemporaryValue{Name: "t1"}, Type: qbe.Word, Instruction: qbe.AddInstruction{

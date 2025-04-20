@@ -110,15 +110,11 @@ func RemapAstType(t ast.Type) Type {
 
 		lambda := Function{
 			Linkage:    NewLinkage(false),
-			Arguments:  make([]TypedValue, len(fnType.Arguments)),
+			Params:     make([]TypedValue, len(fnType.Arguments)),
 			ReturnType: RemapAstType(fnType.ReturnType),
 		}
 
 		return FunctionBox{Inner: lambda}
-	}
-
-	if t.IsEntity() {
-		return StructBox{Name: t.(*ast.Entity).Name}
 	}
 
 	panic(fmt.Sprintf("Unknown type '%s'", t))

@@ -28,7 +28,16 @@ tasks:
       - "bin/blomc"
       - "bin/blomp"
   test:
-    description: Run the tests
-    command: go test ./qbe/... && go test ./parser/...
+    deps:
+      - test-qbe
+      - test-parser
+  test-qbe:
+    description: Run the qbe tests
+    command: go test ./qbe/...
     inputs:
-      - "**/*.go"
+      - "qbe/tests/*.go"
+  test-parser:
+    description: Run the parser tests
+    command: go test ./parser/...
+    inputs:
+      - "parser/tests/*.go"
