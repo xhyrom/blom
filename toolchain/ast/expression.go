@@ -44,3 +44,16 @@ func (a Assignment) Kind() NodeKind {
 func (a Assignment) Location() tokens.Location {
 	return a.Loc
 }
+
+type GroupedExpression struct {
+	Expression Node
+	Loc        tokens.Location
+}
+
+func (g GroupedExpression) Kind() NodeKind {
+	return GroupedExpressionNode
+}
+
+func (g GroupedExpression) Location() tokens.Location {
+	return g.Loc
+}

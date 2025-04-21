@@ -27,6 +27,8 @@ func (c *Compiler) compileStatement(statement ast.Node, function *qbe.Function, 
 		return c.compileUnaryExpression(statement, function, vtype, isReturn)
 	case *ast.Block:
 		return c.compileBlock(statement, function, vtype, isReturn)
+	case *ast.GroupedExpression:
+		return c.compileStatement(statement.Expression, function, vtype, isReturn)
 	}
 
 	return nil

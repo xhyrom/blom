@@ -31,6 +31,7 @@ const (
 
 	FieldNode
 	PathNode
+	GroupedExpressionNode
 )
 
 type Node interface {

@@ -13,13 +13,8 @@ func (p *Parser) parseCondition() *ast.If {
 
 	condition := p.parseExpression()
 	if condition == nil {
-		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
-		dbg.ThrowError("Expected condition", true, debug.NewHint("Did you forget to add a condition?", "if"))
-	}
-
-	if p.Current().Kind != tokens.LeftCurlyBracket {
-		dbg := debug.NewSourceLocation(p.Source(), condition.Location().Row, condition.Location().Column)
-		dbg.ThrowError("Expected opening bracket", true, debug.NewHint("Did you forget to add an opening bracket?", "{"))
+		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Previous())
+		dbg.ThrowError("Expected condition", true, debug.NewHint("Did you forget to add a condition?", " <condition>"))
 	}
 
 	thenBlock := p.parseBlock()
@@ -41,11 +36,6 @@ func (p *Parser) parseCondition() *ast.If {
 				},
 				Loc: loc,
 			}
-		}
-
-		if p.Current().Kind != tokens.LeftCurlyBracket {
-			dbg := debug.NewSourceLocation(p.Source(), condition.Location().Row, condition.Location().Column)
-			dbg.ThrowError("Expected opening bracket", true, debug.NewHint("Did you forget to add an opening bracket", "{"))
 		}
 
 		elseBlock = p.parseBlock()

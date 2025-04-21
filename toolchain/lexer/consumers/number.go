@@ -90,7 +90,6 @@ func ConsumeNumber(lex Lexer) *tokens.Token {
 				}
 			}
 		}
-
 	}
 
 	// handle decimal numbers
@@ -156,9 +155,14 @@ func ConsumeNumber(lex Lexer) *tokens.Token {
 		kind = tokens.FloatLiteral
 	}
 
+	loc := startLocation.Copy()
+	if lex.CurrentChar() == '\n' {
+		loc.Column-- // remove the newline character from the column
+	}
+
 	return &tokens.Token{
 		Kind:     kind,
 		Value:    value,
-		Location: startLocation.Copy(),
+		Location: loc,
 	}
 }

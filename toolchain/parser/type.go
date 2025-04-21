@@ -9,13 +9,13 @@ import (
 // Parses a type, for example:
 // - i32
 // - i64
-func (p *Parser) parseType() ast.Type {
-	token := p.Consume()
-
-	if token.Kind != tokens.Identifier {
-		dbg := debug.NewSourceLocation(p.Source(), token.Location.Row, token.Location.Column)
-		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a type name?", "i32"))
+func (p *Parser) parseType() (ast.Type, tokens.Location) {
+	if p.Current().Kind != tokens.Identifier {
+		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Previous())
+		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a type name?", " i32"))
 	}
+
+	token := p.Consume()
 
 	str := token.Value
 
@@ -30,5 +30,5 @@ func (p *Parser) parseType() ast.Type {
 		dbg.ThrowError(err.Error(), true)
 	}
 
-	return ty
+	return ty, token.Location
 }

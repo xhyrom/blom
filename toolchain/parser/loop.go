@@ -17,6 +17,11 @@ func (p *Parser) parseForLoop() *ast.Block {
 	var step ast.Node
 
 	stmt := p.parseStatement()
+	if stmt == nil {
+		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
+		dbg.ThrowError("Expected declaration or condition", true, debug.NewHint("Did you forget to add a declaration, condition and step?", " <declaration>; <condition>; <step>"), debug.NewHint("Did you forget to add a condition and step?", " <condition>; <step>"))
+	}
+
 	if stmt.Kind() == ast.VariableDeclarationNode {
 		declaration = stmt.(*ast.VariableDeclaration)
 	} else {
@@ -27,17 +32,12 @@ func (p *Parser) parseForLoop() *ast.Block {
 		condition = p.parseExpression()
 
 		if p.Consume().Kind != tokens.Semicolon {
-			dbg := debug.NewSourceLocation(p.Source(), condition.Location().Row, condition.Location().Column)
+			dbg := debug.NewSourceLocationFromNode(p.Source(), condition)
 			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 		}
 	}
 
 	step = p.parseExpression()
-
-	if p.Current().Kind != tokens.LeftCurlyBracket {
-		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
-		dbg.ThrowError("Expected opening bracket", true, debug.NewHint("Did you forget to add an opening bracket?", "{"))
-	}
 
 	block := p.parseBlock()
 	block.Body = append(block.Body, step)

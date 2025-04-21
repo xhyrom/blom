@@ -9,6 +9,7 @@ import (
 
 type Parser struct {
 	tokens      []tokens.Token
+	previous    tokens.Token
 	source      string
 	annotations []ast.Annotation
 }
@@ -16,6 +17,7 @@ type Parser struct {
 func New(file string) *Parser {
 	return &Parser{
 		tokens:      make([]tokens.Token, 0),
+		previous:    tokens.Token{},
 		source:      file,
 		annotations: make([]ast.Annotation, 0),
 	}
@@ -59,6 +61,10 @@ func (p *Parser) Current() tokens.Token {
 	return p.tokens[0]
 }
 
+func (p *Parser) Previous() tokens.Token {
+	return p.previous
+}
+
 func (p *Parser) Peek(i int) tokens.Token {
 	return p.tokens[i]
 }
@@ -67,10 +73,13 @@ func (p *Parser) Consume() tokens.Token {
 	prev := p.tokens[0]
 	p.Advance()
 
+	p.previous = prev
+
 	return prev
 }
 
 func (p *Parser) Advance() {
+	p.previous = p.tokens[0]
 	p.tokens = p.tokens[1:]
 }
 
@@ -98,8 +107,8 @@ func (p *Parser) parseStatement() ast.Node {
 		statement = p.parseExpression()
 	}
 
-	if p.Consume().Kind != tokens.Semicolon {
-		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Current())
+	if statement != nil && (p.IsEof() || p.Consume().Kind != tokens.Semicolon) {
+		dbg := debug.NewSourceLocationFromNode(p.Source(), statement)
 		dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 	}
 
@@ -167,12 +176,16 @@ func (p *Parser) parseGroupedExpression() ast.Node {
 
 	exp := p.parseExpression()
 
-	if p.Consume().Kind != tokens.RightParenthesis {
+	token := p.Consume()
+	if token.Kind != tokens.RightParenthesis {
 		dbg := debug.NewSourceLocationFromNode(p.Source(), exp)
 		dbg.ThrowError("Expected closing parenthesis", true, debug.NewHint("Did you forget to add a closing parenthesis?", ")"))
 	}
 
-	return exp
+	return &ast.GroupedExpression{
+		Expression: exp,
+		Loc:        token.Location,
+	}
 }
 
 func (p *Parser) parseUnaryExpression() ast.Node {
@@ -190,10 +203,15 @@ func (p *Parser) parseBinaryExpression(left ast.Node) ast.Node {
 	operator := p.Consume()
 	right := p.parseExpressionWithPrecedence(operator.Kind.Precedence())
 
+	if right == nil {
+		dbg := debug.NewSourceLocationFromToken(p.Source(), operator)
+		dbg.ThrowError("Expected right operand", true, debug.NewHint("Did you forget to add a right operand?", " a"))
+	}
+
 	return &ast.BinaryExpression{
 		Left:     left,
 		Operator: operator.Kind,
 		Right:    right,
-		Loc:      operator.Location,
+		Loc:      right.Location(),
 	}
 }

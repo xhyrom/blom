@@ -2,6 +2,7 @@ package parser
 
 import (
 	"blom/ast"
+	"blom/debug"
 	"blom/tokens"
 )
 
@@ -20,26 +21,36 @@ func (p *Parser) parseVariableDeclaration() *ast.VariableDeclaration {
 			Name:    name,
 			Type:    ast.Int32,
 			Mutable: mutable,
-			Loc:     name.Location(),
+			Loc:     argument.Location(),
 		}
 	}
 
-	assign := p.Consume()
+	p.Consume()
 	value := p.parseExpression()
+
+	if value == nil {
+		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Previous())
+		dbg.ThrowError("Expected value for variable declaration", true, debug.NewHint("Did you forget to add a value?", ""))
+	}
 
 	return &ast.VariableDeclaration{
 		Name:    name,
 		Type:    ty,
 		Init:    value,
 		Mutable: mutable,
-		Loc:     assign.Location,
+		Loc:     value.Location(),
 	}
 }
 
 func (p *Parser) parseAssignment(left ast.Node) ast.Node {
-	p.Consume()
+	operator := p.Consume()
 
 	right := p.parseExpression()
+
+	if right == nil {
+		dbg := debug.NewSourceLocationFromToken(p.Source(), operator)
+		dbg.ThrowError("Expected right operand", true, debug.NewHint("Did you forget to add a right operand?", ""))
+	}
 
 	return &ast.Assignment{
 		Left:  left,

@@ -14,19 +14,22 @@ import (
 // - <type> is the type of the argument
 func (p *Parser) parseArgument() *ast.Argument {
 	if p.Current().Kind != tokens.Identifier {
-		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column+1)
+		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Previous())
 		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add an argument name?", "<name>"))
 	}
 
 	argument := p.parseLiteral().(*ast.IdentifierLiteral)
 
 	if p.Consume().Kind != tokens.Colon {
-		dbg := debug.NewSourceLocation(p.Source(), argument.Location().Row, argument.Location().Column+1)
+		dbg := debug.NewSourceLocationFromNode(p.Source(), argument)
 		dbg.ThrowError("Expected colon and type", true, debug.NewHint("Did you forget to add a colon and type?", ": i32"))
 	}
 
+	ty, loc := p.parseType()
+
 	return &ast.Argument{
 		Name: *argument,
-		Type: p.parseType(),
+		Type: ty,
+		Loc:  loc,
 	}
 }

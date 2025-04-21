@@ -25,14 +25,14 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	p.collectAnnotations()
 
 	if p.Current().Kind != tokens.Identifier {
-		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
-		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function name?", "fn"))
+		dbg := debug.NewSourceLocationFromToken(p.Source(), p.Previous())
+		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function name?", " <name>"))
 	}
 
 	path := p.parsePath(p.parseLiteral())
 
 	if p.Consume().Kind != tokens.LeftParenthesis {
-		dbg := debug.NewSourceLocation(p.Source(), path.Location().Row, path.Location().Column)
+		dbg := debug.NewSourceLocationFromNode(p.Source(), path)
 		dbg.ThrowError("Expected opening parenthesis", true, debug.NewHint("Did you forget to add an opening parenthesis?", "("))
 	}
 
@@ -52,13 +52,13 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 
 		if p.Current().Kind == tokens.Comma {
 			p.Consume()
+		} else if p.Current().Kind != tokens.RightParenthesis {
+			dbg := debug.NewSourceLocationFromToken(p.Source(), p.Previous())
+			dbg.ThrowError("Expected parameter or closing parenthesis", true, debug.NewHint("Did you forget to add a parameter?", ", <name>: <type>"), debug.NewHint("Did you forget to add a closing parenthesis?", ")"))
 		}
 	}
 
-	if p.Consume().Kind != tokens.RightParenthesis {
-		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
-		dbg.ThrowError("Expected closing parenthesis", true, debug.NewHint("Did you forget to add a closing parenthesis?", ")"))
-	}
+	p.Consume() // consume the closing parenthesis
 
 	if p.Current().Kind == tokens.Minus {
 		p.Consume()
@@ -68,7 +68,7 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 			dbg.ThrowError("Expected arrow", true, debug.NewHint("Did you forget to add an arrow?", " ->"))
 		}
 
-		fun.Return = p.parseType()
+		fun.Return, _ = p.parseType()
 	} else {
 		fun.Return = ast.Int32
 	}
@@ -84,10 +84,12 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 			dbg.ThrowError("Native functions cannot have a body", true)
 		}
 
-		if p.Consume().Kind != tokens.Semicolon {
-			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
+		if p.Current().Kind != tokens.Semicolon {
+			dbg := debug.NewSourceLocationFromToken(p.Source(), p.Previous())
 			dbg.ThrowError("Expected semicolon", true, debug.NewHint("Did you forget to add a semicolon?", ";"))
 		}
+
+		p.Consume() // consume the semicolon
 	}
 
 	return fun
