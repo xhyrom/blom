@@ -1,23 +1,7 @@
-fun @native @variadic printf(format: string);
-
-fun i32::ahoj(self: i32) {
-  return self + 95;
-}
-
-fun @infix nam::add(a: i32, b: i32) -> i32 {
-  return a + b;
-}
-
-fun @infix nam::times(a: i32, b: i32) -> i32 {
-  return a * b;
-}
-
-fun @infix nam::add(a: string, b: i32, c: i32) -> i32 {
-  return 9 + b + c;
-}
+import std/io;
+import std/math;
 
 fun @public main() {
-  printf("%d\n", nam::add("a", 3, 5));
-  printf("%d %d\n", 3 nam::add 3 nam::times ~9, ~5 + 9 nam::add 9);
+  io::printf("hello :) %d %d %d\n", math::fact(5));
   return 0;
 }

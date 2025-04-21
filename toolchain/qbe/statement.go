@@ -17,8 +17,23 @@ func (b *Block) AddAssign(name Value, t Type, instruction Instruction) {
 	b.AddStatement(AssignStatement{Name: name, Type: t.IntoAbi(), Instruction: instruction})
 }
 
+func (b *Block) AddAssignAt(index int, name Value, t Type, instruction Instruction) {
+	if index < 0 || index > len(b.Statements) {
+		return
+	}
+
+	b.AddStatementAt(index, AssignStatement{Name: name, Type: t.IntoAbi(), Instruction: instruction})
+}
+
 func (b *Block) AddStatement(statement Statement) {
 	b.Statements = append(b.Statements, statement)
+}
+
+func (b *Block) AddStatementAt(index int, statement Statement) {
+	if index < 0 || index > len(b.Statements) {
+		return
+	}
+	b.Statements = append(b.Statements[:index], append([]Statement{statement}, b.Statements[index:]...)...)
 }
 
 func (b *Block) IsLastStatement(instruction InstructionType) bool {

@@ -60,34 +60,66 @@ func (m *ASTMangler) mangleTopLevelNode(node ast.Node, analysisContext *types.An
 }
 
 func (m *ASTMangler) mangleNode(node ast.Node, analysisContext *types.AnalysisContext) {
-	if node == nil {
-		return
-	}
-
 	switch n := node.(type) {
 	case *ast.FunctionCall, *ast.MethodCall, *ast.InfixCall:
+		if n == nil {
+			return
+		}
+
 		m.mangleCall(n.(ast.Call), analysisContext)
 	case *ast.Block:
+		if n == nil {
+			return
+		}
+
 		for _, stmt := range n.Body {
 			m.mangleNode(stmt, analysisContext)
 		}
 	case *ast.Return:
+		if n == nil {
+			return
+		}
+
 		m.mangleNode(n.Value, analysisContext)
 	case *ast.If:
+		if n == nil {
+			return
+		}
+
 		m.mangleNode(n.Condition, analysisContext)
 		m.mangleNode(n.Then, analysisContext)
 		m.mangleNode(n.Else, analysisContext)
 	case *ast.BinaryExpression:
+		if n == nil {
+			return
+		}
+
 		m.mangleNode(n.Left, analysisContext)
 		m.mangleNode(n.Right, analysisContext)
 	case *ast.UnaryExpression:
+		if n == nil {
+			return
+		}
+
 		m.mangleNode(n.Operand, analysisContext)
 	case *ast.WhileLoop:
+		if n == nil {
+			return
+		}
+
 		m.mangleNode(n.Condition, analysisContext)
 		m.mangleNode(n.Block, analysisContext)
 	case *ast.VariableDeclaration:
+		if n == nil {
+			return
+		}
+
 		m.mangleNode(n.Init, analysisContext)
 	case *ast.Assignment:
+		if n == nil {
+			return
+		}
+
 		m.mangleNode(n.Left, analysisContext)
 		m.mangleNode(n.Right, analysisContext)
 	}

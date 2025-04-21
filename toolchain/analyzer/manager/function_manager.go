@@ -25,7 +25,7 @@ func (m *FunctionManager) Register(fun *ast.FunctionDeclaration) {
 func (m *FunctionManager) GetWithIndex(name string, params []ast.Type) (*ast.FunctionDeclaration, int, bool) {
 	if functions, ok := m.functions[name]; ok {
 		for i, fun := range functions {
-			if len(fun.Params) == len(params) {
+			if len(fun.Params) == len(params) || fun.HasAnnotation(ast.Variadic) {
 				matches := true
 				for j, param := range fun.Params {
 					if !param.Type.Equal(params[j]) {
@@ -59,6 +59,14 @@ func (m *FunctionManager) Get(name string, params []ast.Type) (*ast.FunctionDecl
 	}
 
 	return nil, false
+}
+
+func (m *FunctionManager) GetAll(name string) []*ast.FunctionDeclaration {
+	if funs, ok := m.functions[name]; ok {
+		return funs
+	}
+
+	return []*ast.FunctionDeclaration{}
 }
 
 func (m *FunctionManager) GetByDeclaration(fun *ast.FunctionDeclaration) (*ast.FunctionDeclaration, bool) {

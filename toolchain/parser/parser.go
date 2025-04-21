@@ -97,8 +97,12 @@ func (p *Parser) parseStatement() ast.Node {
 		return p.parseCondition()
 	case tokens.For:
 		return p.parseForLoop()
+	case tokens.While:
+		return p.parseWhileLoop()
 	case tokens.Val, tokens.Var:
 		statement = p.parseVariableDeclaration()
+	case tokens.Import:
+		statement = p.parseImport()
 	case tokens.LeftCurlyBracket:
 		return p.parseBlock()
 	}

@@ -19,7 +19,7 @@ func (a *TypeAnalyzer) analyzeIf(expression *ast.If) ast.Type {
 		)
 	}
 
-	returnType := a.analyzeBlock(&expression.Then)
+	returnType := a.analyzeBlock(expression.Then)
 
 	if expression.Else != nil {
 		elseReturnType := a.analyzeBlock(expression.Else)

@@ -29,6 +29,7 @@ const (
 	MethodCallNode
 	InfixCallNode
 
+	ImportNode
 	FieldNode
 	PathNode
 	GroupedExpressionNode

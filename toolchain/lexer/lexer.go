@@ -136,6 +136,7 @@ func (lex *Lexer) Next() *tokens.Token {
 			case '.':
 				kind = tokens.Ellipsis
 			default:
+				kind = tokens.Range
 				lex.Rewind()
 			}
 		default:

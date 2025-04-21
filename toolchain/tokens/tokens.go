@@ -49,6 +49,7 @@ const (
 
 	// Delimiters
 	Dot
+	Range
 	Ellipsis
 	Comma
 	Colon
@@ -67,6 +68,7 @@ const (
 	Return
 	Val
 	Var
+	Import
 )
 
 var tokens = []string{
@@ -103,6 +105,7 @@ var tokens = []string{
 	DoubleGreaterThan:  ">>",
 	GreaterThanOrEqual: ">=",
 	Dot:                ".",
+	Range:              "..",
 	Ellipsis:           "...",
 	Comma:              ",",
 	Colon:              ":",
@@ -119,6 +122,7 @@ var tokens = []string{
 	Return:             "return",
 	Val:                "val",
 	Var:                "var",
+	Import:             "import",
 }
 
 var reserved = []string{
@@ -130,6 +134,7 @@ var reserved = []string{
 	Return: "return",
 	Val:    "val",
 	Var:    "var",
+	Import: "import",
 }
 
 func (t TokenKind) String() string {

@@ -28,7 +28,14 @@ func (a *TypeAnalyzer) analyzeFunctionCall(call *ast.FunctionCall) ast.Type {
 		argTypes = append(argTypes, a.analyzeExpression(arg))
 	}
 
-	function, _ := a.FunctionManager.Get(name, argTypes)
+	function, exists := a.FunctionManager.Get(name, argTypes)
+	if !exists {
+		overloads := a.FunctionManager.GetAll(name)
+		if len(overloads) == 1 {
+			function = overloads[0]
+		}
+	}
+
 	if function == nil {
 		return ast.Void
 	}

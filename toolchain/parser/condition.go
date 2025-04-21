@@ -28,7 +28,7 @@ func (p *Parser) parseCondition() *ast.If {
 		if p.Current().Kind == tokens.If {
 			return &ast.If{
 				Condition: condition,
-				Then:      *thenBlock,
+				Then:      thenBlock,
 				Else: &ast.Block{
 					Body: []ast.Node{
 						p.parseCondition(),
@@ -44,7 +44,7 @@ func (p *Parser) parseCondition() *ast.If {
 
 	return &ast.If{
 		Condition: condition,
-		Then:      *thenBlock,
+		Then:      thenBlock,
 		Else:      elseBlock,
 		Loc:       loc,
 	}

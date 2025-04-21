@@ -6,6 +6,7 @@ import (
 	"blom/lexer"
 	"blom/mangling"
 	"blom/parser"
+	"blom/resolver"
 	"blom/tokens"
 	"fmt"
 	"os"
@@ -76,11 +77,29 @@ func main() {
 		dump.Println(ast)
 	}
 
+	moduleResolver := resolver.NewModuleResolver(
+		"/home/hyro/Workspace/blom/", // standard library path
+		resolver.MergeModules,        // merge imported modules
+	)
+	inputDir := filepath.Dir(inputFile)
+	if inputDir != "." {
+		moduleResolver.AddSearchPath(inputDir)
+	}
+
+	resolvedAst, err := moduleResolver.ResolveProgram(inputFile, ast)
+	if err != nil {
+		panic(err)
+	}
+	ast = resolvedAst
+
 	analyzer := analyzer.New(inputFile, ast)
 	analyzer.Analyze()
 
 	mangler := mangling.NewASTMangler()
 	mangler.Mangle(ast, analyzer.GetAnalysisContext())
+
+	demangler := mangling.NewNativeDemangler()
+	demangler.Demangle(ast, analyzer.GetAnalysisContext())
 
 	//if emitAst {
 	//	dump.Println(ast)

@@ -55,6 +55,10 @@ func (f *Function) AddBlock(label string) {
 	})
 }
 
+func (f *Function) FirstBlock() *Block {
+	return &f.Blocks[0]
+}
+
 func (f *Function) LastBlock() *Block {
 	return &f.Blocks[len(f.Blocks)-1]
 }

@@ -7,6 +7,25 @@ import (
 )
 
 // Parses a loop that can have a form:
+// while <condition> { <block> }
+func (p *Parser) parseWhileLoop() *ast.WhileLoop {
+	p.Consume()
+
+	condition := p.parseExpression()
+	if condition == nil {
+		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
+		dbg.ThrowError("Expected condition", true, debug.NewHint("Did you forget to add a condition?", "<condition>"))
+	}
+
+	block := p.parseBlock()
+
+	return &ast.WhileLoop{
+		Condition: condition,
+		Block:     block,
+	}
+}
+
+// Parses a loop that can have a form:
 // for <declaration>; <condition>; <step> { <block> }
 // for <condition>; <step> { <block> }
 func (p *Parser) parseForLoop() *ast.Block {
@@ -48,7 +67,7 @@ func (p *Parser) parseForLoop() *ast.Block {
 				declaration,
 				&ast.WhileLoop{
 					Condition: condition,
-					Block:     *block,
+					Block:     block,
 					Loc:       condition.Location(),
 				},
 			},
@@ -60,7 +79,7 @@ func (p *Parser) parseForLoop() *ast.Block {
 		Body: []ast.Node{
 			&ast.WhileLoop{
 				Condition: condition,
-				Block:     *block,
+				Block:     block,
 				Loc:       condition.Location(),
 			},
 		},
