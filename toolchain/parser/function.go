@@ -7,18 +7,18 @@ import (
 )
 
 // Parses a function declaration that can have a form:
-// fun ?(<annotations>) <name> (<parameters>) ?(-> <return type>) { <body> }
-// fun ?(<annotations>) <namespace>::<name> (<parameters>) ?(-> <return type>) { <body> }
+// fun ?(<annotations>) <path> (<parameters>) ?(-> <return type>) { <body> }
 //
 // where:
 // - <annotations> is a list of annotations
-// - <name> is the name of the function
+// - <path> is the path (name) of the function
 // - <parameters> is a list of parameters separated by commas
 // - <return type> is the type of the return value
 // - <body> is the body of the function
 //
 // Example:
 // fun add(a: i32, b: i32) -> i32 {}
+// fun a::b::c::d::e::f(a: i32, b: i32) -> i32 {}
 // fun main() {}
 func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	p.Consume()
