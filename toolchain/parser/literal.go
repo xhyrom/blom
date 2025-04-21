@@ -71,7 +71,10 @@ func parseInt(p *Parser) ast.Node {
 		if f == math.Trunc(f) {
 			val = int64(f)
 		} else {
-			panic(fmt.Sprintf("scientific notation number is not an integer: %s", value))
+			return &ast.FloatLiteral{
+				Value: f,
+				Loc:   token.Location,
+			}
 		}
 
 		return &ast.IntLiteral{
