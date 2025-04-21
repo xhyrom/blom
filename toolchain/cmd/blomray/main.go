@@ -10,14 +10,10 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/gookit/goutil/dump"
+	"github.com/yassinebenaid/godump"
 )
 
 func main() {
-	dump.Config(func(o *dump.Options) {
-		o.MaxDepth = 100
-	})
-
 	compact := flag.Bool("compact", false, "Display tokens in a single-line format")
 	pretty := flag.Bool("pretty", false, "Display tokens in a pretty format with one token per line")
 	noColor := flag.Bool("no-color", false, "Disable colored output")
@@ -59,18 +55,18 @@ func main() {
 	}
 
 	if *readStdin {
-		processStdin(format)
+		processStdin(format, *noColor)
 	} else {
 		for _, inputFile := range args {
 			if !strings.HasSuffix(inputFile, ".blom") {
 				fmt.Fprintf(os.Stderr, "Warning: '%s' does not have .blom extension\n", inputFile)
 			}
-			processFile(inputFile, format)
+			processFile(inputFile, format, *noColor)
 		}
 	}
 }
 
-func processStdin(format string) {
+func processStdin(format string, noColor bool) {
 	scanner := bufio.NewScanner(os.Stdin)
 	content := strings.Builder{}
 
@@ -84,10 +80,10 @@ func processStdin(format string) {
 	}
 
 	lex := lexer.New("<stdin>", content.String())
-	processTokens(lex, format)
+	processTokens(lex, format, noColor)
 }
 
-func processFile(inputFile string, format string) {
+func processFile(inputFile string, format string, noColor bool) {
 	content, err := os.ReadFile(inputFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
@@ -95,16 +91,21 @@ func processFile(inputFile string, format string) {
 	}
 
 	lex := lexer.New(inputFile, string(content))
-	processTokens(lex, format)
+	processTokens(lex, format, noColor)
 }
 
-func processTokens(lex *lexer.Lexer, format string) {
+func processTokens(lex *lexer.Lexer, format string, noColor bool) {
 	tkns := make([]tokens.Token, 0)
 
 	current := lex.Next()
 	for current.Kind != tokens.Eof {
 		tkns = append(tkns, *current)
 		current = lex.Next()
+	}
+
+	var theme godump.Theme = godump.Theme{}
+	if !noColor {
+		theme = godump.DefaultTheme
 	}
 
 	switch format {
@@ -127,7 +128,12 @@ func processTokens(lex *lexer.Lexer, format string) {
 		printPrettyTokens(tkns)
 
 	default:
-		dump.Println(tkns)
+		dumper := godump.Dumper{
+			Theme:                   theme,
+			ShowPrimitiveNamedTypes: true,
+		}
+
+		dumper.Println(tkns)
 	}
 }
 

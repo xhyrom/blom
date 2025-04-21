@@ -14,6 +14,7 @@ tasks:
       go build -o bin/blom ./cmd/blom
       go build -o bin/blomprism ./cmd/blomprism
       go build -o bin/blomray ./cmd/blomray
+      go build -o bin/blomsight ./cmd/blomsight
     inputs:
       - "analyzer/**/*"
       - "ast/**/*"
