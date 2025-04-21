@@ -1,0 +1,29 @@
+fun @public i32::max() -> i32 {
+  return 2_147_483_647;
+}
+
+fun @public i32::min() -> i32 {
+  return -2_147_483_648;
+}
+
+fun @public fact(n: i64) -> i64 {
+    if n < 0 {
+        return -1;
+    }
+
+    if n == 0 {
+        return 1;
+    }
+
+    if n == 1 {
+        return 1;
+    }
+
+    var a: i64 = n;
+    var result: i64 = 1;
+    for a > 1; a = a - 1 {
+        result = result * a;
+    }
+
+    return result;
+}
