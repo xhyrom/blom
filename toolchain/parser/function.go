@@ -24,40 +24,12 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	p.Consume()
 	p.collectAnnotations()
 
-	var path ast.Path
-
 	if p.Current().Kind != tokens.Identifier {
 		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
 		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function name?", "fn"))
 	}
 
-	nameOrNamespace := p.parseLiteral().(*ast.IdentifierLiteral)
-
-	if p.Current().Kind == tokens.DoubleColon {
-		p.Consume()
-
-		if p.Current().Kind != tokens.Identifier {
-			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
-			dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function identifier?", "fn"))
-		}
-
-		realName := p.parseLiteral().(*ast.IdentifierLiteral)
-
-		path = ast.Path{
-			Segments: []ast.IdentifierLiteral{
-				*nameOrNamespace,
-				*realName,
-			},
-			Loc: realName.Location(),
-		}
-	} else {
-		path = ast.Path{
-			Segments: []ast.IdentifierLiteral{
-				*nameOrNamespace,
-			},
-			Loc: nameOrNamespace.Location(),
-		}
-	}
+	path := p.parsePath(p.parseLiteral())
 
 	if p.Consume().Kind != tokens.LeftParenthesis {
 		dbg := debug.NewSourceLocation(p.Source(), path.Location().Row, path.Location().Column)
@@ -65,7 +37,7 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	}
 
 	fun := &ast.FunctionDeclaration{
-		Path: path,
+		Path: *path,
 		Loc:  path.Location(),
 	}
 

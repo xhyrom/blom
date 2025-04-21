@@ -9,11 +9,11 @@ fun test(a: i32, b: i32) {
   return a + b;
 }
 
-fun i32::test(a: string) -> string {
+fun something::i32::test(a: string) -> string {
     return a;
 }
 
 fun @public main() {
-  printf("hello %d %d %s\n", test(5), test(5, 7), i32::test("ahoj"));
+  printf("hello %d %d %s\n", test(5), test(5, 7), something::i32::test("ahoj"));
   return 0;
 }
