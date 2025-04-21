@@ -4,7 +4,9 @@ import (
 	"blom/ast"
 	"blom/tokens"
 	"fmt"
+	"math"
 	"strconv"
+	"strings"
 )
 
 func (p *Parser) parseLiteral() ast.Node {
@@ -24,19 +26,9 @@ func (p *Parser) parseLiteral() ast.Node {
 			Loc:   token.Location,
 		}
 	case tokens.IntLiteral:
-		token := p.Consume()
-		value, _ := strconv.ParseInt(token.Value, 10, 64)
-		return &ast.IntLiteral{
-			Value: int64(value),
-			Loc:   token.Location,
-		}
+		return parseInt(p)
 	case tokens.FloatLiteral:
-		token := p.Consume()
-		value, _ := strconv.ParseFloat(token.Value, 64)
-		return &ast.FloatLiteral{
-			Value: float64(value),
-			Loc:   token.Location,
-		}
+		return parseFloat(p)
 	case tokens.BooleanLiteral:
 		token := p.Consume()
 		value, _ := strconv.ParseBool(token.Value)
@@ -49,6 +41,72 @@ func (p *Parser) parseLiteral() ast.Node {
 	}
 
 	panic(fmt.Sprintf("unexpected literal %T", p.Current()))
+}
+
+func parseInt(p *Parser) ast.Node {
+	token := p.Consume()
+	value := token.Value
+	cleanValue := strings.Replace(value, "_", "", -1)
+
+	var val int64
+	var err error
+
+	if strings.HasPrefix(cleanValue, "0x") || strings.HasPrefix(cleanValue, "0X") {
+		// hexadecimal
+		val, err = strconv.ParseInt(cleanValue[2:], 16, 64)
+	} else if strings.HasPrefix(cleanValue, "0b") || strings.HasPrefix(cleanValue, "0B") {
+		// binary
+		val, err = strconv.ParseInt(cleanValue[2:], 2, 64)
+	} else if strings.HasPrefix(cleanValue, "0o") || strings.HasPrefix(cleanValue, "0O") {
+		// octal
+		val, err = strconv.ParseInt(cleanValue[2:], 8, 64)
+	} else if strings.ContainsAny(cleanValue, "eE") {
+		// scientific notation
+		f, err := strconv.ParseFloat(cleanValue, 64)
+		if err != nil {
+			panic(fmt.Sprintf("invalid scientific notation number: %s", value))
+		}
+
+		// check if it's a whole number
+		if f == math.Trunc(f) {
+			val = int64(f)
+		} else {
+			panic(fmt.Sprintf("scientific notation number is not an integer: %s", value))
+		}
+
+		return &ast.IntLiteral{
+			Value: val,
+			Loc:   token.Location,
+		}
+	} else {
+		// regular decimal integer
+		val, err = strconv.ParseInt(cleanValue, 10, 64)
+	}
+
+	if err != nil {
+		panic(fmt.Sprintf("invalid integer: %s (%s)", value, err))
+	}
+
+	return &ast.IntLiteral{
+		Value: val,
+		Loc:   token.Location,
+	}
+}
+
+func parseFloat(p *Parser) ast.Node {
+	token := p.Consume()
+	value := token.Value
+	cleanValue := strings.Replace(value, "_", "", -1)
+	val, err := strconv.ParseFloat(cleanValue, 64)
+
+	if err != nil {
+		panic(fmt.Sprintf("invalid floating-point number: %s (%s)", value, err))
+	}
+
+	return &ast.FloatLiteral{
+		Value: val,
+		Loc:   token.Location,
+	}
 }
 
 func parseIdentifier(p *Parser) ast.Node {

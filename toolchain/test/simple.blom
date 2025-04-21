@@ -1,16 +1,9 @@
 fun @native @variadic printf(format: string);
 
-fun test(a: i32) {
-  var a: i32 = 3;
-  printf("hello %d\n", a);
-  return 0;
-}
 
 fun @public main() {
-  var a: i32 = 3;
-  printf("hello %d\n", a);
+  printf("hello %ld\n", 0xdeadbeef);
+  printf("hello %d\n", 01);
 
-  a = 7;
-  printf("hello %d\n", a);
   return 0;
 }

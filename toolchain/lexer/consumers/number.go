@@ -10,35 +10,144 @@ func ConsumeNumber(lex Lexer) *tokens.Token {
 	value := ""
 	isFloat := false
 
-	var err error
+	if lex.CurrentChar() == '0' {
+		value += string(lex.CurrentChar())
+		lex.Advance()
 
-	char := lex.CurrentChar()
-	for unicode.IsDigit(char) || char == '.' && !isFloat || char == '_' {
-		if char == '.' {
+		if lex.IsEof() {
+			return &tokens.Token{
+				Kind:     tokens.IntLiteral,
+				Value:    value,
+				Location: startLocation.Copy(),
+			}
+		}
+
+		switch lex.CurrentChar() {
+		case 'x', 'X': // hexadecimal
+			value += string(lex.CurrentChar())
+			lex.Advance()
+
+			for !lex.IsEof() && (unicode.IsDigit(lex.CurrentChar()) ||
+				('a' <= lex.CurrentChar() && lex.CurrentChar() <= 'f') ||
+				('A' <= lex.CurrentChar() && lex.CurrentChar() <= 'F') ||
+				lex.CurrentChar() == '_') {
+				if lex.CurrentChar() != '_' {
+					value += string(lex.CurrentChar())
+				}
+				lex.Advance()
+			}
+
+			lex.Rewind()
+			return &tokens.Token{
+				Kind:     tokens.IntLiteral,
+				Value:    value,
+				Location: startLocation.Copy(),
+			}
+
+		case 'b', 'B': // binary
+			value += string(lex.CurrentChar())
+			lex.Advance()
+
+			for !lex.IsEof() && (lex.CurrentChar() == '0' || lex.CurrentChar() == '1' || lex.CurrentChar() == '_') {
+				if lex.CurrentChar() != '_' {
+					value += string(lex.CurrentChar())
+				}
+				lex.Advance()
+			}
+
+			lex.Rewind()
+			return &tokens.Token{
+				Kind:     tokens.IntLiteral,
+				Value:    value,
+				Location: startLocation.Copy(),
+			}
+
+		case 'o', 'O': // octal
+			value += string(lex.CurrentChar())
+			lex.Advance()
+
+			for !lex.IsEof() && ('0' <= lex.CurrentChar() && lex.CurrentChar() <= '7' || lex.CurrentChar() == '_') {
+				if lex.CurrentChar() != '_' {
+					value += string(lex.CurrentChar())
+				}
+				lex.Advance()
+			}
+
+			lex.Rewind()
+			return &tokens.Token{
+				Kind:     tokens.IntLiteral,
+				Value:    value,
+				Location: startLocation.Copy(),
+			}
+
+		default:
+			if !unicode.IsDigit(lex.CurrentChar()) {
+				lex.Rewind()
+				return &tokens.Token{
+					Kind:     tokens.IntLiteral,
+					Value:    value,
+					Location: startLocation.Copy(),
+				}
+			}
+		}
+
+	}
+
+	// handle decimal numbers
+	for !lex.IsEof() && (unicode.IsDigit(lex.CurrentChar()) || lex.CurrentChar() == '.' || lex.CurrentChar() == '_') {
+		if lex.CurrentChar() == '.' {
+			if isFloat {
+				break
+			}
+
 			isFloat = true
 		}
 
-		if char != '_' {
-			value += string(char)
+		if lex.CurrentChar() != '_' {
+			value += string(lex.CurrentChar())
 		}
 
-		err = lex.Advance()
-		if err != nil {
-			break
-		}
-
-		char = lex.CurrentChar()
+		lex.Advance()
 	}
 
-	// check if last character is an dot, if so, rewind
-	if value[len(value)-1] == '.' {
+	// handle scientific notation
+	if !lex.IsEof() && (lex.CurrentChar() == 'e' || lex.CurrentChar() == 'E') {
+		value += string(lex.CurrentChar())
+		lex.Advance()
+
+		if !lex.IsEof() && (lex.CurrentChar() == '+' || lex.CurrentChar() == '-') {
+			value += string(lex.CurrentChar())
+			lex.Advance()
+		}
+
+		hasExponentDigits := false
+
+		for !lex.IsEof() && (unicode.IsDigit(lex.CurrentChar()) || lex.CurrentChar() == '_') {
+			if lex.CurrentChar() != '_' {
+				value += string(lex.CurrentChar())
+				hasExponentDigits = true
+			}
+			lex.Advance()
+		}
+
+		if !hasExponentDigits {
+			for value[len(value)-1] == 'e' || value[len(value)-1] == 'E' ||
+				value[len(value)-1] == '+' || value[len(value)-1] == '-' {
+				value = value[:len(value)-1]
+				lex.Rewind()
+			}
+		}
+	}
+
+	// handle trailing dot
+	if len(value) > 0 && value[len(value)-1] == '.' {
 		value = value[:len(value)-1]
 		isFloat = false
-
 		lex.Rewind()
 	}
 
-	if err == nil {
+	// rewind to the last character we processed
+	if !lex.IsEof() {
 		lex.Rewind()
 	}
 
