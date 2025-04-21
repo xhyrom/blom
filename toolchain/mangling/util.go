@@ -2,26 +2,20 @@ package mangling
 
 import (
 	"blom/ast"
-	"fmt"
 	"strings"
 )
 
 func shouldSkipMangling(fn *ast.FunctionDeclaration) bool {
-	return fn.Name.Value == "main" || fn.HasAnnotation(ast.NoMangle) || fn.HasAnnotation(ast.Native)
+	return fn.Path.Dotify() == "main" || fn.HasAnnotation(ast.NoMangle) || fn.HasAnnotation(ast.Native)
 }
 
-func getFunctionKey(fn *ast.FunctionDeclaration) string {
-	paramTypes := make([]string, len(fn.Params))
-	for i, param := range fn.Params {
-		paramTypes[i] = param.Type.String()
+func GetOriginalFunctionName(mangledName string) string {
+	// If it's not a mangled name, return as is
+	if !strings.HasPrefix(mangledName, "_Z") {
+		return mangledName
 	}
 
-	originalName := getOriginalFunctionName(fn.Name.Value)
-
-	return fmt.Sprintf("%s_%s", originalName, strings.Join(paramTypes, "_"))
-}
-
-func getOriginalFunctionName(mangledName string) string {
+	// If it's a simple namespace path
 	if strings.Contains(mangledName, ".") {
 		return strings.Split(mangledName, ".")[0]
 	}

@@ -79,7 +79,8 @@ func main() {
 	analyzer := analyzer.New(inputFile, ast)
 	analyzer.Analyze()
 
-	mangling.Mangle(ast, analyzer.GetAnalysisContext())
+	mangler := mangling.NewASTMangler()
+	mangler.Mangle(ast, analyzer.GetAnalysisContext())
 
 	//if emitAst {
 	//	dump.Println(ast)

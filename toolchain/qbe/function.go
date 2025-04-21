@@ -99,7 +99,7 @@ func RemapAstFunction(fun ast.FunctionDeclaration) Function {
 
 	return Function{
 		Linkage:    NewLinkage(fun.HasAnnotation(ast.Public)),
-		Name:       fun.Name.Value,
+		Name:       fun.Path.Dotify(),
 		Params:     params,
 		ReturnType: RemapAstType(fun.Return),
 		Variadic:   fun.HasAnnotation(ast.Variadic),

@@ -7,7 +7,7 @@ import (
 )
 
 type FunctionDeclaration struct {
-	Name        tokens.Token
+	Path        Path
 	Params      []Argument
 	Annotations []Annotation
 	Block       *Block
@@ -23,6 +23,10 @@ func (f FunctionDeclaration) Kind() NodeKind {
 
 func (f FunctionDeclaration) Location() tokens.Location {
 	return f.Loc
+}
+
+func (f FunctionDeclaration) Name() IdentifierLiteral {
+	return f.Path.Last()
 }
 
 func (f FunctionDeclaration) HasAnnotation(ty AnnotationType) bool {

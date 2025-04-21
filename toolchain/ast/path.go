@@ -18,6 +18,14 @@ func (p Path) Location() tokens.Location {
 	return p.Loc
 }
 
+func (p Path) Last() IdentifierLiteral {
+	if len(p.Segments) == 0 {
+		return IdentifierLiteral{}
+	}
+
+	return p.Segments[len(p.Segments)-1]
+}
+
 func (p Path) Dotify() string {
 	segments := make([]string, len(p.Segments))
 	for i, segment := range p.Segments {

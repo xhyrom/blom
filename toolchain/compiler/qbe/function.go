@@ -26,7 +26,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	returnType := qbe.RemapAstType(declaration.Return)
 	function := qbe.Function{
 		Linkage:    linkage,
-		Name:       declaration.Name.Value,
+		Name:       declaration.Path.Dotify(),
 		Params:     params,
 		ReturnType: returnType,
 		Variadic:   declaration.HasAnnotation(ast.Variadic),
@@ -47,5 +47,5 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 
 	c.Scopes.Pop()
 
-	c.Module.SetFunctionByName(declaration.Name.Value, function)
+	c.Module.SetFunctionByName(declaration.Path.Dotify(), function)
 }

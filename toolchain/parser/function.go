@@ -24,36 +24,49 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 	p.Consume()
 	p.collectAnnotations()
 
-	name := p.Consume()
-	if name.Kind != tokens.Identifier {
-		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
+	var path ast.Path
+
+	if p.Current().Kind != tokens.Identifier {
+		dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
 		dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function name?", "fn"))
 	}
+
+	nameOrNamespace := p.parseLiteral().(*ast.IdentifierLiteral)
 
 	if p.Current().Kind == tokens.DoubleColon {
 		p.Consume()
 
-		namespace := p.Consume()
-		if namespace.Kind != tokens.Identifier {
-			dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
+		if p.Current().Kind != tokens.Identifier {
+			dbg := debug.NewSourceLocation(p.Source(), p.Current().Location.Row, p.Current().Location.Column)
 			dbg.ThrowError("Expected identifier", true, debug.NewHint("Did you forget to add a function identifier?", "fn"))
 		}
 
-		name = tokens.Token{
-			Kind:     tokens.Identifier,
-			Location: name.Location,
-			Value:    name.Value + "." + namespace.Value,
+		realName := p.parseLiteral().(*ast.IdentifierLiteral)
+
+		path = ast.Path{
+			Segments: []ast.IdentifierLiteral{
+				*nameOrNamespace,
+				*realName,
+			},
+			Loc: realName.Location(),
+		}
+	} else {
+		path = ast.Path{
+			Segments: []ast.IdentifierLiteral{
+				*nameOrNamespace,
+			},
+			Loc: nameOrNamespace.Location(),
 		}
 	}
 
 	if p.Consume().Kind != tokens.LeftParenthesis {
-		dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column)
+		dbg := debug.NewSourceLocation(p.Source(), path.Location().Row, path.Location().Column)
 		dbg.ThrowError("Expected opening parenthesis", true, debug.NewHint("Did you forget to add an opening parenthesis?", "("))
 	}
 
 	fun := &ast.FunctionDeclaration{
-		Name: name,
-		Loc:  name.Location,
+		Path: path,
+		Loc:  path.Location(),
 	}
 
 	params := make([]ast.Argument, 0)
@@ -79,7 +92,7 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 		p.Consume()
 
 		if p.Consume().Kind != tokens.GreaterThan {
-			dbg := debug.NewSourceLocation(p.Source(), name.Location.Row, name.Location.Column+3)
+			dbg := debug.NewSourceLocation(p.Source(), path.Location().Row, path.Location().Column+3)
 			dbg.ThrowError("Expected arrow", true, debug.NewHint("Did you forget to add an arrow?", " ->"))
 		}
 

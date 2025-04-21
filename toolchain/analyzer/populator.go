@@ -52,7 +52,7 @@ func (a *Analyzer) populateFunction(statement *ast.FunctionDeclaration) {
 		)
 	}
 
-	if statement.Name.Value == "main" && !statement.HasAnnotation(ast.Public) {
+	if statement.Path.Dotify() == "main" && !statement.HasAnnotation(ast.Public) {
 		dbg := debug.NewSourceLocation(a.Source, statement.Location().Row, statement.Location().Column-4)
 		dbg.ThrowError(
 			"The 'main' function must be declared as public since it's the program's entry point.",

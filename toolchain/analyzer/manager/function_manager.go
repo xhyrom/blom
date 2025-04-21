@@ -15,11 +15,11 @@ func NewFunctionManager() *FunctionManager {
 }
 
 func (m *FunctionManager) Register(fun *ast.FunctionDeclaration) {
-	if _, ok := m.functions[fun.Name.Value]; !ok {
-		m.functions[fun.Name.Value] = make([]*ast.FunctionDeclaration, 0)
+	if _, ok := m.functions[fun.Path.Dotify()]; !ok {
+		m.functions[fun.Path.Dotify()] = make([]*ast.FunctionDeclaration, 0)
 	}
 
-	m.functions[fun.Name.Value] = append(m.functions[fun.Name.Value], fun)
+	m.functions[fun.Path.Dotify()] = append(m.functions[fun.Path.Dotify()], fun)
 }
 
 func (m *FunctionManager) GetWithIndex(name string, params []ast.Type) (*ast.FunctionDeclaration, int, bool) {
@@ -50,7 +50,7 @@ func (m *FunctionManager) GetByDeclarationWithIndex(fun *ast.FunctionDeclaration
 		params[i] = arg.Type
 	}
 
-	return m.GetWithIndex(fun.Name.Value, params)
+	return m.GetWithIndex(fun.Path.Dotify(), params)
 }
 
 func (m *FunctionManager) Get(name string, params []ast.Type) (*ast.FunctionDeclaration, bool) {

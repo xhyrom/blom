@@ -1,6 +1,19 @@
 fun @native @variadic printf(format: string);
 
-fun @public main() {
+fun test(a: i32) {
   printf("hello %d\n", 5);
+  return 0;
+}
+
+fun test(a: i32, b: i32) {
+  return a + b;
+}
+
+fun i32::test(a: string) -> string {
+    return a;
+}
+
+fun @public main() {
+  printf("hello %d %d %s\n", test(5), test(5, 7), i32::test("ahoj"));
   return 0;
 }
