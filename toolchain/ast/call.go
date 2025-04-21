@@ -54,3 +54,8 @@ func (i InfixCall) Location() tokens.Location {
 }
 
 func (i InfixCall) isCall() {}
+
+// Explicit interface implementation
+var _ Call = (*FunctionCall)(nil)
+var _ Call = (*MethodCall)(nil)
+var _ Call = (*InfixCall)(nil)

@@ -1,6 +1,5 @@
 fun @native @variadic printf(format: string);
 
-
 fun @public main() {
   printf("hello %ld\n", 0xdeadbeef);
   printf("hello %d\n", 01);
