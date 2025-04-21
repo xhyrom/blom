@@ -2,7 +2,7 @@ package lexer
 
 import (
 	"blom/lexer/consumers"
-	"blom/reader"
+	"blom/lexer/reader"
 	"blom/tokens"
 	"unicode"
 )
