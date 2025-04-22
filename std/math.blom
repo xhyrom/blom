@@ -1,3 +1,11 @@
+fun @public i64::max() -> i64 {
+    return 9_223_372_036_854_775_807;
+}
+
+fun @public i64::min() -> i64 {
+    return ~i64::max();
+}
+
 fun @public i32::max() -> i32 {
   return 2_147_483_647;
 }

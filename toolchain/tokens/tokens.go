@@ -157,19 +157,21 @@ func FromIdentifier(identifier string) TokenKind {
 type Precedence int
 
 const (
-	LowestPrecedence Precedence = iota
-	AssignPrecedence
-	OrPrecedence
-	AndPrecedence
-	BitwiseOrPrecedence
-	BitwiseXorPrecedence
-	BitwiseAndPrecedence
-	EqualityPrecedence
-	RelationalPrecedence
-	ShiftPrecedence
-	AdditivePrecedence
-	MultiplicativePrecedence
-	HighestPrecedence
+	LowestPrecedence         Precedence = iota
+	AssignPrecedence                    // =
+	OrPrecedence                        // or (logical OR)
+	AndPrecedence                       // and (logical AND)
+	BitwiseOrPrecedence                 // |
+	BitwiseXorPrecedence                // ^
+	BitwiseAndPrecedence                // &
+	EqualityPrecedence                  // == !=
+	RelationalPrecedence                // < <= > >=
+	ShiftPrecedence                     // << >>
+	AdditivePrecedence                  // + -
+	MultiplicativePrecedence            // * / %
+	UnaryPrecedence                     // unary + - ~ (not)
+	MemberAccessPrecedence              // . :: (highest: member access, namespace)
+	HighestPrecedence                   // parentheses, function calls, array indexing
 )
 
 func (kind TokenKind) Precedence() Precedence {
@@ -196,7 +198,11 @@ func (kind TokenKind) Precedence() Precedence {
 		return AdditivePrecedence
 	case Asterisk, Slash, PercentSign:
 		return MultiplicativePrecedence
-	case Tilde, Dot, LeftParenthesis, LeftSquareBracket, DoubleColon, Identifier:
+	case Tilde:
+		return UnaryPrecedence
+	case Dot, DoubleColon:
+		return MemberAccessPrecedence
+	case LeftParenthesis, LeftSquareBracket:
 		return HighestPrecedence
 	default:
 		return LowestPrecedence
