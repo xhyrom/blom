@@ -1,44 +1,45 @@
 package tests
 
 import (
-	"blom/qbe"
 	"testing"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
 func TestComparisonTypeString(t *testing.T) {
 	tests := []struct {
 		name string
-		c    qbe.ComparisonType
+		c    ir.ComparisonType
 		want string
 	}{
 		{
 			name: "LessThan",
-			c:    qbe.LessThan,
+			c:    ir.LessThan,
 			want: "lt",
 		},
 		{
 			name: "LessThanOrEqual",
-			c:    qbe.LessThanOrEqual,
+			c:    ir.LessThanOrEqual,
 			want: "le",
 		},
 		{
 			name: "GreaterThan",
-			c:    qbe.GreaterThan,
+			c:    ir.GreaterThan,
 			want: "gt",
 		},
 		{
 			name: "GreaterThanOrEqual",
-			c:    qbe.GreaterThanOrEqual,
+			c:    ir.GreaterThanOrEqual,
 			want: "ge",
 		},
 		{
 			name: "Equal",
-			c:    qbe.Equal,
+			c:    ir.Equal,
 			want: "eq",
 		},
 		{
 			name: "NotEqual",
-			c:    qbe.NotEqual,
+			c:    ir.NotEqual,
 			want: "ne",
 		},
 	}
@@ -59,5 +60,5 @@ func TestUnknownComparisonType(t *testing.T) {
 		}
 	}()
 
-	_ = qbe.ComparisonType(100).String()
+	_ = ir.ComparisonType(100).String()
 }

@@ -1,6 +1,8 @@
 name: "Delegate"
 on:
   push:
+    branches:
+      - main
     paths:
       - "tree-sitter-blom/**"
   workflow_dispatch:

@@ -1,0 +1,17 @@
+type: library
+language: go
+
+project:
+  name: qbe
+  description: QBE IR abstraction and targets
+
+tasks:
+  build:
+    description: Build all QBE tools
+    inputs:
+      - "ir/**/*"
+      - "targets/**/*"
+
+  test:
+    description: Run the tests
+    command: go test ./ir/... ./targets/...

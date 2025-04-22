@@ -2,13 +2,14 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
 	"blom/tokens"
 	"fmt"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
-func (c *Codegen) compileVariableDeclaration(statement *ast.VariableDeclaration, function *qbe.Function, isReturn bool) *qbe.TypedValue {
-	t := qbe.RemapAstType(statement.Type)
+func (c *Codegen) compileVariableDeclaration(statement *ast.VariableDeclaration, function *ir.Function, isReturn bool) *ir.TypedValue {
+	t := RemapAstType(statement.Type)
 
 	value := c.compileStatement(statement.Init, function, t, isReturn)
 	if value.Type.IsFunction() {
@@ -20,9 +21,9 @@ func (c *Codegen) compileVariableDeclaration(statement *ast.VariableDeclaration,
 
 	function.LastBlock().AddAssign(
 		address,
-		qbe.NewPointer(t),
-		qbe.Alloc8Instruction{
-			Value: qbe.NewConstantValue(int64(t.Size(c.Module))),
+		ir.NewPointer(t),
+		ir.Alloc8Instruction{
+			Value: ir.NewConstantValue(int64(t.Size(c.Module))),
 		},
 	)
 
@@ -32,13 +33,13 @@ func (c *Codegen) compileVariableDeclaration(statement *ast.VariableDeclaration,
 	}
 
 	function.LastBlock().AddInstruction(
-		qbe.NewStoreInstruction(t.IntoBase(), value.Value, address),
+		ir.NewStoreInstruction(t.IntoBase(), value.Value, address),
 	)
 
 	return value
 }
 
-func (c *Codegen) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileAssignmentStatement(statement *ast.Assignment, function *ir.Function, isReturn bool) *ir.TypedValue {
 	address := evaluateLeftSide(c, statement.Left, function)
 	value := c.compileStatement(statement.Right, function, address.Type, isReturn)
 
@@ -49,13 +50,13 @@ func (c *Codegen) compileAssignmentStatement(statement *ast.Assignment, function
 	}
 
 	function.LastBlock().AddInstruction(
-		qbe.NewStoreInstruction(t, value.Value, address.Value),
+		ir.NewStoreInstruction(t, value.Value, address.Value),
 	)
 
 	return value
 }
 
-func evaluateLeftSide(c *Codegen, left ast.Node, function *qbe.Function) *qbe.TypedValue {
+func evaluateLeftSide(c *Codegen, left ast.Node, function *ir.Function) *ir.TypedValue {
 	switch expr := left.(type) {
 	case *ast.IdentifierLiteral:
 		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", expr.Value))

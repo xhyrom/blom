@@ -2,11 +2,12 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
 	"fmt"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
-func (c *Codegen) compileLiteral(literal ast.Node, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileLiteral(literal ast.Node, function *ir.Function, vtype ir.Type, isReturn bool) *ir.TypedValue {
 	switch literal := literal.(type) {
 	case *ast.IdentifierLiteral:
 		return compileIdentifierLiteral(c, literal, function)
@@ -25,7 +26,7 @@ func (c *Codegen) compileLiteral(literal ast.Node, function *qbe.Function, vtype
 	panic(fmt.Sprintf("'%T' is not a valid literal", literal))
 }
 
-func compileIdentifierLiteral(c *Codegen, literal *ast.IdentifierLiteral, function *qbe.Function) *qbe.TypedValue {
+func compileIdentifierLiteral(c *Codegen, literal *ast.IdentifierLiteral, function *ir.Function) *ir.TypedValue {
 	variable, exists := c.Scopes.GetValue(literal.Value)
 	if !exists {
 		panic("missing variable")
@@ -39,16 +40,16 @@ func compileIdentifierLiteral(c *Codegen, literal *ast.IdentifierLiteral, functi
 	function.LastBlock().AddAssign(
 		variable.Value,
 		variable.Type.IntoBase(),
-		qbe.NewLoadInstruction(variable.Type.IntoBase(), address.Value),
+		ir.NewLoadInstruction(variable.Type.IntoBase(), address.Value),
 	)
 
 	return variable
 }
 
-func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func compileIntLiteral(literal *ast.IntLiteral, function *ir.Function, vtype ir.Type, isReturn bool) *ir.TypedValue {
 	prefix := ""
 
-	var t qbe.Type = qbe.Word
+	var t ir.Type = ir.Word
 	if vtype != nil {
 		t = vtype
 	}
@@ -65,8 +66,8 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype qb
 		t = function.ReturnType
 	}
 
-	return &qbe.TypedValue{
-		Value: qbe.ConstantValue[int64]{
+	return &ir.TypedValue{
+		Value: ir.ConstantValue[int64]{
 			Value:  literal.Value,
 			Prefix: prefix,
 		},
@@ -74,10 +75,10 @@ func compileIntLiteral(literal *ast.IntLiteral, function *qbe.Function, vtype qb
 	}
 }
 
-func compileFloatLiteral(literal *ast.FloatLiteral, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func compileFloatLiteral(literal *ast.FloatLiteral, function *ir.Function, vtype ir.Type, isReturn bool) *ir.TypedValue {
 	prefix := ""
 
-	var t qbe.Type = qbe.Single
+	var t ir.Type = ir.Single
 	if vtype != nil {
 		t = vtype
 	}
@@ -95,14 +96,14 @@ func compileFloatLiteral(literal *ast.FloatLiteral, function *qbe.Function, vtyp
 	}
 
 	switch t {
-	case qbe.Double:
+	case ir.Double:
 		prefix = "d_"
-	case qbe.Single:
+	case ir.Single:
 		prefix = "s_"
 	}
 
-	return &qbe.TypedValue{
-		Value: qbe.ConstantValue[float64]{
+	return &ir.TypedValue{
+		Value: ir.ConstantValue[float64]{
 			Value:  literal.Value,
 			Prefix: prefix,
 		},
@@ -110,30 +111,30 @@ func compileFloatLiteral(literal *ast.FloatLiteral, function *qbe.Function, vtyp
 	}
 }
 
-func compileCharLiteral(literal *ast.CharLiteral) *qbe.TypedValue {
-	return &qbe.TypedValue{
-		Value: qbe.ConstantValue[int64]{
+func compileCharLiteral(literal *ast.CharLiteral) *ir.TypedValue {
+	return &ir.TypedValue{
+		Value: ir.ConstantValue[int64]{
 			Value: int64(literal.Value),
 		},
-		Type: qbe.Char,
+		Type: ir.Char,
 	}
 }
 
-func compileStringLiteral(c *Codegen, function *qbe.Function, literal *ast.StringLiteral) *qbe.TypedValue {
+func compileStringLiteral(c *Codegen, function *ir.Function, literal *ast.StringLiteral) *ir.TypedValue {
 	name := c.assignNameToValueWithPrefix(function.Name)
 
-	c.Module.AddData(qbe.Data{
-		Linkage: qbe.NewLinkage(false),
+	c.Module.AddData(ir.Data{
+		Linkage: ir.NewLinkage(false),
 		Name:    name,
-		Items: []qbe.TypedDataItem{
-			qbe.NewTypedDataItem(qbe.Byte, qbe.NewStringDataItem(literal.Value)),
-			qbe.NewTypedDataItem(qbe.Byte, qbe.NewConstantDataItem(0)),
+		Items: []ir.TypedDataItem{
+			ir.NewTypedDataItem(ir.Byte, ir.NewStringDataItem(literal.Value)),
+			ir.NewTypedDataItem(ir.Byte, ir.NewConstantDataItem(0)),
 		},
 	})
 
-	return &qbe.TypedValue{
-		Value: qbe.NewGlobalValue(name),
-		Type:  qbe.NewPointer(qbe.Char),
+	return &ir.TypedValue{
+		Value: ir.NewGlobalValue(name),
+		Type:  ir.NewPointer(ir.Char),
 	}
 }
 
@@ -145,7 +146,7 @@ func boolToInt(value bool) int64 {
 	return 0
 }
 
-func compileBooleanLiteral(literal *ast.BooleanLiteral, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func compileBooleanLiteral(literal *ast.BooleanLiteral, function *ir.Function, vtype ir.Type, isReturn bool) *ir.TypedValue {
 	return compileIntLiteral(&ast.IntLiteral{
 		Value: boolToInt(literal.Value),
 		Loc:   literal.Loc,

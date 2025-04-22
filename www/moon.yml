@@ -8,16 +8,20 @@ project:
 tasks:
   install:
     description: Install dependencies
-    command: bun install
+    script: |
+      bun install
 
   build:
     description: Build the website
     command: bun run build
+    deps:
+      - install
     inputs:
       - "src/**/*"
       - "public/**/*"
     outputs:
       - "dist"
+
   dev:
     description: Start the development server
     command: bun run dev

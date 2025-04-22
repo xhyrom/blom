@@ -17,6 +17,8 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: oven-sh/setup-bun@v2
+
       - uses: "moonrepo/setup-toolchain@v0"
       - run: "moon ci --color"
 

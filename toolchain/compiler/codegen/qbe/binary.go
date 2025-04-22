@@ -2,11 +2,12 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
 	"blom/tokens"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
-func (c *Codegen) compileBinaryExpression(expression *ast.BinaryExpression, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileBinaryExpression(expression *ast.BinaryExpression, function *ir.Function, vtype ir.Type, isReturn bool) *ir.TypedValue {
 	typedLeft := c.compileStatement(expression.Left, function, vtype, isReturn)
 	typedRight := c.compileStatement(expression.Right, function, vtype, isReturn)
 
@@ -30,76 +31,76 @@ func (c *Codegen) compileBinaryExpression(expression *ast.BinaryExpression, func
 
 	ty := typedLeft.Type
 
-	var instruction qbe.Instruction
+	var instruction ir.Instruction
 	switch expression.Operator {
 	case tokens.Plus:
-		instruction = qbe.NewAddInstruction(left, right)
+		instruction = ir.NewAddInstruction(left, right)
 	case tokens.Minus:
-		instruction = qbe.NewSubtractInstruction(left, right)
+		instruction = ir.NewSubtractInstruction(left, right)
 	case tokens.Asterisk:
-		instruction = qbe.NewMultiplyInstruction(left, right)
+		instruction = ir.NewMultiplyInstruction(left, right)
 	case tokens.Slash:
-		instruction = qbe.NewDivideInstruction(left, right)
+		instruction = ir.NewDivideInstruction(left, right)
 	case tokens.PercentSign:
-		instruction = qbe.NewModulusInstruction(left, right)
+		instruction = ir.NewModulusInstruction(left, right)
 	case tokens.LessThan:
-		instruction = qbe.NewCompareInstruction(
+		instruction = ir.NewCompareInstruction(
 			ty,
-			qbe.LessThan,
+			ir.LessThan,
 			left,
 			right,
 		)
 	case tokens.LessThanOrEqual:
-		instruction = qbe.NewCompareInstruction(
+		instruction = ir.NewCompareInstruction(
 			ty,
-			qbe.LessThanOrEqual,
+			ir.LessThanOrEqual,
 			left,
 			right,
 		)
 	case tokens.GreaterThan:
-		instruction = qbe.NewCompareInstruction(
+		instruction = ir.NewCompareInstruction(
 			ty,
-			qbe.GreaterThan,
+			ir.GreaterThan,
 			left,
 			right,
 		)
 	case tokens.GreaterThanOrEqual:
-		instruction = qbe.NewCompareInstruction(
+		instruction = ir.NewCompareInstruction(
 			ty,
-			qbe.GreaterThanOrEqual,
+			ir.GreaterThanOrEqual,
 			left,
 			right,
 		)
 	case tokens.Equals:
-		instruction = qbe.NewCompareInstruction(
+		instruction = ir.NewCompareInstruction(
 			ty,
-			qbe.Equal,
+			ir.Equal,
 			left,
 			right,
 		)
 	case tokens.NotEquals:
-		instruction = qbe.NewCompareInstruction(
+		instruction = ir.NewCompareInstruction(
 			ty,
-			qbe.NotEqual,
+			ir.NotEqual,
 			left,
 			right,
 		)
 	case tokens.Ampersand:
-		instruction = qbe.NewBitwiseAndInstruction(left, right)
+		instruction = ir.NewBitwiseAndInstruction(left, right)
 	case tokens.VerticalLine:
-		instruction = qbe.NewBitwiseOrInstruction(left, right)
+		instruction = ir.NewBitwiseOrInstruction(left, right)
 	case tokens.CircumflexAccent:
-		instruction = qbe.NewBitwiseXorInstruction(left, right)
+		instruction = ir.NewBitwiseXorInstruction(left, right)
 	case tokens.DoubleLessThan:
-		instruction = qbe.NewShiftLeftInstruction(left, right)
+		instruction = ir.NewShiftLeftInstruction(left, right)
 	case tokens.DoubleGreaterThan:
-		instruction = qbe.NewArithmeticShiftRightInstruction(left, right)
+		instruction = ir.NewArithmeticShiftRightInstruction(left, right)
 	}
 
 	tempValue := c.getTemporaryValue(nil)
 
 	if isComparisonOperator(expression.Operator) {
-		ty = qbe.Boolean
+		ty = ir.Boolean
 	}
 
 	function.LastBlock().AddAssign(
@@ -108,7 +109,7 @@ func (c *Codegen) compileBinaryExpression(expression *ast.BinaryExpression, func
 		instruction,
 	)
 
-	return &qbe.TypedValue{
+	return &ir.TypedValue{
 		Type:  ty,
 		Value: tempValue,
 	}

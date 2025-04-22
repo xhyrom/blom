@@ -2,22 +2,23 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
 	"blom/scope"
 	"fmt"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
 type Codegen struct {
 	TempCounter int
-	Module      qbe.Module
-	Scopes      *scope.Scopes[*qbe.TypedValue]
+	Module      ir.Module
+	Scopes      *scope.Scopes[*ir.TypedValue]
 }
 
 func New() *Codegen {
 	return &Codegen{
 		TempCounter: 0,
-		Module:      qbe.NewModule(),
-		Scopes:      scope.NewScopes[*qbe.TypedValue](),
+		Module:      ir.NewModule(),
+		Scopes:      scope.NewScopes[*ir.TypedValue](),
 	}
 }
 
@@ -39,7 +40,7 @@ func (c *Codegen) generatePrimitive(primitive ast.Node, populate bool) {
 	switch primitive := primitive.(type) {
 	case *ast.FunctionDeclaration:
 		if populate {
-			c.Module.AddFunction(qbe.RemapAstFunction(*primitive))
+			c.Module.AddFunction(RemapAstFunction(*primitive))
 		} else {
 			c.compileFunction(primitive)
 		}
@@ -57,7 +58,7 @@ func (c *Codegen) assignNameToValueWithPrefix(prefix string) string {
 	return fmt.Sprintf("%s.%d", prefix, c.TempCounter)
 }
 
-func (c *Codegen) getTemporaryValue(name *string) *qbe.TemporaryValue {
+func (c *Codegen) getTemporaryValue(name *string) *ir.TemporaryValue {
 	var prefix string
 	if name != nil {
 		prefix = *name
@@ -65,21 +66,21 @@ func (c *Codegen) getTemporaryValue(name *string) *qbe.TemporaryValue {
 		prefix = "tmp"
 	}
 
-	return &qbe.TemporaryValue{
+	return &ir.TemporaryValue{
 		Name: c.assignNameToValueWithPrefix(prefix),
 	}
 }
 
-func (c *Codegen) getGlobalValue(name *string) *qbe.GlobalValue {
-	return &qbe.GlobalValue{
+func (c *Codegen) getGlobalValue(name *string) *ir.GlobalValue {
+	return &ir.GlobalValue{
 		Name: c.assignNameToValueWithPrefix(*name),
 	}
 }
 
-func (c *Codegen) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
+func (c *Codegen) createVariable(t ir.Type, name string) *ir.TemporaryValue {
 	tmp := c.getTemporaryValue(&name)
 
-	c.Scopes.Set(name, &qbe.TypedValue{
+	c.Scopes.Set(name, &ir.TypedValue{
 		Type:  t,
 		Value: tmp,
 	})
@@ -87,10 +88,10 @@ func (c *Codegen) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
 	return tmp
 }
 
-func (c *Codegen) createGlobalVariable(t qbe.Type, name string) *qbe.GlobalValue {
+func (c *Codegen) createGlobalVariable(t ir.Type, name string) *ir.GlobalValue {
 	tmp := c.getGlobalValue(&name)
 
-	c.Scopes.Set(name, &qbe.TypedValue{
+	c.Scopes.Set(name, &ir.TypedValue{
 		Type:  t,
 		Value: tmp,
 	})
@@ -98,16 +99,16 @@ func (c *Codegen) createGlobalVariable(t qbe.Type, name string) *qbe.GlobalValue
 	return tmp
 }
 
-func (c *Codegen) convertToType(first qbe.Type, second qbe.Type, value qbe.Value, function *qbe.Function) *qbe.TypedValue {
-	if first.IsPointer() && second.IsPointer() && (first.(qbe.PointerBox).Inner == qbe.Void || second.(qbe.PointerBox).Inner == qbe.Void) {
-		return &qbe.TypedValue{
+func (c *Codegen) convertToType(first ir.Type, second ir.Type, value ir.Value, function *ir.Function) *ir.TypedValue {
+	if first.IsPointer() && second.IsPointer() && (first.(ir.PointerBox).Inner == ir.Void || second.(ir.PointerBox).Inner == ir.Void) {
+		return &ir.TypedValue{
 			Value: value,
 			Type:  second,
 		}
 	}
 
 	if first.Weight() == second.Weight() {
-		return &qbe.TypedValue{
+		return &ir.TypedValue{
 			Value: value,
 			Type:  second,
 		}
@@ -115,15 +116,15 @@ func (c *Codegen) convertToType(first qbe.Type, second qbe.Type, value qbe.Value
 		name := "conv"
 		conv := c.getTemporaryValue(&name)
 
-		var instruction qbe.Instruction
+		var instruction ir.Instruction
 		if first.Weight() > second.Weight() {
 			if first.IsFloatingPoint() {
-				instruction = qbe.NewTruncateInstruction(value)
+				instruction = ir.NewTruncateInstruction(value)
 			} else {
-				instruction = qbe.NewCopyInstruction(value)
+				instruction = ir.NewCopyInstruction(value)
 			}
 		} else {
-			instruction = qbe.NewExtensionInstruction(first, value)
+			instruction = ir.NewExtensionInstruction(first, value)
 		}
 
 		function.LastBlock().AddAssign(
@@ -132,7 +133,7 @@ func (c *Codegen) convertToType(first qbe.Type, second qbe.Type, value qbe.Value
 			instruction,
 		)
 
-		return &qbe.TypedValue{
+		return &ir.TypedValue{
 			Value: conv,
 			Type:  second,
 		}
@@ -143,12 +144,86 @@ func (c *Codegen) convertToType(first qbe.Type, second qbe.Type, value qbe.Value
 		function.LastBlock().AddAssign(
 			conv,
 			second,
-			qbe.NewConversionInstruction(first, second, value),
+			ir.NewConversionInstruction(first, second, value),
 		)
 
-		return &qbe.TypedValue{
+		return &ir.TypedValue{
 			Value: conv,
 			Type:  second,
 		}
+	}
+}
+
+func RemapAstType(t ast.Type) ir.Type {
+	switch t {
+	case ast.Int8:
+		return ir.Byte
+	case ast.UnsignedInt8:
+		return ir.UnsignedByte
+	case ast.Int16:
+		return ir.Halfword
+	case ast.UnsignedInt16:
+		return ir.UnsignedHalfword
+	case ast.Int32:
+		return ir.Word
+	case ast.UnsignedInt32:
+		return ir.UnsignedWord
+	case ast.Int64:
+		return ir.Long
+	case ast.UnsignedInt64:
+		return ir.UnsignedLong
+	case ast.Float32:
+		return ir.Single
+	case ast.Float64:
+		return ir.Double
+	case ast.Boolean:
+		return ir.Boolean
+	case ast.Char:
+		return ir.Char
+	case ast.String:
+		return ir.PointerBox{Inner: ir.Char}
+	case ast.Void:
+		return ir.Void
+	case ast.Null:
+		return ir.Null
+	}
+
+	if t.IsPointer() {
+		return ir.PointerBox{Inner: RemapAstType(t.(ast.PointerType).Inner)}
+	}
+
+	if t.IsFunction() {
+		fnType := t.(ast.FunctionType)
+
+		lambda := ir.Function{
+			Linkage:    ir.NewLinkage(false),
+			Params:     make([]ir.TypedValue, len(fnType.Arguments)),
+			ReturnType: RemapAstType(fnType.ReturnType),
+		}
+
+		return ir.FunctionBox{Inner: lambda}
+	}
+
+	panic(fmt.Sprintf("Unknown type '%s'", t))
+}
+
+func RemapAstFunction(fun ast.FunctionDeclaration) ir.Function {
+	params := make([]ir.TypedValue, len(fun.Params))
+
+	for i, param := range fun.Params {
+		params[i] = ir.TypedValue{
+			Type:  RemapAstType(param.Type),
+			Value: ir.NewTemporaryValue(param.Name.Value),
+		}
+	}
+
+	return ir.Function{
+		Linkage:    ir.NewLinkage(fun.HasAnnotation(ast.Public)),
+		Name:       fun.Path.Dotify(),
+		Params:     params,
+		ReturnType: RemapAstType(fun.Return),
+		Variadic:   fun.Variadic,
+		External:   fun.HasAnnotation(ast.Native),
+		Blocks:     make([]ir.Block, 0),
 	}
 }

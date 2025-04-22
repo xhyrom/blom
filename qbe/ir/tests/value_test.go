@@ -1,14 +1,15 @@
 package tests
 
 import (
-	"blom/qbe"
 	"testing"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
 func TestTemporaryValue(t *testing.T) {
-	v := qbe.TemporaryValue{Name: "name"}
+	v := ir.TemporaryValue{Name: "name"}
 
-	if v.Type() != qbe.TemporaryValueType {
+	if v.Type() != ir.TemporaryValueType {
 		t.Errorf("Expected TemporaryValueType, got %v", v.Type())
 	}
 
@@ -18,9 +19,9 @@ func TestTemporaryValue(t *testing.T) {
 }
 
 func TestGlobalValue(t *testing.T) {
-	v := qbe.GlobalValue{Name: "name"}
+	v := ir.GlobalValue{Name: "name"}
 
-	if v.Type() != qbe.GlobalValueType {
+	if v.Type() != ir.GlobalValueType {
 		t.Errorf("Expected GlobalValueType, got %v", v.Type())
 	}
 
@@ -30,9 +31,9 @@ func TestGlobalValue(t *testing.T) {
 }
 
 func TestTypedValue(t *testing.T) {
-	v := qbe.TypedValue{
-		Value: qbe.TemporaryValue{Name: "name"},
-		Type:  qbe.Word,
+	v := ir.TypedValue{
+		Value: ir.TemporaryValue{Name: "name"},
+		Type:  ir.Word,
 	}
 
 	if v.String() != "w %name" {
@@ -45,9 +46,9 @@ func TestTypedValue(t *testing.T) {
 }
 
 func TestTypedValueDifferentAbi(t *testing.T) {
-	v := qbe.TypedValue{
-		Value: qbe.TemporaryValue{Name: "name"},
-		Type:  qbe.Byte,
+	v := ir.TypedValue{
+		Value: ir.TemporaryValue{Name: "name"},
+		Type:  ir.Byte,
 	}
 
 	if v.String() != "b %name" {

@@ -2,18 +2,19 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
-func (c *Codegen) compileReturnStatement(statement *ast.Return, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func (c *Codegen) compileReturnStatement(statement *ast.Return, function *ir.Function, vtype ir.Type) *ir.TypedValue {
 	returnStatement := c.compileStatement(statement.Value, function, vtype, true)
 
 	if returnStatement == nil {
-		function.LastBlock().AddInstruction(qbe.ReturnInstruction{
+		function.LastBlock().AddInstruction(ir.ReturnInstruction{
 			Value: nil,
 		})
 	} else {
-		function.LastBlock().AddInstruction(qbe.ReturnInstruction{
+		function.LastBlock().AddInstruction(ir.ReturnInstruction{
 			Value: returnStatement.Value,
 		})
 	}

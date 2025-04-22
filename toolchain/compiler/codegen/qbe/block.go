@@ -2,11 +2,12 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
 	"fmt"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
-func (c *Codegen) compileBlock(block *ast.Block, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileBlock(block *ast.Block, function *ir.Function, vtype ir.Type, isReturn bool) *ir.TypedValue {
 	c.Scopes.Append()
 
 	c.TempCounter += 1

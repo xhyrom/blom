@@ -2,28 +2,29 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
 func (c *Codegen) compileFunction(declaration *ast.FunctionDeclaration) {
 	c.Scopes.Append()
 
-	var linkage qbe.Linkage
+	var linkage ir.Linkage
 	if declaration.HasAnnotation(ast.Public) {
-		linkage = qbe.NewLinkage(true)
+		linkage = ir.NewLinkage(true)
 	} else {
-		linkage = qbe.NewLinkage(false)
+		linkage = ir.NewLinkage(false)
 	}
 
-	returnType := qbe.RemapAstType(declaration.Return)
-	function := qbe.Function{
+	returnType := RemapAstType(declaration.Return)
+	function := ir.Function{
 		Linkage:    linkage,
 		Name:       declaration.Path.Dotify(),
-		Params:     make([]qbe.TypedValue, len(declaration.Params)),
+		Params:     make([]ir.TypedValue, len(declaration.Params)),
 		ReturnType: returnType,
 		Variadic:   declaration.Variadic,
 		External:   declaration.HasAnnotation(ast.Native),
-		Blocks:     make([]qbe.Block, 0),
+		Blocks:     make([]ir.Block, 0),
 	}
 
 	if declaration.HasAnnotation(ast.Native) {
@@ -34,7 +35,7 @@ func (c *Codegen) compileFunction(declaration *ast.FunctionDeclaration) {
 	function.AddBlock("start")
 
 	for i, param := range declaration.Params {
-		t := qbe.RemapAstType(param.Type)
+		t := RemapAstType(param.Type)
 
 		temp := c.createVariable(t, param.Name.Value)
 		stmt := &ast.VariableDeclaration{
@@ -46,7 +47,7 @@ func (c *Codegen) compileFunction(declaration *ast.FunctionDeclaration) {
 		}
 
 		c.compileStatement(stmt, &function, t, false)
-		function.Params[i] = qbe.NewTypedValue(t, temp)
+		function.Params[i] = ir.NewTypedValue(t, temp)
 	}
 
 	for _, statement := range declaration.Block.Body {

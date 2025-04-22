@@ -7,10 +7,13 @@ project:
 tasks:
   install:
     description: Install dependencies
-    command: bun install
+    script: |
+      bun install
 
   build:
     description: Builds the parser
+    deps:
+      - install
     command: bun run generate
     inputs:
       - "src/**/*"
