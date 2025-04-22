@@ -1,18 +1,223 @@
 #!/bin/sh
 
+# colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;36m'
+NC='\033[0m' # no color
+
+USE_COLORS=true
+for arg in "$@"; do
+  if [ "$arg" = "--no-colors" ] || [ "$arg" = "-no-colors" ]; then
+    USE_COLORS=false
+    set -- $(echo "$@" | sed "s/--no-colors\|-no-colors//g")
+    break
+  fi
+done
+
+if [ "$USE_COLORS" = false ]; then
+  RED=''
+  GREEN=''
+  YELLOW=''
+  BLUE=''
+  NC=''
+fi
+
+# check if moon is installed
 MOON_PATH=$(which moon 2>/dev/null)
 if [ -z "$MOON_PATH" ]; then
-    echo "'moon' command not found. Please install 'moon' by following the instructions at: https://moonrepo.dev/docs/install"
+    echo "${RED}'moon' command not found. Please install 'moon' by following the instructions at: https://moonrepo.dev/docs/install${NC}"
     exit 1
 fi
 
-TASK=$1
-if [ -z "$TASK" ]; then
-    echo "$0: missing task name"
+# default output directory
+BUILD_DIR="toolchain/test/build"
+mkdir -p "$BUILD_DIR" 2>/dev/null
+
+show_help() {
+    echo "${BLUE}Blom Development Tool${NC}"
+    echo ""
+    echo "Usage: $0 [command] [options]"
+    echo ""
+    echo "${GREEN}Commands:${NC}"
+    echo "  build              Build the toolchain"
+    echo "  test               Run all tests"
+    echo "  compile <file>     Compile a .blom file using blomc"
+    echo "  run <file>         Run a .blom file using the interpreter"
+    echo "  ray <file>         Analyze tokens in a .blom file using blomray"
+    echo "  sight <file>       Visualize AST for a .blom file using blomsight"
+    echo "  prism <symbol>     Demangle a symbol using blomprism"
+    echo "  moon <task>        Run a specific moon task"
+    echo "  clean              Clean build artifacts"
+    echo ""
+    echo "${GREEN}Options:${NC}"
+    echo "  -o, --output <file>    Specify output file (for compile/js/py)"
+    echo "  --no-colors            Disable colored output"
+    echo "  -h, --help             Show this help message"
+    echo ""
+    echo "${YELLOW}Examples:${NC}"
+    echo "  $0 compile toolchain/test/test.blom -o test"
+    echo "  $0 run toolchain/test/test.blom"
+    echo "  $0 ray toolchain/test/test.blom"
+    echo "  $0 prism _Z3addii_Ri"
+    echo ""
+}
+
+run_cmd() {
+    echo "${BLUE}> $*${NC}"
+    $@
+    return $?
+}
+
+find_output_arg() {
+    output=""
+    i=1
+    while [ $i -le $# ]; do
+        eval arg=\${$i}
+        next=$((i+1))
+        eval next_arg=\${$next}
+
+        if [ "$arg" = "-o" ] || [ "$arg" = "--output" ]; then
+            if [ ! -z "$next_arg" ] && [ ! $(echo "$next_arg" | grep -E "^-") ]; then
+                output=$next_arg
+                # remove these args
+                eval "set -- $(echo $@ | sed "s/${arg} ${next_arg}//")"
+                break
+            fi
+        fi
+        i=$((i+1))
+    done
+
+    echo "$output"
+}
+
+# no args
+if [ $# -eq 0 ]; then
+    show_help
+    exit 0
 fi
 
-if [ -z "$(echo $TASK | grep ':')" ]; then
-    TASK=":$TASK"
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    show_help
+    exit 0
 fi
 
-moon run $TASK
+COMMAND=$1
+shift
+
+case "$COMMAND" in
+    build)
+        run_cmd moon run :build
+        ;;
+
+    test)
+        run_cmd moon run :test
+        ;;
+
+    compile)
+        if [ $# -eq 0 ]; then
+            echo "${RED}Error: No file specified for compilation${NC}"
+            show_help
+            exit 1
+        fi
+
+        INPUT_FILE=$1
+        shift
+
+        OUTPUT=$(find_output_arg "$@")
+        if [ -z "$OUTPUT" ]; then
+            BASENAME=$(basename "$INPUT_FILE" .blom)
+            OUTPUT="$BUILD_DIR/$BASENAME"
+        fi
+
+        echo "${GREEN}Compiling$INPUT_FILE to $OUTPUT${NC}"
+        run_cmd go run toolchain/cmd/blomc/main.go "$INPUT_FILE" -o "$OUTPUT" "$@"
+        ;;
+
+    run)
+        if [ $# -eq 0 ]; then
+            echo "${RED}Error: No file specified to run${NC}"
+            show_help
+            exit 1
+        fi
+
+        INPUT_FILE=$1
+        shift
+
+        echo "${GREEN}Running$INPUT_FILE with interpreter${NC}"
+        run_cmd go run toolchain/cmd/blom/main.go "$INPUT_FILE" "$@"
+        ;;
+
+    ray)
+        if [ $# -eq 0 ]; then
+            echo "${RED}Error: No file specified for token analysis${NC}"
+            show_help
+            exit 1
+        fi
+
+        INPUT_FILE=$1
+        shift
+
+        echo "${GREEN}Analyzing tokens in$INPUT_FILE${NC}"
+        run_cmd go run toolchain/cmd/blomray/main.go "$INPUT_FILE" "$@"
+        ;;
+
+    sight)
+        if [ $# -eq 0 ]; then
+            echo "${RED}Error: No file specified for AST visualization${NC}"
+            show_help
+            exit 1
+        fi
+
+        INPUT_FILE=$1
+        shift
+
+        echo "${GREEN}Visualizing AST for$INPUT_FILE${NC}"
+        run_cmd go run toolchain/cmd/blomsight/main.go "$INPUT_FILE" "$@"
+        ;;
+
+    prism)
+        if [ $# -eq 0 ]; then
+            echo "${RED}Error: No symbol specified for demangling${NC}"
+            show_help
+            exit 1
+        fi
+
+        SYMBOL=$1
+        shift
+
+        echo "${GREEN}Demangling symbol$SYMBOL${NC}"
+        run_cmd go run toolchain/cmd/blomprism/main.go "$SYMBOL" "$@"
+        ;;
+
+    moon)
+        TASK=$1
+        if [ -z "$TASK" ]; then
+            echo "${RED}Error: No moon task specified${NC}"
+            show_help
+            exit 1
+        fi
+
+        # handle task format
+        if [ -z "$(echo $TASK | grep ':')" ]; then
+            TASK=":$TASK"
+        fi
+
+        run_cmd moon run "$TASK" "${@:2}"
+        ;;
+
+    clean)
+        echo "${GREEN}Cleaning build artifacts${NC}"
+        run_cmd rm -rf "$BUILD_DIR"/*
+        echo "Cleaned $BUILD_DIR"
+        ;;
+
+    *)
+        echo "${RED}Unknown command: $COMMAND${NC}"
+        show_help
+        exit 1
+        ;;
+esac
+
+exit $?
