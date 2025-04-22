@@ -19,10 +19,9 @@ fun @public fact(n: i64) -> i64 {
         return 1;
     }
 
-    var a: i64 = n;
     var result: i64 = 1;
-    for a > 1; a = a - 1 {
-        result = result * a;
+    for n > 1; n = n - 1 {
+        result = result * n;
     }
 
     return result;

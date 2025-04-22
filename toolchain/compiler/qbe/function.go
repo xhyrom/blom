@@ -8,14 +8,6 @@ import (
 func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	c.Scopes.Append()
 
-	params := make([]qbe.TypedValue, len(declaration.Params))
-	for i, param := range declaration.Params {
-		t := qbe.RemapAstType(param.Type)
-
-		temp := c.createVariable(t, param.Name.Value)
-		params[i] = qbe.NewTypedValue(t, temp)
-	}
-
 	var linkage qbe.Linkage
 	if declaration.HasAnnotation(ast.Public) {
 		linkage = qbe.NewLinkage(true)
@@ -27,7 +19,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	function := qbe.Function{
 		Linkage:    linkage,
 		Name:       declaration.Path.Dotify(),
-		Params:     params,
+		Params:     make([]qbe.TypedValue, len(declaration.Params)),
 		ReturnType: returnType,
 		Variadic:   declaration.HasAnnotation(ast.Variadic),
 		External:   declaration.HasAnnotation(ast.Native),
@@ -40,6 +32,22 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 	}
 
 	function.AddBlock("start")
+
+	for i, param := range declaration.Params {
+		t := qbe.RemapAstType(param.Type)
+
+		temp := c.createVariable(t, param.Name.Value)
+		stmt := &ast.VariableDeclaration{
+			Name: param.Name,
+			Type: param.Type,
+			Init: &ast.IdentifierLiteral{
+				Value: param.Name.Value,
+			},
+		}
+
+		c.compileStatement(stmt, &function, t, false)
+		function.Params[i] = qbe.NewTypedValue(t, temp)
+	}
 
 	for _, statement := range declaration.Block.Body {
 		c.compileStatement(statement, &function, nil, false)

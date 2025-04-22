@@ -60,19 +60,7 @@ func evaluateLeftSide(c *Compiler, left ast.Node, function *qbe.Function) *qbe.T
 	case *ast.IdentifierLiteral:
 		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", expr.Value))
 		if !exists {
-			val, _ := c.Scopes.GetValue(expr.Value)
-			address := c.createVariable(val.Type, fmt.Sprintf("%s.addr", expr.Value))
-
-			function.FirstBlock().AddAssignAt(
-				0,
-				address,
-				qbe.NewPointer(val.Type),
-				qbe.Alloc8Instruction{
-					Value: qbe.NewConstantValue(int64(val.Type.Size(c.Module))),
-				},
-			)
-
-			return evaluateLeftSide(c, expr, function)
+			panic("missing variable address")
 		}
 
 		return address
