@@ -7,7 +7,13 @@ project:
 tasks:
   install:
     description: Install dependencies
-    command: bun install
+    script: |
+      if ! command -v bun &> /dev/null; then
+        echo "Bun not found, installing..."
+        curl -fsSL https://bun.sh/install | bash
+      end
+
+      bun install
 
   build:
     description: Builds the parser
