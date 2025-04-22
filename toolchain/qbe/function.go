@@ -106,7 +106,7 @@ func RemapAstFunction(fun ast.FunctionDeclaration) Function {
 		Name:       fun.Path.Dotify(),
 		Params:     params,
 		ReturnType: RemapAstType(fun.Return),
-		Variadic:   fun.HasAnnotation(ast.Variadic),
+		Variadic:   fun.Variadic,
 		External:   fun.HasAnnotation(ast.Native),
 		Blocks:     make([]Block, 0),
 	}

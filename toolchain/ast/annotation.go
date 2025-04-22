@@ -22,7 +22,6 @@ type AnnotationType int
 
 const (
 	Native AnnotationType = iota
-	Variadic
 	Public
 	Infix
 	NoMangle
@@ -30,7 +29,6 @@ const (
 
 var annotations = []string{
 	Native:   "native",
-	Variadic: "variadic",
 	Public:   "public",
 	Infix:    "infix",
 	NoMangle: "nomangle",

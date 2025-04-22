@@ -1,1 +1,1 @@
-fun @public @native @variadic printf(format: string);
+fun @public @native printf(format: string, ...);

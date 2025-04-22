@@ -43,12 +43,17 @@ func (p *Parser) parseFunction() *ast.FunctionDeclaration {
 
 	params := make([]ast.Argument, 0)
 	for p.Current().Kind != tokens.RightParenthesis {
-		param := p.parseArgument()
-		if param == nil {
-			break
-		}
+		if p.Current().Kind == tokens.Ellipsis {
+			fun.Variadic = true
+			p.Consume()
+		} else {
+			param := p.parseArgument()
+			if param == nil {
+				break
+			}
 
-		params = append(params, *param)
+			params = append(params, *param)
+		}
 
 		if p.Current().Kind == tokens.Comma {
 			p.Consume()

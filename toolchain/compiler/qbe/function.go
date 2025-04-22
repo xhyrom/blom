@@ -21,7 +21,7 @@ func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
 		Name:       declaration.Path.Dotify(),
 		Params:     make([]qbe.TypedValue, len(declaration.Params)),
 		ReturnType: returnType,
-		Variadic:   declaration.HasAnnotation(ast.Variadic),
+		Variadic:   declaration.Variadic,
 		External:   declaration.HasAnnotation(ast.Native),
 		Blocks:     make([]qbe.Block, 0),
 	}

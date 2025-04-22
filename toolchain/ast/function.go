@@ -12,7 +12,8 @@ type FunctionDeclaration struct {
 	Annotations []Annotation
 	Block       *Block
 
-	Return Type
+	Variadic bool
+	Return   Type
 
 	Loc tokens.Location
 }
