@@ -2,12 +2,13 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
 	"blom/tokens"
 	"fmt"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
-func (c *Codegen) compileUnaryExpression(expression *ast.UnaryExpression, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileUnaryExpression(expression *ast.UnaryExpression, function *ir.Function, vtype ir.Type, isReturn bool) *ir.TypedValue {
 	switch expression.Operator {
 	case tokens.Plus: // unary plus
 		return c.compileStatement(&ast.BinaryExpression{
@@ -45,16 +46,16 @@ func (c *Codegen) compileUnaryExpression(expression *ast.UnaryExpression, functi
 	panic(fmt.Sprintf("unknown unary operator: %s", expression.Operator))
 }
 
-func compileAddressOf(c *Codegen, expression ast.Node, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func compileAddressOf(c *Codegen, expression ast.Node, function *ir.Function, vtype ir.Type) *ir.TypedValue {
 	val := c.compileStatement(expression, function, vtype, false)
-	ty := qbe.NewPointer(val.Type)
+	ty := ir.NewPointer(val.Type)
 
 	if val := expression.(*ast.IdentifierLiteral); val != nil {
 		if _, exists := c.Scopes.GetValue(val.Value); exists {
 			address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", val.Value))
 
 			if exists {
-				return &qbe.TypedValue{
+				return &ir.TypedValue{
 					Type:  ty,
 					Value: address.Value,
 				}
@@ -67,38 +68,38 @@ func compileAddressOf(c *Codegen, expression ast.Node, function *qbe.Function, v
 	function.LastBlock().AddAssign(
 		tempValue,
 		ty,
-		qbe.NewAlloc8Instruction(qbe.NewConstantValue(ty.Size(c.Module))),
+		ir.NewAlloc8Instruction(ir.NewConstantValue(ty.Size(c.Module))),
 	)
 
 	function.LastBlock().AddInstruction(
-		qbe.NewStoreInstruction(
+		ir.NewStoreInstruction(
 			ty,
 			tempValue,
 			val.Value,
 		),
 	)
 
-	return &qbe.TypedValue{
+	return &ir.TypedValue{
 		Type:  ty,
 		Value: tempValue,
 	}
 }
 
-func compileDereference(c *Codegen, expression ast.Node, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func compileDereference(c *Codegen, expression ast.Node, function *ir.Function, vtype ir.Type) *ir.TypedValue {
 	val := c.compileStatement(expression, function, vtype, false)
 	tempValue := c.getTemporaryValue(nil)
 
 	function.LastBlock().AddAssign(
 		tempValue,
-		val.Type.(qbe.PointerBox).Inner.IntoBase(),
-		qbe.NewLoadInstruction(
-			val.Type.(qbe.PointerBox).Inner.IntoBase(),
+		val.Type.(ir.PointerBox).Inner.IntoBase(),
+		ir.NewLoadInstruction(
+			val.Type.(ir.PointerBox).Inner.IntoBase(),
 			val.Value,
 		),
 	)
 
-	return &qbe.TypedValue{
-		Type:  val.Type.(qbe.PointerBox).Inner,
+	return &ir.TypedValue{
+		Type:  val.Type.(ir.PointerBox).Inner,
 		Value: tempValue,
 	}
 }

@@ -1,7 +1,6 @@
-package qbe
+package ir
 
 import (
-	"blom/ast"
 	"fmt"
 	"strings"
 	"unsafe"
@@ -65,59 +64,6 @@ var types = []string{
 	Void:    "w",
 	Null:    "",
 	Func:    "l",
-}
-
-func RemapAstType(t ast.Type) Type {
-	switch t {
-	case ast.Int8:
-		return Byte
-	case ast.UnsignedInt8:
-		return UnsignedByte
-	case ast.Int16:
-		return Halfword
-	case ast.UnsignedInt16:
-		return UnsignedHalfword
-	case ast.Int32:
-		return Word
-	case ast.UnsignedInt32:
-		return UnsignedWord
-	case ast.Int64:
-		return Long
-	case ast.UnsignedInt64:
-		return UnsignedLong
-	case ast.Float32:
-		return Single
-	case ast.Float64:
-		return Double
-	case ast.Boolean:
-		return Boolean
-	case ast.Char:
-		return Char
-	case ast.String:
-		return PointerBox{Inner: Char}
-	case ast.Void:
-		return Void
-	case ast.Null:
-		return Null
-	}
-
-	if t.IsPointer() {
-		return PointerBox{Inner: RemapAstType(t.(ast.PointerType).Inner)}
-	}
-
-	if t.IsFunction() {
-		fnType := t.(ast.FunctionType)
-
-		lambda := Function{
-			Linkage:    NewLinkage(false),
-			Params:     make([]TypedValue, len(fnType.Arguments)),
-			ReturnType: RemapAstType(fnType.ReturnType),
-		}
-
-		return FunctionBox{Inner: lambda}
-	}
-
-	panic(fmt.Sprintf("Unknown type '%s'", t))
 }
 
 func (t TypeId) String() string {

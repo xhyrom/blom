@@ -2,11 +2,12 @@ package qbe
 
 import (
 	"blom/ast"
-	"blom/qbe"
 	"fmt"
+
+	"github.com/xhyrom/blom/qbe/ir"
 )
 
-func (c *Codegen) compileCondition(conditionStatement *ast.If, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileCondition(conditionStatement *ast.If, function *ir.Function, vtype ir.Type, isReturn bool) *ir.TypedValue {
 	c.Scopes.Append()
 
 	c.TempCounter += 1
@@ -26,7 +27,7 @@ func (c *Codegen) compileCondition(conditionStatement *ast.If, function *qbe.Fun
 	condition := c.compileStatement(conditionStatement.Condition, function, vtype, isReturn)
 
 	function.LastBlock().AddInstruction(
-		qbe.NewJumpNonZeroInstruction(
+		ir.NewJumpNonZeroInstruction(
 			condition.Value,
 			thenLabel,
 			ifZero,
@@ -42,11 +43,11 @@ func (c *Codegen) compileCondition(conditionStatement *ast.If, function *qbe.Fun
 
 	// Else block
 	if conditionStatement.Else != nil && len(conditionStatement.Else.Body) > 0 {
-		if !function.LastBlock().IsLastStatement(qbe.Jump) &&
-			!function.LastBlock().IsLastStatement(qbe.Return) &&
-			!function.LastBlock().IsLastStatement(qbe.JumpNonZero) {
+		if !function.LastBlock().IsLastStatement(ir.Jump) &&
+			!function.LastBlock().IsLastStatement(ir.Return) &&
+			!function.LastBlock().IsLastStatement(ir.JumpNonZero) {
 			function.LastBlock().AddInstruction(
-				qbe.NewJumpInstruction(endLabel),
+				ir.NewJumpInstruction(endLabel),
 			)
 		}
 

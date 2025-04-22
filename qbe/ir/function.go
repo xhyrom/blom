@@ -1,7 +1,6 @@
-package qbe
+package ir
 
 import (
-	"blom/ast"
 	"fmt"
 	"strings"
 )
@@ -89,27 +88,6 @@ func (f Function) String() string {
 	}
 
 	return fmt.Sprintf("%s {\n%s\n}", signature, strings.Join(blocks, "\n"))
-}
-
-func RemapAstFunction(fun ast.FunctionDeclaration) Function {
-	params := make([]TypedValue, len(fun.Params))
-
-	for i, param := range fun.Params {
-		params[i] = TypedValue{
-			Type:  RemapAstType(param.Type),
-			Value: NewTemporaryValue(param.Name.Value),
-		}
-	}
-
-	return Function{
-		Linkage:    NewLinkage(fun.HasAnnotation(ast.Public)),
-		Name:       fun.Path.Dotify(),
-		Params:     params,
-		ReturnType: RemapAstType(fun.Return),
-		Variadic:   fun.Variadic,
-		External:   fun.HasAnnotation(ast.Native),
-		Blocks:     make([]Block, 0),
-	}
 }
 
 // FunctionBox is a wrapped around a Type that represents a function

@@ -1,4 +1,4 @@
-package qbe
+package ir
 
 import (
 	"fmt"
