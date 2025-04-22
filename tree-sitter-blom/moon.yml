@@ -7,7 +7,7 @@ project:
 tasks:
   install:
     description: Install dependencies
-    script: |
+    script: |-
       if ! command -v bun &> /dev/null; then
         echo "Bun not found, installing..."
         curl -fsSL https://bun.sh/install | bash
