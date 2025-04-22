@@ -5,6 +5,7 @@ go 1.23.6
 require (
 	github.com/fatih/color v1.18.0
 	github.com/gookit/goutil v0.6.18
+	github.com/xhyrom/blom/qbe v0.0.0-00010101000000-000000000000
 	github.com/yassinebenaid/godump v0.11.1
 )
 
@@ -17,3 +18,5 @@ require (
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 )
+
+replace github.com/xhyrom/blom/qbe => ../qbe
