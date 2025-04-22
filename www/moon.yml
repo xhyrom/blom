@@ -19,6 +19,8 @@ tasks:
   build:
     description: Build the website
     command: bun run build
+    deps:
+      - install
     inputs:
       - "src/**/*"
       - "public/**/*"

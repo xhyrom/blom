@@ -17,6 +17,8 @@ tasks:
 
   build:
     description: Builds the parser
+    deps:
+      - install
     command: bun run generate
     inputs:
       - "src/**/*"
