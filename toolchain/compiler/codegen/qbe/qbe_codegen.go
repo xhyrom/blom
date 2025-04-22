@@ -7,35 +7,35 @@ import (
 	"fmt"
 )
 
-type Compiler struct {
+type Codegen struct {
 	TempCounter int
 	Module      qbe.Module
 	Scopes      *scope.Scopes[*qbe.TypedValue]
 }
 
-func New() *Compiler {
-	return &Compiler{
+func New() *Codegen {
+	return &Codegen{
 		TempCounter: 0,
 		Module:      qbe.NewModule(),
 		Scopes:      scope.NewScopes[*qbe.TypedValue](),
 	}
 }
 
-func (c *Compiler) Compile(program *ast.Program) {
+func (c *Codegen) Generate(program *ast.Program) {
 	for _, primitive := range program.Body {
-		c.compilePrimitive(primitive, true)
+		c.generatePrimitive(primitive, true)
 	}
 
 	for _, primitive := range program.Body {
-		c.compilePrimitive(primitive, false)
+		c.generatePrimitive(primitive, false)
 	}
 }
 
-func (c *Compiler) Emit() string {
+func (c *Codegen) Emit() string {
 	return c.Module.String()
 }
 
-func (c *Compiler) compilePrimitive(primitive ast.Node, populate bool) {
+func (c *Codegen) generatePrimitive(primitive ast.Node, populate bool) {
 	switch primitive := primitive.(type) {
 	case *ast.FunctionDeclaration:
 		if populate {
@@ -48,16 +48,16 @@ func (c *Compiler) compilePrimitive(primitive ast.Node, populate bool) {
 	}
 }
 
-func (c *Compiler) assignNameToValue() string {
+func (c *Codegen) assignNameToValue() string {
 	return c.assignNameToValueWithPrefix("")
 }
 
-func (c *Compiler) assignNameToValueWithPrefix(prefix string) string {
+func (c *Codegen) assignNameToValueWithPrefix(prefix string) string {
 	c.TempCounter += 1
 	return fmt.Sprintf("%s.%d", prefix, c.TempCounter)
 }
 
-func (c *Compiler) getTemporaryValue(name *string) *qbe.TemporaryValue {
+func (c *Codegen) getTemporaryValue(name *string) *qbe.TemporaryValue {
 	var prefix string
 	if name != nil {
 		prefix = *name
@@ -70,13 +70,13 @@ func (c *Compiler) getTemporaryValue(name *string) *qbe.TemporaryValue {
 	}
 }
 
-func (c *Compiler) getGlobalValue(name *string) *qbe.GlobalValue {
+func (c *Codegen) getGlobalValue(name *string) *qbe.GlobalValue {
 	return &qbe.GlobalValue{
 		Name: c.assignNameToValueWithPrefix(*name),
 	}
 }
 
-func (c *Compiler) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
+func (c *Codegen) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
 	tmp := c.getTemporaryValue(&name)
 
 	c.Scopes.Set(name, &qbe.TypedValue{
@@ -87,7 +87,7 @@ func (c *Compiler) createVariable(t qbe.Type, name string) *qbe.TemporaryValue {
 	return tmp
 }
 
-func (c *Compiler) createGlobalVariable(t qbe.Type, name string) *qbe.GlobalValue {
+func (c *Codegen) createGlobalVariable(t qbe.Type, name string) *qbe.GlobalValue {
 	tmp := c.getGlobalValue(&name)
 
 	c.Scopes.Set(name, &qbe.TypedValue{
@@ -98,7 +98,7 @@ func (c *Compiler) createGlobalVariable(t qbe.Type, name string) *qbe.GlobalValu
 	return tmp
 }
 
-func (c *Compiler) convertToType(first qbe.Type, second qbe.Type, value qbe.Value, function *qbe.Function) *qbe.TypedValue {
+func (c *Codegen) convertToType(first qbe.Type, second qbe.Type, value qbe.Value, function *qbe.Function) *qbe.TypedValue {
 	if first.IsPointer() && second.IsPointer() && (first.(qbe.PointerBox).Inner == qbe.Void || second.(qbe.PointerBox).Inner == qbe.Void) {
 		return &qbe.TypedValue{
 			Value: value,

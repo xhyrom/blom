@@ -5,7 +5,7 @@ import (
 	"blom/qbe"
 )
 
-func (c *Compiler) compileCall(call ast.Call, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func (c *Codegen) compileCall(call ast.Call, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	switch call := call.(type) {
 	case *ast.FunctionCall:
 		return c.compileFunctionCall(call, function, vtype)
@@ -18,7 +18,7 @@ func (c *Compiler) compileCall(call ast.Call, function *qbe.Function, vtype qbe.
 	panic("invalid call")
 }
 
-func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func (c *Codegen) compileFunctionCall(call *ast.FunctionCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	function := c.Module.GetFunctionByName(call.Path.Dotify())
 	name := qbe.NewGlobalValue(function.Name)
 
@@ -63,12 +63,12 @@ func (c *Compiler) compileFunctionCall(call *ast.FunctionCall, currentFunction *
 	}
 }
 
-func (c *Compiler) compileMethodCall(call *ast.MethodCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func (c *Codegen) compileMethodCall(call *ast.MethodCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	// TODO: implement method call
 	panic("not implemented method call")
 }
 
-func (c *Compiler) compileInfixCall(call *ast.InfixCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func (c *Codegen) compileInfixCall(call *ast.InfixCall, currentFunction *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	if call.FunctionCall != nil {
 		return c.compileFunctionCall(call.FunctionCall, currentFunction, vtype)
 	}

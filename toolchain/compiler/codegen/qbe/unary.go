@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileUnaryExpression(expression *ast.UnaryExpression, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileUnaryExpression(expression *ast.UnaryExpression, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	switch expression.Operator {
 	case tokens.Plus: // unary plus
 		return c.compileStatement(&ast.BinaryExpression{
@@ -45,7 +45,7 @@ func (c *Compiler) compileUnaryExpression(expression *ast.UnaryExpression, funct
 	panic(fmt.Sprintf("unknown unary operator: %s", expression.Operator))
 }
 
-func compileAddressOf(c *Compiler, expression ast.Node, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func compileAddressOf(c *Codegen, expression ast.Node, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	val := c.compileStatement(expression, function, vtype, false)
 	ty := qbe.NewPointer(val.Type)
 
@@ -84,7 +84,7 @@ func compileAddressOf(c *Compiler, expression ast.Node, function *qbe.Function, 
 	}
 }
 
-func compileDereference(c *Compiler, expression ast.Node, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
+func compileDereference(c *Codegen, expression ast.Node, function *qbe.Function, vtype qbe.Type) *qbe.TypedValue {
 	val := c.compileStatement(expression, function, vtype, false)
 	tempValue := c.getTemporaryValue(nil)
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileLiteral(literal ast.Node, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileLiteral(literal ast.Node, function *qbe.Function, vtype qbe.Type, isReturn bool) *qbe.TypedValue {
 	switch literal := literal.(type) {
 	case *ast.IdentifierLiteral:
 		return compileIdentifierLiteral(c, literal, function)
@@ -25,7 +25,7 @@ func (c *Compiler) compileLiteral(literal ast.Node, function *qbe.Function, vtyp
 	panic(fmt.Sprintf("'%T' is not a valid literal", literal))
 }
 
-func compileIdentifierLiteral(c *Compiler, literal *ast.IdentifierLiteral, function *qbe.Function) *qbe.TypedValue {
+func compileIdentifierLiteral(c *Codegen, literal *ast.IdentifierLiteral, function *qbe.Function) *qbe.TypedValue {
 	variable, exists := c.Scopes.GetValue(literal.Value)
 	if !exists {
 		panic("missing variable")
@@ -119,7 +119,7 @@ func compileCharLiteral(literal *ast.CharLiteral) *qbe.TypedValue {
 	}
 }
 
-func compileStringLiteral(c *Compiler, function *qbe.Function, literal *ast.StringLiteral) *qbe.TypedValue {
+func compileStringLiteral(c *Codegen, function *qbe.Function, literal *ast.StringLiteral) *qbe.TypedValue {
 	name := c.assignNameToValueWithPrefix(function.Name)
 
 	c.Module.AddData(qbe.Data{

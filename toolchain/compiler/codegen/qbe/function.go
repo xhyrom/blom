@@ -5,7 +5,7 @@ import (
 	"blom/qbe"
 )
 
-func (c *Compiler) compileFunction(declaration *ast.FunctionDeclaration) {
+func (c *Codegen) compileFunction(declaration *ast.FunctionDeclaration) {
 	c.Scopes.Append()
 
 	var linkage qbe.Linkage

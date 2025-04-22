@@ -1,7 +1,7 @@
 package main
 
 import (
-	"blom/mangling"
+	"blom/compiler/mangling"
 	"bufio"
 	"flag"
 	"fmt"

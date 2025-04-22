@@ -1,43 +1,44 @@
 package compiler
 
 import (
+	"blom/analyzer"
 	"blom/ast"
-	"blom/compiler/qbe"
-)
-
-type Backend int
-
-const (
-	QBE Backend = iota
-	LLVM
+	"blom/compiler/codegen"
+	"blom/compiler/mangling"
+	"blom/compiler/resolver"
 )
 
 type Compiler struct {
-	Backend Backend
+	sourceFile string
+	codegen    *codegen.Codegen
 }
 
-func New(backend Backend) *Compiler {
-	return &Compiler{Backend: backend}
+func New(sourceFile string, codegen *codegen.Codegen) *Compiler {
+	return &Compiler{
+		sourceFile: sourceFile,
+		codegen:    codegen,
+	}
 }
 
 func (c *Compiler) Compile(program *ast.Program) string {
-	switch c.Backend {
-	case QBE:
-		return c.compileQBE(program)
-	case LLVM:
-		return c.compileLLVM()
+	modules := resolver.NewModuleResolver(
+		"/home/hyro/Workspace/blom/", // standard library path
+		resolver.MergeModules,        // merge imported modules
+	)
+
+	program, err := modules.ResolveProgram(c.sourceFile, program)
+	if err != nil {
+		panic(err)
 	}
 
-	panic("Unknown backend")
-}
+	analyzer := analyzer.New(c.sourceFile, program)
+	analyzer.Analyze()
 
-func (c *Compiler) compileQBE(program *ast.Program) string {
-	qbeCompiler := qbe.New()
-	qbeCompiler.Compile(program)
+	mangler := mangling.NewASTMangler()
+	mangler.Mangle(program, analyzer.GetAnalysisContext())
 
-	return qbeCompiler.Emit()
-}
+	demangler := mangling.NewNativeDemangler()
+	demangler.Demangle(program, analyzer.GetAnalysisContext())
 
-func (c *Compiler) compileLLVM() string {
-	panic("Not implemented")
+	return c.codegen.Generate(program)
 }

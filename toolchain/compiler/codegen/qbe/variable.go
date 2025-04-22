@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration, function *qbe.Function, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileVariableDeclaration(statement *ast.VariableDeclaration, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	t := qbe.RemapAstType(statement.Type)
 
 	value := c.compileStatement(statement.Init, function, t, isReturn)
@@ -38,7 +38,7 @@ func (c *Compiler) compileVariableDeclaration(statement *ast.VariableDeclaration
 	return value
 }
 
-func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
+func (c *Codegen) compileAssignmentStatement(statement *ast.Assignment, function *qbe.Function, isReturn bool) *qbe.TypedValue {
 	address := evaluateLeftSide(c, statement.Left, function)
 	value := c.compileStatement(statement.Right, function, address.Type, isReturn)
 
@@ -55,7 +55,7 @@ func (c *Compiler) compileAssignmentStatement(statement *ast.Assignment, functio
 	return value
 }
 
-func evaluateLeftSide(c *Compiler, left ast.Node, function *qbe.Function) *qbe.TypedValue {
+func evaluateLeftSide(c *Codegen, left ast.Node, function *qbe.Function) *qbe.TypedValue {
 	switch expr := left.(type) {
 	case *ast.IdentifierLiteral:
 		address, exists := c.Scopes.GetValue(fmt.Sprintf("%s.addr", expr.Value))

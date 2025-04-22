@@ -1,12 +1,10 @@
 package main
 
 import (
-	"blom/analyzer"
 	"blom/compiler"
+	"blom/compiler/codegen"
 	"blom/lexer"
-	"blom/mangling"
 	"blom/parser"
-	"blom/resolver"
 	"blom/tokens"
 	"fmt"
 	"os"
@@ -25,19 +23,11 @@ func main() {
 
 	args := os.Args[1:]
 
-	var emitTokens bool
-	var emitAst bool
-	var emitSse bool
-
 	var inputFile string
 	var outputFile string = "a.out"
 
 	for i, arg := range args {
 		switch arg {
-		case "-tokens", "--emit-tokens":
-			emitTokens = true
-		case "-ast", "--emit-ast":
-			emitAst = true
 		case "-o", "--output":
 			outputFile = args[i+1]
 			i += 1
@@ -66,51 +56,11 @@ func main() {
 		current = lex.Next()
 	}
 
-	if emitTokens {
-		dump.Println(tkns)
-	}
-
 	parser := parser.New(inputFile)
 	ast := parser.AST(inputFile, string(content))
 
-	if emitAst {
-		dump.Println(ast)
-	}
-
-	moduleResolver := resolver.NewModuleResolver(
-		"/home/hyro/Workspace/blom/", // standard library path
-		resolver.MergeModules,        // merge imported modules
-	)
-	inputDir := filepath.Dir(inputFile)
-	if inputDir != "." {
-		moduleResolver.AddSearchPath(inputDir)
-	}
-
-	resolvedAst, err := moduleResolver.ResolveProgram(inputFile, ast)
-	if err != nil {
-		panic(err)
-	}
-	ast = resolvedAst
-
-	analyzer := analyzer.New(inputFile, ast)
-	analyzer.Analyze()
-
-	mangler := mangling.NewASTMangler()
-	mangler.Mangle(ast, analyzer.GetAnalysisContext())
-
-	demangler := mangling.NewNativeDemangler()
-	demangler.Demangle(ast, analyzer.GetAnalysisContext())
-
-	//if emitAst {
-	//	dump.Println(ast)
-	//}
-
-	comp := compiler.New(compiler.QBE)
-	sse := comp.Compile(ast)
-
-	if emitSse {
-		fmt.Println(sse)
-	}
+	comp := compiler.New(inputFile, codegen.New(codegen.QBE))
+	ssa := comp.Compile(ast)
 
 	outputDir := filepath.Dir(outputFile)
 	if outputDir != "." {
@@ -123,7 +73,7 @@ func main() {
 	ssaFile := filepath.Join(outputDir, "out.ssa")
 	asmFile := filepath.Join(outputDir, "out.s")
 
-	err = os.WriteFile(ssaFile, []byte(sse), 0644)
+	err = os.WriteFile(ssaFile, []byte(ssa), 0644)
 	if err != nil {
 		panic(err)
 	}
