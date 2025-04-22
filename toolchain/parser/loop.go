@@ -28,7 +28,7 @@ func (p *Parser) parseWhileLoop() *ast.WhileLoop {
 // Parses a loop that can have a form:
 // for <declaration>; <condition>; <step> { <block> }
 // for <condition>; <step> { <block> }
-func (p *Parser) parseForLoop() *ast.Block {
+func (p *Parser) parseForLoop() ast.Node {
 	p.Consume()
 
 	var declaration *ast.VariableDeclaration
@@ -75,14 +75,9 @@ func (p *Parser) parseForLoop() *ast.Block {
 		}
 	}
 
-	return &ast.Block{
-		Body: []ast.Node{
-			&ast.WhileLoop{
-				Condition: condition,
-				Block:     block,
-				Loc:       condition.Location(),
-			},
-		},
-		Loc: block.Location(),
+	return &ast.WhileLoop{
+		Condition: condition,
+		Block:     block,
+		Loc:       condition.Location(),
 	}
 }

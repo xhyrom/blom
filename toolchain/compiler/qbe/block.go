@@ -11,8 +11,8 @@ func (c *Compiler) compileBlock(block *ast.Block, function *qbe.Function, vtype 
 
 	c.TempCounter += 1
 
-	blockLabel := fmt.Sprintf("block.%d", c.TempCounter)
-	endLabel := fmt.Sprintf("end.%d", c.TempCounter)
+	blockLabel := fmt.Sprintf("block.%d.body", c.TempCounter)
+	endLabel := fmt.Sprintf("block.%d.end", c.TempCounter)
 
 	function.AddBlock(blockLabel)
 

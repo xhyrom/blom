@@ -11,9 +11,9 @@ func (c *Compiler) compileLoop(loopStatement *ast.WhileLoop, function *qbe.Funct
 
 	c.TempCounter += 1
 
-	conditionLabel := fmt.Sprintf("loopc.%d", c.TempCounter)
-	loopLabel := fmt.Sprintf("loop.%d", c.TempCounter)
-	endLabel := fmt.Sprintf("end.%d", c.TempCounter)
+	conditionLabel := fmt.Sprintf("loop.%d.cond", c.TempCounter)
+	loopLabel := fmt.Sprintf("loop.%d.body", c.TempCounter)
+	endLabel := fmt.Sprintf("loop.%d.end", c.TempCounter)
 
 	function.AddBlock(conditionLabel)
 
