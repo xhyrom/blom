@@ -32,11 +32,5 @@ tasks:
       - "bin/blomsight"
 
   test:
-    deps:
-      - test-parser
-
-  test-parser:
-    description: Run the parser tests
+    description: Run the tests
     command: go test ./parser/...
-    inputs:
-      - "parser/tests/*.go"

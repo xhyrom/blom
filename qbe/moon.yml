@@ -13,5 +13,5 @@ tasks:
       - "targets/**/*"
 
   test:
-    description: Run all QBE tests
+    description: Run the tests
     command: go test ./ir/... ./targets/...
