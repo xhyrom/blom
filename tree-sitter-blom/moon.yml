@@ -7,12 +7,9 @@ project:
 tasks:
   install:
     description: Install dependencies
+    toolchain: system
     script: |-
-      if ! command -v bun &> /dev/null; then
-        echo "Bun not found, installing..."
-        curl -fsSL https://bun.sh/install | bash
-      end
-
+      command -v bun &> /dev/null || { echo "Bun not found, installing..."; curl -fsSL https://bun.sh/install | bash; }
       bun install
 
   build:
