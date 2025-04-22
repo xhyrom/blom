@@ -27,11 +27,12 @@ tasks:
       - "qbe/**/*"
       - "scope/**/*"
       - "tokens/**/*"
-      - "transpiler/**/*"
     outputs:
       - "bin/blom"
       - "bin/blomc"
-      - "bin/blomp"
+      - "bin/blomprism"
+      - "bin/blomray"
+      - "bin/blomsight"
   test:
     deps:
       - test-qbe
