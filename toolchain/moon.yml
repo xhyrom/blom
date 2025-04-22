@@ -20,11 +20,8 @@ tasks:
       - "cmd/**/*"
       - "compiler/**/*"
       - "debug/**/*"
-      - "interpreter/**/*"
       - "lexer/**/*"
-      - "mangling/**/*"
       - "parser/**/*"
-      - "qbe/**/*"
       - "scope/**/*"
       - "tokens/**/*"
     outputs:
@@ -33,15 +30,11 @@ tasks:
       - "bin/blomprism"
       - "bin/blomray"
       - "bin/blomsight"
+
   test:
     deps:
-      - test-qbe
       - test-parser
-  test-qbe:
-    description: Run the qbe tests
-    command: go test ./qbe/...
-    inputs:
-      - "qbe/tests/*.go"
+
   test-parser:
     description: Run the parser tests
     command: go test ./parser/...

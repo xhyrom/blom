@@ -92,7 +92,6 @@ func ConsumeNumber(lex Lexer) *tokens.Token {
 		}
 	}
 
-	// handle decimal numbers
 	for !lex.IsEof() && (unicode.IsDigit(lex.CurrentChar()) || lex.CurrentChar() == '.' || lex.CurrentChar() == '_') {
 		if lex.CurrentChar() == '.' {
 			if isFloat {
@@ -136,17 +135,14 @@ func ConsumeNumber(lex Lexer) *tokens.Token {
 				lex.Rewind()
 			}
 		}
+	} else {
+		lex.Rewind()
 	}
 
 	// handle trailing dot
 	if len(value) > 0 && value[len(value)-1] == '.' {
 		value = value[:len(value)-1]
 		isFloat = false
-		lex.Rewind()
-	}
-
-	// rewind to the last character we processed
-	if !lex.IsEof() {
 		lex.Rewind()
 	}
 
